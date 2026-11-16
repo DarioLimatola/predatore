@@ -1,0 +1,10 @@
+{
+  "created_unix": 1794827856.5867558,
+  "engine": "Predatore V6.04 Boolean Vector",
+  "experiment_id": "EXP_seed42_size8",
+  "initial_revision": 0,
+  "schema": "predatore.evolution-vault/2.0",
+  "seed": 42,
+  "smith_profile": "SMITH",
+  "training_protocol": "Independent adaptive explorers; teacher transfer; adaptive EVA; isolated validation/test copies"
+}

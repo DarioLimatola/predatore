@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "name": "validation_moving",
+  "size": 8,
+  "density": 0.0625,
+  "requested_density": 0.06,
+  "seed": 2239,
+  "obstacles": [
+    [
+      0,
+      5
+    ],
+    [
+      1,
+      5
+    ],
+    [
+      2,
+      0
+    ],
+    [
+      6,
+      7
+    ]
+  ]
+}

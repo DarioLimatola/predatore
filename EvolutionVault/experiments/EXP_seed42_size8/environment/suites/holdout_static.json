@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "name": "holdout_static",
+  "size": 8,
+  "density": 0.03125,
+  "requested_density": 0.06,
+  "seed": 3042,
+  "obstacles": [
+    [
+      0,
+      1
+    ],
+    [
+      4,
+      6
+    ]
+  ]
+}

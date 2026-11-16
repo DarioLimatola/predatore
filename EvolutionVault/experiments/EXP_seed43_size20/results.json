@@ -1,0 +1,325 @@
+{
+  "baseline_comparison": {
+    "greedy": {
+      "best_capture_steps": 2,
+      "blocked_actions": 0,
+      "by_scenario": {
+        "hidden": {
+          "best_capture_steps": 2,
+          "blocked_actions": 0,
+          "capture_count": 17,
+          "capture_rate": 0.68,
+          "capture_steps_sum": 223,
+          "episode_count": 25,
+          "mean_steps": 18.52,
+          "stall_rate": 0.32,
+          "successful_mean_steps": 13.117647058823529
+        },
+        "maze": {
+          "best_capture_steps": 3,
+          "blocked_actions": 0,
+          "capture_count": 10,
+          "capture_rate": 0.4,
+          "capture_steps_sum": 93,
+          "episode_count": 25,
+          "mean_steps": 20.84,
+          "stall_rate": 0.6,
+          "successful_mean_steps": 9.3
+        },
+        "moving": {
+          "best_capture_steps": 3,
+          "blocked_actions": 0,
+          "capture_count": 25,
+          "capture_rate": 1,
+          "capture_steps_sum": 440,
+          "episode_count": 25,
+          "mean_steps": 17.6,
+          "stall_rate": 0,
+          "successful_mean_steps": 17.6
+        },
+        "static": {
+          "best_capture_steps": 4,
+          "blocked_actions": 0,
+          "capture_count": 15,
+          "capture_rate": 0.6,
+          "capture_steps_sum": 197,
+          "episode_count": 25,
+          "mean_steps": 18.96,
+          "stall_rate": 0.4,
+          "successful_mean_steps": 13.133333333333333
+        }
+      },
+      "capture_count": 67,
+      "capture_rate": 0.67,
+      "capture_steps_sum": 953,
+      "episode_count": 100,
+      "exploration": 0.03633861867530326,
+      "mean_reward": 13.886000000000001,
+      "mean_steps": 18.98,
+      "note": "Uses true prey coordinates; not restricted to EVA sensors",
+      "stall_rate": 0.33,
+      "successful_mean_steps": 14.223880597014926
+    },
+    "random": {
+      "best_capture_steps": 22,
+      "blocked_actions": 11.99,
+      "by_scenario": {
+        "hidden": {
+          "best_capture_steps": 46,
+          "blocked_actions": 11.56,
+          "capture_count": 3,
+          "capture_rate": 0.12,
+          "capture_steps_sum": 165,
+          "episode_count": 25,
+          "mean_steps": 94.6,
+          "stall_rate": 0,
+          "successful_mean_steps": 55.0
+        },
+        "maze": {
+          "best_capture_steps": 28,
+          "blocked_actions": 15.48,
+          "capture_count": 1,
+          "capture_rate": 0.04,
+          "capture_steps_sum": 28,
+          "episode_count": 25,
+          "mean_steps": 97.12,
+          "stall_rate": 0,
+          "successful_mean_steps": 28.0
+        },
+        "moving": {
+          "best_capture_steps": 22,
+          "blocked_actions": 8.64,
+          "capture_count": 5,
+          "capture_rate": 0.2,
+          "capture_steps_sum": 197,
+          "episode_count": 25,
+          "mean_steps": 87.88,
+          "stall_rate": 0,
+          "successful_mean_steps": 39.4
+        },
+        "static": {
+          "best_capture_steps": 27,
+          "blocked_actions": 12.28,
+          "capture_count": 2,
+          "capture_rate": 0.08,
+          "capture_steps_sum": 90,
+          "episode_count": 25,
+          "mean_steps": 95.6,
+          "stall_rate": 0,
+          "successful_mean_steps": 45.0
+        }
+      },
+      "capture_count": 11,
+      "capture_rate": 0.11,
+      "capture_steps_sum": 480,
+      "episode_count": 100,
+      "exploration": 0.09640595620109216,
+      "mean_reward": -7.5699999999999905,
+      "mean_steps": 93.8,
+      "note": "Uniform random cardinal actions",
+      "stall_rate": 0,
+      "successful_mean_steps": 43.63636363636363
+    }
+  },
+  "benchmarks": {
+    "holdout": {
+      "active_neurons": 51,
+      "best_capture_steps": 7,
+      "blocked_actions": 19.52,
+      "by_scenario": {
+        "hidden": {
+          "best_capture_steps": 7,
+          "blocked_actions": 18.88,
+          "capture_count": 5,
+          "capture_rate": 0.2,
+          "capture_steps_sum": 164,
+          "episode_count": 25,
+          "exploration": 0.09096774193548388,
+          "mean_reward": -12.673599999999992,
+          "mean_steps": 78.12,
+          "paired_outcomes": {
+            "captures": 11534496,
+            "episodes": 25,
+            "stalls": 16778050
+          },
+          "stall_count": 5,
+          "stall_rate": 0.2,
+          "successful_mean_steps": 32.8
+        },
+        "maze": {
+          "best_capture_steps": 15,
+          "blocked_actions": 20.96,
+          "capture_count": 7,
+          "capture_rate": 0.28,
+          "capture_steps_sum": 344,
+          "episode_count": 25,
+          "exploration": 0.10870588235294118,
+          "mean_reward": -12.737599999999992,
+          "mean_steps": 76.56,
+          "paired_outcomes": {
+            "captures": 1687810,
+            "episodes": 25,
+            "stalls": 8391332
+          },
+          "stall_count": 6,
+          "stall_rate": 0.24,
+          "successful_mean_steps": 49.142857142857146
+        },
+        "moving": {
+          "best_capture_steps": 38,
+          "blocked_actions": 14.92,
+          "capture_count": 2,
+          "capture_rate": 0.08,
+          "capture_steps_sum": 89,
+          "episode_count": 25,
+          "exploration": 0.10198952879581152,
+          "mean_reward": -10.806399999999993,
+          "mean_steps": 79.6,
+          "paired_outcomes": {
+            "captures": 4195328,
+            "episodes": 25,
+            "stalls": 18012238
+          },
+          "stall_count": 11,
+          "stall_rate": 0.44,
+          "successful_mean_steps": 44.5
+        },
+        "static": {
+          "best_capture_steps": 27,
+          "blocked_actions": 23.32,
+          "capture_count": 2,
+          "capture_rate": 0.08,
+          "capture_steps_sum": 60,
+          "episode_count": 25,
+          "exploration": 0.07381333333333333,
+          "mean_reward": -20.82239999999999,
+          "mean_steps": 75.52,
+          "paired_outcomes": {
+            "captures": 131584,
+            "episodes": 25,
+            "stalls": 29932906
+          },
+          "stall_count": 14,
+          "stall_rate": 0.56,
+          "successful_mean_steps": 30.0
+        }
+      },
+      "capture_count": 16,
+      "capture_rate": 0.16,
+      "capture_steps_sum": 657,
+      "episode_count": 100,
+      "exploration": 0.09386912160439248,
+      "mean_reward": -14.259999999999991,
+      "mean_steps": 77.45,
+      "min_task_capture": 0.08,
+      "stall_count": 36,
+      "stall_rate": 0.36,
+      "successful_mean_steps": 41.0625,
+      "total_neurons": 51
+    },
+    "validation": {
+      "active_neurons": 51,
+      "best_capture_steps": 31,
+      "blocked_actions": 16.583333333333332,
+      "by_scenario": {
+        "hidden": {
+          "best_capture_steps": 47,
+          "blocked_actions": 11,
+          "capture_count": 2,
+          "capture_rate": 0.3333333333333333,
+          "capture_steps_sum": 100,
+          "episode_count": 6,
+          "exploration": 0.11201445347786812,
+          "mean_reward": -0.8333333333333327,
+          "mean_steps": 83.33333333333333,
+          "paired_outcomes": {
+            "captures": 5,
+            "episodes": 6,
+            "stalls": 0
+          },
+          "stall_count": 0,
+          "stall_rate": 0,
+          "successful_mean_steps": 50.0
+        },
+        "maze": {
+          "best_capture_steps": null,
+          "blocked_actions": 19.333333333333332,
+          "capture_count": 0,
+          "capture_rate": 0,
+          "capture_steps_sum": 0,
+          "episode_count": 6,
+          "exploration": 0.10528800755429651,
+          "mean_reward": -17.446666666666655,
+          "mean_steps": 84.83333333333333,
+          "paired_outcomes": {
+            "captures": 0,
+            "episodes": 6,
+            "stalls": 35
+          },
+          "stall_count": 3,
+          "stall_rate": 0.5,
+          "successful_mean_steps": null
+        },
+        "moving": {
+          "best_capture_steps": null,
+          "blocked_actions": 21,
+          "capture_count": 0,
+          "capture_rate": 0,
+          "capture_steps_sum": 0,
+          "episode_count": 6,
+          "exploration": 0.09420289855072464,
+          "mean_reward": -19.413333333333327,
+          "mean_steps": 77.16666666666667,
+          "paired_outcomes": {
+            "captures": 0,
+            "episodes": 6,
+            "stalls": 39
+          },
+          "stall_count": 4,
+          "stall_rate": 0.6666666666666666,
+          "successful_mean_steps": null
+        },
+        "static": {
+          "best_capture_steps": 31,
+          "blocked_actions": 15,
+          "capture_count": 1,
+          "capture_rate": 0.16666666666666666,
+          "capture_steps_sum": 31,
+          "episode_count": 6,
+          "exploration": 0.10949868073878628,
+          "mean_reward": -8.466666666666663,
+          "mean_steps": 77.33333333333333,
+          "paired_outcomes": {
+            "captures": 16,
+            "episodes": 6,
+            "stalls": 6
+          },
+          "stall_count": 2,
+          "stall_rate": 0.3333333333333333,
+          "successful_mean_steps": 31.0
+        }
+      },
+      "capture_count": 3,
+      "capture_rate": 0.125,
+      "capture_steps_sum": 131,
+      "episode_count": 24,
+      "exploration": 0.10525101008041889,
+      "mean_reward": -11.539999999999994,
+      "mean_steps": 80.66666666666667,
+      "min_task_capture": 0,
+      "stall_count": 9,
+      "stall_rate": 0.375,
+      "successful_mean_steps": 43.666666666666664,
+      "total_neurons": 51
+    }
+  },
+  "champion_id": "c3f992ab9b76ef6f6e9a",
+  "complete": true,
+  "cpu_this_session_seconds": 492.125,
+  "elapsed_this_session_seconds": 541.6647964000003,
+  "engine": "boolean-vector/4",
+  "generations": 30,
+  "note": "Adaptive isolated test; empirical selection, no guarantee of improvement.",
+  "revision": 60,
+  "smith_profile": "SMITH"
+}

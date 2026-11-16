@@ -1,0 +1,1 @@
+"""Predatore laboratory interface."""
