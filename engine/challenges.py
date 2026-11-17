@@ -50,11 +50,12 @@ def create_connected_map(path, size, density, seed):
         while y!=dest[1]:
             y+=1 if dest[1]>y else -1
             obstacles.discard((x,y))
-    record={'version':1,'name':Path(path).stem,'size':size,'density':len(obstacles)/(size*size),
+    record={'version':1,'name':Path(path).stem if path is not None else 'training','size':size,'density':len(obstacles)/(size*size),
             'requested_density':density,'seed':seed,
             'obstacles':[list(p) for p in sorted(obstacles)]}
-    Path(path).parent.mkdir(parents=True,exist_ok=True)
-    Path(path).write_text(json.dumps(record,indent=2),encoding='utf-8')
+    if path is not None:
+        Path(path).parent.mkdir(parents=True,exist_ok=True)
+        Path(path).write_text(json.dumps(record,indent=2),encoding='utf-8')
     return record
 
 
@@ -85,3 +86,35 @@ def load_suites(folder, split):
     return [{'name':name, 'map':read_json(Path(folder)/'environment'/'suites'/f'{split}_{name}.json'),
              'map_key':f'suites/{split}_{name}', 'visibility':spec['visibility'],
              'prey_moves':spec['prey_moves']} for name,spec in SCENARIOS.items()]
+
+
+def training_generation(size,seed,generation,count,archive,run):
+    """One shared training schedule; replay entries come only from completed training."""
+    import hashlib
+    from .settings import Limits
+    def derived(*parts):
+        return int.from_bytes(hashlib.sha256(':'.join(map(str,parts)).encode()).digest()[:8],'little')
+    suites=[]; fresh=[]; replayed=0
+    for i,(name,spec) in enumerate(SCENARIOS.items()):
+        scene={'name':name,'map':create_connected_map(None,size,spec['density'],derived(seed,generation,name,'map')),
+               'map_key':f'train/g{generation}/{name}','visibility':spec['visibility'],'prey_moves':spec['prey_moves']}
+        old=[record for record in archive if record['scenario']['name']==name]
+        episodes=[]
+        for index in range(count):
+            episode_seed=derived(seed,generation,name,index,'episode')
+            if old and (i*count+index+generation)%Limits.TRAIN_REPLAY_DENOMINATOR==0:
+                chosen=random.Random(episode_seed).choice(old)
+                episodes.append({**chosen,'replay':True});replayed+=1
+            else:
+                record={'id':f'{run}/g{generation}/{name}/{index}','seed':episode_seed,'scenario':scene}
+                fresh.append(record);episodes.append({**record,'replay':False})
+        suites.append({**scene,'episode_specs':episodes})
+    retained=sorted(archive+fresh,key=lambda r:derived(r['id'],'sample'))[:Limits.TRAIN_REPLAY_CAPACITY]
+    return suites,retained,replayed
+
+
+def episode_specs(scenario,base_seed,split,count):
+    if 'episode_specs' in scenario:
+        if split!='train':raise ValueError('Training replay outside training')
+        return [(item['scenario'],item['seed']) for item in scenario['episode_specs'][:count]]
+    return [(scenario,seed) for seed in seeds_for(base_seed,split,scenario['name'],count)]

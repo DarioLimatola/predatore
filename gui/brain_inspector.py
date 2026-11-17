@@ -52,9 +52,10 @@ class BrainInspector(ttk.Frame):
         tables = [list(row) for row in frame.get('plastic_tables', [])]
         for update in frame.get('plastic_updates', []):
             if update['neuron'] < len(tables):tables[update['neuron']][update['entry']] = update['before']
+        computed=set(frame.get('computed_nodes',range(len(brain['nodes']))))
         for i, item in enumerate(self.node_items):
             n = brain['nodes'][i]
-            color = '#94a3b8' if not n['active'] else ('#22c55e' if i<len(states) and states[i] else '#1e3a5f')
+            color = '#94a3b8' if not n['active'] or i not in computed else ('#22c55e' if i<len(states) and states[i] else '#1e3a5f')
             self.canvas.itemconfigure(item, fill=color)
             if i<len(tables):
                 effective=next((op for op in GATES if [gate(op,a,b) for a,b in ((0,0),(0,1),(1,0),(1,1))]==tables[i]),'TABLE')
@@ -68,7 +69,7 @@ class BrainInspector(ttk.Frame):
         if brain.get('engine')==Limits.ENGINE:
             width=frame.get('vector_width',math.prod(brain['shape']))
             for label in self.gate_labels:self.canvas.itemconfigure(label,text=f'LUT {width}b')
-            self.info.set(f'{source} · passo {frame.get("t","—")} · {len(brain["nodes"])} moduli × {width} bit · azione RAM {frame.get("action","—")} · memorie {frame.get("knowledge_entries",len(brain.get("knowledge",[])))} · colori: bit 0, clic per vettore completo')
+            self.info.set(f'{source} · passo {frame.get("t","—")} · {len(computed)}/{len(brain["nodes"])} moduli × {width} bit · azione {frame.get("action","—")} ({frame.get("decoder",{}).get("source","—")}) · memorie {frame.get("knowledge_entries",len(brain.get("knowledge",{}).get("rows",[])))} · colori: bit 0, clic per vettore completo')
         if self.selected is not None:
             self.inspect(self.selected)
 
@@ -85,7 +86,11 @@ class BrainInspector(ttk.Frame):
         for i, n in enumerate(nodes):
             x,y = positions[sensors+i]
             sources = [(n['a'],False)]
-            if n['op'] not in ('COPY','NOT') or brain.get('learning'):
+            if brain.get('engine')==Limits.ENGINE:
+                sources.append((n['b'],False))
+                hold=brain['rules'][i]['hold']
+                if hold>=0:sources.append((hold,True))
+            elif n['op'] not in ('COPY','NOT') or brain.get('learning'):
                 sources.append((n['b'],False))
             if brain.get('learning'):
                 rule=brain['learning'][i]
@@ -112,7 +117,7 @@ class BrainInspector(ttk.Frame):
             self.gate_labels.append(self.canvas.create_text(x,y+35,text=n['op'],font=('Segoe UI',8),tags=tag))
             self.canvas.tag_bind(tag,'<Button-1>',lambda event,index=i:self.inspect(index))
         width=1220;height=max(sensors*37+70,math.ceil(len(nodes)/8)*100+100)
-        self.canvas.create_text(250,height-25,anchor='w',text=f'Uscite bit 0,1,2: {brain["outputs"]} · Tratteggio: plasticità/hold; bordi oro: uscite')
+        self.canvas.create_text(250,height-25,anchor='w',text=f'Moduli di uscita: {brain["outputs"]} · Tratteggio: hold; bordi oro: uscite')
         self.canvas.configure(scrollregion=(0,0,width,height))
 
     def inspect(self, index):
@@ -136,14 +141,14 @@ class BrainInspector(ttk.Frame):
             width=math.prod(self.brain['shape'])
             current=frame.get('vector_state',[])
             old=frame.get('vector_previous',[])
-            text=f'Modulo {index} · forma {self.brain["shape"]} · {width} bit · abilitato={n["active"]}\n'
+            text=f'Modulo {index} · forma {self.brain["rules"][index]["shape"]} · {width} bit · abilitato={n["active"]}\n'
             text+=f'Ingressi vettoriali a={n["a"]}, b={n["b"]}; regola={self.brain["rules"][index]}\n'
             if index<len(current):
                 text+=f'Precedente: {format(int(old[index],16),f"0{width}b") if index<len(old) else "?"}\n'
                 text+=f'Attuale:    {format(int(current[index],16),f"0{width}b")}\n'
             else:text+='Stato vettoriale live non disponibile.\n'
             text+=f'Decodificatore RAM e contesto: {frame.get("decoder",{})}\n'
-            text+=f'Memorie contestuali: {frame.get("contextual_entries",len(self.brain.get("contextual_memory",[])))}\n'
+            text+=f'Memorie contestuali: {frame.get("contextual_entries",len(self.brain.get("contextual_memory",{}).get("rows",[])))}\n'
             text+=f'Scritture dopo feedback: {frame.get("vector_updates",[])}\n'
             text+=f'Errore previsione XOR: {frame.get("prediction_error")} (None = contesto sconosciuto)\n'
             text+='Il bit 0 nel grafo è una proiezione; gli output usano le corsie '+str(self.brain['output_lanes'])
@@ -165,7 +170,7 @@ class BrainInspector(ttk.Frame):
             nodes=other['nodes']
             changed=[i for i,(a,b) in enumerate(zip(self.brain['nodes'],nodes)) if
                      {k:a[k] for k in ('a','b','op','active')}!={k:b[k] for k in ('a','b','op','active')}]
-            result=f'Confronto strutturale con {filename}\nNodi: {len(self.brain["nodes"])} / {len(nodes)}; nodi comuni diversi: {changed}\nUscite: {self.brain["outputs"]} / {other["outputs"]}\nRegole plastiche uguali: {self.brain.get("learning")==other.get("learning")}'
+            result=f'Confronto strutturale con {filename}\nNodi: {len(self.brain["nodes"])} / {len(nodes)}; nodi comuni diversi: {changed}\nUscite: {self.brain["outputs"]} / {other["outputs"]}\nForme: {self.brain.get("shape")} / {other.get("shape")}\nCorsie: {self.brain.get("output_lanes")} / {other.get("output_lanes")}\nRegole modificate: {[i for i,(a,b) in enumerate(zip(self.brain["rules"],other["rules"])) if a!=b]}'
         except (OSError,ValueError,KeyError,TypeError) as exc:result=f'Confronto non disponibile: {exc}'
         self.selected=None
         self.details.delete('1.0','end');self.details.insert('end',result)

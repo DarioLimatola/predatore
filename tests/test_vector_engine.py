@@ -7,6 +7,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
+from boolean_engine.memory import counter_value
 from engine.vector_boolean import VectorBooleanNet, BinarySpace, pack, unpack, rotate, masked_write
 from engine.continual import (load_profile, profile_lock, profile_path,
                               fit_topology, evaluation_copy)
@@ -30,7 +31,7 @@ def config(**values):
 class VectorCircuitTests(unittest.TestCase):
     def test_boolean_vector_matches_independent_lane_reference(self):
         net=VectorBooleanNet(4,neurons=5,shape=(2,8));rng=random.Random(123)
-        net.associative_enabled=False
+        net.associative_enabled=False;net.sparse_enabled=False
         for rule in net.rules:
             rule['lut']=[rng.getrandbits(16) for _ in range(4)]
             rule['write']=rng.getrandbits(16)
@@ -54,14 +55,17 @@ class VectorCircuitTests(unittest.TestCase):
     def test_confirmed_evidence_does_not_cancel_and_can_reverse(self):
         n=VectorBooleanNet(neurons=3)
         for _ in range(10):n.learn(11,2,True)
-        low,high=n.knowledge['11'];self.assertTrue(low & high & 4)
+        self.assertEqual(counter_value(n.knowledge['11'][0],2),10)
         for _ in range(3):n.learn(11,2,False)
-        low,high=n.knowledge['11'];self.assertFalse((low|high)&4)
+        self.assertEqual(n.short_memory.choose('11',2),2)
+        for _ in range(8):n.learn(11,2,False)
+        self.assertNotEqual(n.short_memory.choose('11',2),2)
 
     def test_lifetime_learning_and_reset_retains_acquired_memory(self):
         n=VectorBooleanNet(neurons=3)
         obs=[0]*15
         wrong=n.decide(obs);n.feedback(-1)
+        n.reset();self.assertEqual(n.decide(obs),wrong);n.feedback(-1)
         n.reset();self.assertNotEqual(n.decide(obs),wrong)
         n.plasticity_enabled=False;before=copy.deepcopy(n.knowledge)
         n.feedback(-1);self.assertEqual(n.knowledge,before)
@@ -115,7 +119,7 @@ class VectorCircuitTests(unittest.TestCase):
         observation=[0]*15
         proposed=n.decide(observation);n.reset()
         address=n._address(observation);alternative=(proposed+1)%8
-        n.knowledge[str(address)]=[255 ^ (1<<proposed),1<<alternative]
+        for _ in range(2):n.learn(address,alternative,True)
         n.collect_experience=True
         action=n.decide(observation)
         self.assertNotEqual(action,proposed)
@@ -132,10 +136,11 @@ class VectorCircuitTests(unittest.TestCase):
     def test_cross_agent_experience_transfer(self):
         a=VectorBooleanNet(seed=2,neurons=3);events=[]
         a.collect_experience=True;a.experience_sink=events.append
-        action=a.decide([0]*15);a.transition([1]*15);a.feedback(-1)
+        action=a.decide([0]*15);a.transition([1]*15,True);a.feedback(20)
         b=VectorBooleanNet(seed=3,neurons=3);b.replay_experience(events)
-        low,high=b.knowledge['0'];self.assertEqual((low|high)&(1<<action),0)
-        self.assertNotEqual(b.decide([0]*15),action)
+        self.assertFalse(b.knowledge)
+        self.assertTrue(b.contextual_memory.teachers)
+        self.assertEqual(b.decide([0]*15),action)
 
     def test_round_trip_continues_exact_state_and_evidence(self):
         a=VectorBooleanNet(9,neurons=4)

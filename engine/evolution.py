@@ -1,4 +1,4 @@
-"""Configuration and entry point for the persistent V6.04 vector engine."""
+"""Configuration and entry point for the persistent V6.05 vector engine."""
 from dataclasses import dataclass
 from .settings import Limits
 
@@ -27,6 +27,7 @@ class Config:
     minimum_active_neurons: int = Limits.MIN_NEURONS
     retention_tasks: int = Limits.DEFAULT_RETENTION_TASKS
     smith_profile: str = Limits.DEFAULT_SMITH_PROFILE
+    max_vector_width: int = Limits.MAX_EVOLVED_WIDTH
     novelty_archive_size: int = Limits.DEFAULT_NOVELTY_ARCHIVE
 
 

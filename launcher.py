@@ -5,7 +5,7 @@ from engine.evolution import Config,run
 from engine.settings import Limits
 
 def main():
-    p=argparse.ArgumentParser(description='Predatore V6.04 — EVA learning agent / SMITH agent supervisor')
+    p=argparse.ArgumentParser(description='Predatore V6.05 — EVA learning agent / SMITH agent supervisor')
     p.add_argument('--monitor-every',type=int,default=0,help='Live validation every N generations; 0 disables extra monitoring')
     p.add_argument('--live',action='store_true',help='Publish sampled real training frames')
     p.add_argument('--challenge-tests',metavar='EXPERIMENT_DIR',help='Independent invisible-prey and required-pounce probes')
@@ -14,6 +14,7 @@ def main():
     p.add_argument('--train',action='store_true',help='Run evolutionary training')
     p.add_argument('--resume',action='store_true',help='Resume a saved experiment')
     p.add_argument('--smith-profile',default=Limits.DEFAULT_SMITH_PROFILE,help='Persistent SMITH memory and strategy identity')
+    p.add_argument('--max-vector-width',type=int,default=Limits.MAX_EVOLVED_WIDTH)
     p.add_argument('--vector-width',type=int,default=Limits.DEFAULT_WIDTH)
     p.add_argument('--vector-shape',default='',help='Module axes, e.g. 4,4,4 for 64 bits')
     p.add_argument('--base-neurons',type=int,default=Limits.DEFAULT_BASE_NEURONS)
@@ -43,8 +44,8 @@ def main():
         import json
         state=load_profile(args.vault_root,args.smith_profile)
         print(json.dumps({'profile':args.smith_profile,'revision':state['generation'] if state else 0,
-              'runs':state['runs'] if state else [],'knowledge':len(state['eva'].get('knowledge',[])) if state else 0,
-              'contextual_memory':len(state['eva'].get('contextual_memory',[])) if state else 0,
+              'runs':state['runs'] if state else [],'knowledge':len(state['eva'].get('knowledge',{}).get('rows',[])) if state else 0,
+              'contextual_memory':len(state['eva'].get('contextual_memory',{}).get('rows',[])) if state else 0,
               'explorers':len(state.get('explorers',[])) if state else 0,
               'smith_runs':len(state.get('meta',{}).get('run_memory',[])) if state else 0},indent=2))
         return
@@ -90,7 +91,7 @@ def main():
                     raise ValueError('Cannot change circuit plasticity during resume')
         else:
             cfg=Config(generations=args.generations,population=args.population,episodes=args.episodes,
-                       steps=args.steps,size=args.size,seed=args.seed,smith_profile=args.smith_profile,vector_width=args.vector_width,
+                       steps=args.steps,size=args.size,seed=args.seed,smith_profile=args.smith_profile,vector_width=args.vector_width,max_vector_width=args.max_vector_width,
                        memory_capacity=args.memory_capacity,experience_capacity=args.experience_capacity,
                        vector_shape=args.vector_shape,max_neurons=args.max_neurons,
                        initial_neurons=args.base_neurons,minimum_active_neurons=args.min_neurons,

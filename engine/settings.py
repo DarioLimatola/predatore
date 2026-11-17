@@ -1,32 +1,16 @@
 """Resource budgets and defaults shared by engine, CLI, GUI and benchmarks."""
 
 
-class Limits:
-    VERSION = '6.04'
-    ENGINE = 'boolean-vector/4'
-    PROFILE_SCHEMA = 'smith.supervisor/1'
+from boolean_engine.limits import CoreLimits
+
+
+class Limits(CoreLimits):
+    PROFILE_SCHEMA = 'smith.supervisor/2'
     MIN_NEURONS = 32
-    DEFAULT_BASE_NEURONS = 64
     DEFAULT_MIN_NEURONS = 32
-    DEFAULT_MAX_NEURONS = 128
-    MAX_NEURONS = 4096
-    DEFAULT_WIDTH = 64
-    DEFAULT_SHAPE = (8, 8)
-    MIN_WIDTH = 8
-    MAX_WIDTH = 4096
-    SENSOR_BITS = 15
-    ACTION_BITS = 3
-    ACTIONS = 1 << ACTION_BITS
-    ACTION_MASK = (1 << ACTIONS) - 1
-    DEFAULT_MEMORY = 2048
     MIN_MEMORY = 8
     DEFAULT_EXPERIENCES = 2048
-    DEFAULT_TICKS = 1
-    MAX_TICKS = 8
-    DEFAULT_TRACE = 8
-    MAX_TRACE = 64
     DEFAULT_RETENTION_TASKS = 8
-    LOCAL_CANDIDATES = 1
     TEACHER_CANDIDATES = 3
     MIN_AGENT_SAMPLE = 8
     PROBE_CACHE_ENTRIES = 512
@@ -49,16 +33,18 @@ class Limits:
     MAX_STEPS = 10000
     MIN_WORLD_SIZE = 6
     MAX_WORLD_SIZE = 60
-    CONTEXT_HISTORY = 3
-    CONTEXT_COUNTER_BITS = 4
-    CONTEXT_MIN_SUPPORT = 2
-    CONTEXT_TERMINAL_CREDIT = 3
-    DISTILL_CONTEXT_BUDGET = 128
     EXPLORER_RETENTION = 4
     SMITH_RUN_MEMORY = 64
     SMITH_EXPLORATION_PERIOD = 5
     SMITH_LOW_CAPTURE_DENOMINATOR = 4
     SMITH_HIGH_STALL_DENOMINATOR = 2
+
+    TRAIN_REPLAY_CAPACITY=16
+    TRAIN_REPLAY_DENOMINATOR=4
+    STRATEGIES=('consolidate','explore','represent','compact')
+    CIRCUIT_HISTORY_LIMIT=256
+    CONTRIBUTOR_LIMIT=4096
+    RUN_NAMES_LIMIT=128
 
     EVA_LABEL = "EVA - learning agent"
     SMITH_LABEL = "SMITH - agent supervisor"
