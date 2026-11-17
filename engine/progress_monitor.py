@@ -52,6 +52,11 @@ class ProgressMonitor:
         try:
             if not self.initialized:self._initialize(summary['generation'])
             generation=summary['generation']
+            if getattr(self,'training_suites',None):
+                from .evaluation import baseline_suite
+                c=self.config
+                self.baselines['train']={k:baseline_suite(k,self.training_suites,c.seed,'train',self.counts['train'],c.steps)
+                                         for k in ('random','greedy')}
             snapshot={'generation':generation,'train':summary,'baselines':self.baselines,
                       'monitor_every':self.every,'monitor_seconds':self.seconds,
                       'note':'Addestramento/validazione; holdout riservato alla fine. Copie adattive isolate; nessun feedback delle prove al training.'}

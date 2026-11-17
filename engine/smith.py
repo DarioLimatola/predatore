@@ -1,6 +1,6 @@
 """Persistent contextual training supervisor, separate from all world actors.
 
-Two reproduction strategies are compared through observed balanced validation gains.
+Four reproduction strategies are compared through observed balanced validation gains.
 Forced exploration avoids permanently abandoning an untried strategy. Counts are
 metadata, not motor decisions. No final-test result is consumed here.
 """
@@ -8,19 +8,21 @@ from .settings import Limits
 
 def _choose(arms):
     rounds=sum(v[0] for v in arms.values())
+    names=Limits.STRATEGIES
     if rounds%Limits.SMITH_EXPLORATION_PERIOD==0:
-        return ('consolidate','explore')[(rounds//Limits.SMITH_EXPLORATION_PERIOD)%2]
-    for name in ('consolidate','explore'):
+        return names[(rounds//Limits.SMITH_EXPLORATION_PERIOD)%len(names)]
+    best=names[0]
+    for name in names:
         if arms[name][0]==0:return name
-    a,b=arms['consolidate'],arms['explore']
-    return 'explore' if (b[1]+1)*(a[0]+2)>(a[1]+1)*(b[0]+2) else 'consolidate'
+        a,b=arms[best],arms[name]
+        if (b[1]+1)*(a[0]+2)>(a[1]+1)*(b[0]+2):best=name
+    return best
 
 
 def choose(state,context=None):
-    state.setdefault('arms',{'consolidate':[0,0],'explore':[0,0]})
-    if context is None:return _choose(state['arms'])
-    contexts=state.setdefault('contexts',{})
-    arms=contexts.setdefault(str(context),{'consolidate':[0,0],'explore':[0,0]})
+    arms=state.setdefault('arms',{name:[0,0] for name in Limits.STRATEGIES})
+    if context is not None:
+        arms=state.setdefault('contexts',{}).setdefault(str(context),{name:[0,0] for name in Limits.STRATEGIES})
     return _choose(arms)
 
 
@@ -37,13 +39,15 @@ def observe(state,strategy,improved,context=None):
 
 
 def context_for(summary):
-    """Four observable training facts; no held-out result enters strategy choice."""
+    """Six observable training facts; no held-out result enters strategy choice."""
     low_capture=summary['capture_count']*Limits.SMITH_LOW_CAPTURE_DENOMINATOR<summary['episode_count']
     stall_count=summary.get('stall_count',round(summary['stall_rate']*summary['episode_count']))
     high_stall=stall_count*Limits.SMITH_HIGH_STALL_DENOMINATOR>=summary['episode_count']
     rejected=not summary['eva_promoted']
     conflict=summary.get('distillation',{}).get('conflicting_contexts',0)>0
-    return int(low_capture)|(int(high_stall)<<1)|(int(rejected)<<2)|(int(conflict)<<3)
+    underused=summary.get('executed_neurons',1)*2<summary.get('total_neurons',1)
+    regression=summary.get('post_learning_regression',False)
+    return (int(underused)<<4)|(int(regression)<<5)|int(low_capture)|(int(high_stall)<<1)|(int(rejected)<<2)|(int(conflict)<<3)
 
 
 def record_run(state,run,history,starting_revision):
@@ -71,4 +75,4 @@ def describe(state):
             'remembered_runs':len(state.get('run_memory',[])),
             'learned_contexts':len(state.get('contexts',{})),
             'strategy':state.get('last_strategy'),
-            'scope':'Learns which of two combined reproduction/distillation strategies yields balanced validation gains in each training context.'}
+            'scope':'Learns which of four reproduction/distillation/representation strategies yields balanced validation gains in each training context.'}

@@ -17,7 +17,7 @@ def main():
     manifest_json=json.dumps(manifest,indent=2,sort_keys=True)+'\n'
     with (root/'RELEASE_SHA256.json').open('w',encoding='utf-8',newline='\n') as stream:
         stream.write(manifest_json)
-    archive=destination/'predatore_v6_04_eva_smith.zip'
+    archive=destination/'predatore_v6_05_eva_smith.zip'
     temporary=archive.with_suffix('.building')
     with zipfile.ZipFile(temporary,'w',zipfile.ZIP_DEFLATED,compresslevel=6) as z:
         for p in paths:z.write(root/p,'predatore/'+p.as_posix())

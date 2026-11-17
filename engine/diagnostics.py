@@ -49,7 +49,7 @@ def assess_champion(net, suites, seed, episodes, steps, folder, neuron_ablations
     from .evaluation import rollout, genome_id
     variants = ['normal', 'memory_off']
     variants.insert(1, 'plasticity_off')
-    variants += ['associative_off', 'learned_memory_cleared', 'contextual_off']
+    variants += ['associative_off', 'learned_memory_cleared', 'contextual_off', 'hdc_off', 'tensor_off']
     if neuron_ablations:
         variants += [f'neuron_off_{i}' for i,n in enumerate(net.nodes) if n.active]
     results = {}
@@ -58,7 +58,10 @@ def assess_champion(net, suites, seed, episodes, steps, folder, neuron_ablations
         clone.plasticity_enabled = net.plasticity_enabled
         if variant == 'associative_off':clone.associative_enabled=False
         if variant == 'learned_memory_cleared':
-            clone.knowledge.clear();clone.contextual_memory.rows.clear()
+            clone.short_memory.clear();clone.knowledge=clone.short_memory.rows
+            clone.contextual_memory.clear();clone.rebuild_associative()
+        if variant == 'hdc_off':clone.hdc_enabled=False
+        if variant == 'tensor_off':clone.tensor_enabled=False
         if variant == 'contextual_off':clone.contextual_enabled=False
         if variant == 'plasticity_off':
             clone.plasticity_enabled = False
@@ -66,7 +69,7 @@ def assess_champion(net, suites, seed, episodes, steps, folder, neuron_ablations
             clone.memory_enabled = False
         if variant.startswith('neuron_off_'):
             clone.nodes[int(variant.rsplit('_',1)[1])].active = False
-            clone._compiled = None
+            clone.invalidate()
         rows = []
         for scenario in suites:
             for episode_seed in seeds_for(seed, 'holdout', scenario['name'], episodes):

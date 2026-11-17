@@ -20,7 +20,7 @@ from engine.boolean_net import BooleanNet
 from engine.settings import Limits
 from engine.evolution import Config
 from engine.world import World, DIRS
-from engine.vault import read_json, verify, latest_checkpoint_path, checkpoint_paths
+from engine.vault import read_json, latest_checkpoint_path, checkpoint_paths
 from gui.arena_state import preview_settings, episode_finished
 from engine.telemetry import LiveBuffer, write_mailbox
 from gui.brain_inspector import BrainInspector
@@ -90,7 +90,7 @@ def launch(root_dir=None, *, test_hook=None):
     vault.mkdir(parents=True, exist_ok=True)
 
     app = tk.Tk()
-    app.title('PREDATORE V6.04 | EVA + SMITH')
+    app.title('PREDATORE V6.05 | EVA + SMITH')
     app.geometry('1240x830')
     app.minsize(950, 640)
     app.configure(background=BG)
@@ -117,7 +117,7 @@ def launch(root_dir=None, *, test_hook=None):
     header.pack(fill='x')
     header.pack_propagate(False)
     tk.Label(header, text='PREDATORE', font=('Segoe UI', 19, 'bold'), bg='#14263e', fg='white').pack(side='left', padx=(22, 7), pady=12)
-    tk.Label(header, text='V6.04  /  BOOLEAN VECTOR LAB', font=('Segoe UI', 10, 'bold'), bg='#14263e', fg='#93c5fd').pack(side='left', pady=16)
+    tk.Label(header, text='V6.05  /  BOOLEAN VECTOR LAB', font=('Segoe UI', 10, 'bold'), bg='#14263e', fg='#93c5fd').pack(side='left', pady=16)
     header_state = tk.StringVar(value='Ready · No experiment running')
     tk.Label(header, textvariable=header_state, font=('Segoe UI', 10), bg='#14263e', fg='#cbd5e1').pack(side='right', padx=22)
 
@@ -125,10 +125,10 @@ def launch(root_dir=None, *, test_hook=None):
     tabs.pack(fill='both', expand=True, padx=14, pady=(12, 8))
     panels = {}
     for key, name in [('training','Addestramento'), ('arena','Arena'), ('evolution','Evoluzione'),
-                      ('benchmark','Benchmark'), ('brain','Brain Inspector'), ('diagnostics','Diagnostica'), ('supervisor','SMITH'), ('vault','Evolution Vault')]:
+                      ('benchmark','Benchmark'), ('brain','Brain Inspector'), ('diagnostics','Diagnostica'), ('supervisor','SMITH')]:
         panels[key] = ttk.Frame(tabs)
         tabs.add(panels[key], text=name)
-    footer = tk.Label(app, text='V6.04  •  EVA - learning agent  •  SMITH - agent supervisor',
+    footer = tk.Label(app, text='V6.05  •  EVA - learning agent  •  SMITH - agent supervisor',
                       bg=BG, fg=MUTED, font=('Segoe UI', 9))
     footer.pack(anchor='w', padx=22, pady=(0, 8))
 
@@ -166,12 +166,13 @@ def launch(root_dir=None, *, test_hook=None):
     ttk.Label(profile_row,text='Profilo SMITH').pack(side='left')
     ttk.Entry(profile_row,textvariable=smith_profile,width=22).pack(side='left',padx=8)
     ttk.Label(profile_row,text='Stesso SMITH = archivio, strategie ed EVA continuano tra le run.').pack(side='left')
+    vector_max=tk.StringVar(value=str(Limits.MAX_EVOLVED_WIDTH))
     vector_shape=tk.StringVar(value=','.join(map(str,Limits.DEFAULT_SHAPE)))
     memory_budget=tk.StringVar(value=str(Limits.DEFAULT_MEMORY))
     experience_budget=tk.StringVar(value=str(Limits.DEFAULT_EXPERIENCES))
     vector_row=ttk.Frame(cfg_box)
     vector_row.grid(row=3,column=0,columnspan=3,sticky='w',padx=14,pady=5)
-    for label,var in [('Forma moduli',vector_shape),('Memorie RAM',memory_budget),('Esperienze condivise',experience_budget)]:
+    for label,var in [('Forma iniziale',vector_shape),('Memorie RAM',memory_budget),('Esperienze condivise',experience_budget),('Max bit/modulo',vector_max)]:
         ttk.Label(vector_row,text=label).pack(side='left',padx=(0,5))
         ttk.Entry(vector_row,textvariable=var,width=10).pack(side='left',padx=(0,14))
     structure_row=ttk.Frame(cfg_box)
@@ -222,14 +223,14 @@ def launch(root_dir=None, *, test_hook=None):
             profile,state=selected_state()
             if state is None:raise ValueError('No state')
             brain=state['eva']
-            eva_status.set(f"{Limits.EVA_LABEL} · revisione {state['generation']} · neuroni {len(brain['nodes'])} · RAM {len(brain['knowledge'])} · contesti {len(brain['contextual_memory'])} | SMITH {profile} · esperienze {len(state['events'])} · trasferimenti {state['promotions']}")
+            eva_status.set(f"{Limits.EVA_LABEL} · revisione {state['generation']} · neuroni {len(brain['nodes'])} · RAM {len(brain['knowledge']['rows'])} · contesti {len(brain['contextual_memory']['rows'])} | SMITH {profile} · esperienze {len(state['events'])} · trasferimenti {state['promotions']}")
         except (OSError,ValueError,KeyError,TypeError):
             eva_status.set(Limits.EVA_LABEL+': nessun dato per la run selezionata. SMITH conserva memoria e strategie.')
     smith_profile.trace_add('write',lambda *_:refresh_eva())
     tbar = ttk.Frame(panels['training'])
     tbar.pack(fill='x', padx=16, pady=8)
     train_status = tk.StringVar(value='Ready: set parameters and choose Start training.')
-    ttk.Label(panels['training'], textvariable=train_status, font=('Segoe UI', 11, 'bold')).pack(anchor='w', padx=18, pady=(2, 8))
+    ttk.Label(panels['training'], textvariable=train_status, font=('Segoe UI', 11, 'bold'), wraplength=1020).pack(anchor='w', padx=18, pady=(2, 8))
     logs = tk.Text(panels['training'], height=12, wrap='word', bg='#17243b', fg='#e2e8f0',
                    insertbackground='white', borderwidth=0, padx=13, pady=12, font=('Consolas', 10))
     logs.pack(fill='both', expand=True, padx=16, pady=(6, 16))
@@ -282,7 +283,7 @@ def launch(root_dir=None, *, test_hook=None):
                     cmd.extend(['--vector-width',str(math.prod(brain['shape'])),'--vector-shape',','.join(map(str,brain['shape'])),'--memory-capacity',str(brain['memory_capacity']),'--internal-ticks',str(brain['internal_ticks']),'--trace-depth',str(brain['trace_depth'])])
                 else:
                     shape=tuple(int(x) for x in vector_shape.get().split(','))
-                    cmd.extend(['--vector-width',str(math.prod(shape)),'--vector-shape',vector_shape.get(),'--memory-capacity',str(int(memory_budget.get()))])
+                    cmd.extend(['--max-vector-width',str(int(vector_max.get())),'--vector-width',str(math.prod(shape)),'--vector-shape',vector_shape.get(),'--memory-capacity',str(int(memory_budget.get()))])
                 cmd.extend(['--experience-capacity',str(int(experience_budget.get())),
                             '--min-neurons',str(bounds['minimum']),'--base-neurons',str(bounds['base']),
                             '--max-neurons',str(bounds['maximum'])])
@@ -710,34 +711,12 @@ def launch(root_dir=None, *, test_hook=None):
             text=Limits.SMITH_LABEL+'\nProfilo SMITH: '+profile+' · revisione '+str(state['generation'])+'\n'
             text+='Run visualizzata: '+state['transaction']+'\n'
             text+=f"Archivio: {len(state['events'])} esperienze · {len(state['explorers'])} specialisti · {len(state['tasks'])} compiti di riferimento\n"
-            text+='Strategia: '+str(meta.get('last_strategy','—'))+' · contesto binario '+format(meta.get('last_context',0),'04b')+'\n'
-            text+='Bit: poche catture, molti stalli, trasferimento respinto, conflitto di memoria.\n'
+            text+='Strategia: '+str(meta.get('last_strategy','—'))+' · contesto binario '+format(meta.get('last_context',0),'06b')+'\n'
+            text+='Bit: poche catture, molti stalli, trasferimento respinto, conflitto di memoria, moduli sottoutilizzati, regressione dopo apprendimento.\n'
             text+='Statistiche: tentativi / miglioramenti del punteggio bilanciato in validazione.\n\n'
             text+=json.dumps(meta,indent=2,ensure_ascii=False)
         except (OSError,ValueError,KeyError,TypeError):pass
         supervisor_text.delete('1.0','end');supervisor_text.insert('end',text)
-
-    ttk.Label(panels['vault'],text='Esperimenti: configurazioni, mappe, checkpoint, EVA, esploratori, replay e risultati.\nSMITH conserva memoria, specialisti e strategie in EvolutionVault/SMITH.',wraplength=1000).pack(anchor='w',padx=20,pady=10)
-
-    # VAULT browser: show real experiment files and validate checksums on demand.
-    vault_controls=ttk.Frame(panels['vault'])
-    vault_controls.pack(fill='x',padx=16,pady=13)
-    vault_summary=tk.StringVar(value='Experiment files, self-contained for future versions.')
-    ttk.Label(vault_controls,textvariable=vault_summary).pack(side='left',padx=7)
-    files_list=ttk.Treeview(panels['vault'],columns=('path','size'),show='headings')
-    files_list.heading('path',text='EvolutionVault / experiment file')
-    files_list.heading('size',text='Size')
-    files_list.column('path',width=700)
-    files_list.column('size',width=150,anchor='e')
-    files_list.pack(fill='both',expand=True,padx=16,pady=(0,16))
-    def verify_vault():
-        exp=active_experiment()
-        if not exp:return
-        try:
-            result=verify(exp);good=sum(bool(x) for x in result.values())
-            messagebox.showinfo('Vault integrity',f'{good}/{len(result)} checksums verified.' if result else 'No checksum manifest yet (training may still be running).')
-        except (OSError,ValueError,KeyError) as exc:messagebox.showwarning('Vault integrity',str(exc))
-    ttk.Button(vault_controls,text='Verify checksum',command=verify_vault).pack(side='right')
 
     def format_rate(value):return '—' if value is None else f'{value:.1%}'
 
@@ -775,9 +754,7 @@ def launch(root_dir=None, *, test_hook=None):
             replay_index[0]=0;arena_step[0]=0;logs.delete('1.0','end')
             plot.delete('all')
             for item in table.get_children():table.delete(item)
-            for item in files_list.get_children():files_list.delete(item)
             train_status.set('In attesa dei dati della run '+(exp.name if exp else '—'))
-            vault_summary.set(exp.name if exp else 'Nessun esperimento')
             inspector.show(None,source='Nuova selezione')
         if live_exp[0]!=exp:
             live_buffer[0]=LiveBuffer();live_exp[0]=exp;live_tiles.clear()
@@ -813,7 +790,7 @@ def launch(root_dir=None, *, test_hook=None):
                 history=read_json(cp).get('history',[])
                 if history:
                     newest=history[-1]
-                    train_status.set(f'Generazione {newest["generation"]} | {Limits.EVA_LABEL}: {newest["capture_rate"]:.1%} | Popolazione: {newest["population_mean_capture"]:.1%} | Neuroni EVA: {int(newest["active_neurons"])} | Trasferimento: {newest["promotion_reason"]}')
+                    train_status.set(f'Generazione {newest["generation"]} | {Limits.EVA_LABEL}: {newest["capture_rate"]:.1%} | Popolazione: {newest["population_mean_capture"]:.1%} | Moduli EVA: {newest.get("executed_neurons","—")}/{int(newest["active_neurons"])} | Decodifica: {newest.get("decoder_counts",{})}')
                 else:history=[]
             else:history=[]
             monitor_path=exp/'monitor/latest.json'
@@ -868,13 +845,8 @@ def launch(root_dir=None, *, test_hook=None):
                                   ('Popolazione · migliore','population_best_capture')]:
                     table.insert('','end',values=(label+' / test finale',format_rate(comparison[key]),'—','—','—','—'))
             if brain.exists():draw_brain()
-            for id in files_list.get_children():files_list.delete(id)
-            for f in sorted(exp.rglob('*')):
-                if f.is_file():files_list.insert('','end',values=(f.relative_to(exp).as_posix(),f'{f.stat().st_size:,} B'))
-            cfg=read_json(exp/'config.json')
             last_refresh[0]=stamp
             refresh_diagnostics()
-            vault_summary.set(f'{exp.name} · motore vettoriale · griglia {cfg.get("size")} · popolazione {cfg.get("population")} · {len(files_list.get_children())} file')
         except (OSError,ValueError,KeyError,TypeError) as exc:
             train_status.set('Could not refresh experiment: '+str(exc))
     graph_scenario.trace_add('write',lambda *_:refresh_data(force=True))

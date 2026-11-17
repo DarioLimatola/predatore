@@ -43,7 +43,14 @@ class DevelopmentTests(unittest.TestCase):
             report=net.vary_topology(seed,32,128)
             deltas.add(report['topology_delta'])
             self.assertEqual(len(net.nodes),64+report['topology_delta'])
-        self.assertEqual(deltas,{-1,0,1})
+        self.assertEqual(deltas,{-1,0})
+        growth=[]
+        for seed in range(12):
+            net=VectorBooleanNet(seed,neurons=32)
+            for i,node in enumerate(net.nodes):node.a=net.sensors+max(0,i-1)
+            net.outputs=[31]*3;net.invalidate()
+            growth.append(net.vary_topology(seed,32,128)['topology_delta'])
+        self.assertIn(1,growth)
 
     def test_removal_remaps_cycles_hold_gates_outputs_and_reload(self):
         rng=random.Random(54)

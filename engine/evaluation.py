@@ -6,7 +6,7 @@ import statistics
 
 from .progress_monitor import completion_metrics
 from .world import World, DIRS
-from .challenges import seeds_for
+from .challenges import episode_specs
 
 
 def genome_id(net):
@@ -66,15 +66,16 @@ def rollout(net, scenario, seed, steps, record=False, observer=None):
         observer.end_episode()
     return {'capture': int(world.captured), 'steps': world.steps, 'reward': total,
             'stall': int(stalled), 'blocked': blocked,
-            'exploration': len(world.visited)/len(world._free_cells)}, frames
+            'exploration': len(world.visited)/len(world._free_cells),
+            'decoder_counts':dict(getattr(net,'decoder_counts',{}))}, frames
 
 
 def evaluate_suite(net, suites, seed, split, episodes, steps, observer=None):
     rows = []
     task_metrics = {}
     for scenario in suites:
-        scenario_rows = [rollout(net, scenario, sample_seed, steps, observer=observer)[0]
-                         for sample_seed in seeds_for(seed, split, scenario['name'], episodes)]
+        scenario_rows = [rollout(net, task, sample_seed, steps, observer=observer)[0]
+                         for task,sample_seed in episode_specs(scenario,seed,split,episodes)]
         task_metrics[scenario['name']] = {
             **completion_metrics(scenario_rows),
             'capture_rate': statistics.mean(row['capture'] for row in scenario_rows),
@@ -102,6 +103,9 @@ def evaluate_suite(net, suites, seed, split, episodes, steps, observer=None):
         'exploration': statistics.mean(row['exploration'] for row in rows),
         'active_neurons': sum(node.active for node in net.nodes),
         'total_neurons': len(net.nodes),
+        'executed_neurons': len(net.computed_nodes),
+        'vector_width':net.width,
+        'decoder_counts':{k:sum(r['decoder_counts'].get(k,0) for r in rows) for k in net.decoder_counts},
         'min_task_capture': min(metrics['capture_rate'] for metrics in task_metrics.values()),
         'by_scenario': task_metrics,
     }
@@ -121,8 +125,8 @@ def baseline_suite(kind, suites, base_seed, split, episodes, steps):
     all_rows = []
     for scenario in suites:
         task_rows = []
-        for sample_seed in seeds_for(base_seed, split, scenario['name'], episodes):
-            world = World(scenario['map'], seed=sample_seed,
+        for task,sample_seed in episode_specs(scenario,base_seed,split,episodes):
+            world = World(task['map'], seed=sample_seed,
                           visibility=scenario['visibility'],
                           prey_moves=scenario['prey_moves'])
             rng = random.Random(sample_seed + 81282)

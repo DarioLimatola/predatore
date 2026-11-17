@@ -40,7 +40,7 @@ class ContextDistillationTests(unittest.TestCase):
             action=rng.randrange(8);positive=bool(rng.randrange(2))
             memory.update('0',action,positive)
             index=0 if positive else 1
-            reference[index][action]=min(15,reference[index][action]+1)
+            reference[index][action]=min((1<<Limits.CONTEXT_COUNTER_BITS)-1,reference[index][action]+1)
             for plane_index in (0,1):
                 self.assertEqual([counter_value(memory.rows['0'][plane_index],a) for a in range(8)],reference[plane_index])
         expected=[a for a in range(8) if reference[0][a]>=2 and reference[0][a]>reference[1][a]]
@@ -112,7 +112,7 @@ class ContextDistillationTests(unittest.TestCase):
         wrong=net.decide([0]*15);net.reset()
         for _ in range(3):net.contextual_memory.update(key,wrong,True)
         events=[]
-        for source in ('A','B','C'):
+        for source in ('A','B','C','D'):
             for _ in range(3):
                 events.append(dict(source=source,context_key=key,observation=0,previous=0,
                                    valid=0,action=wrong,feedback=2,next=0,terminal_success=0))
@@ -146,6 +146,8 @@ class ContextDistillationTests(unittest.TestCase):
             smith.observe(state,'consolidate',True,context=1)
         smith.observe(state,'explore',True,context=0)
         smith.observe(state,'consolidate',True,context=1)
+        for context in (0,1):
+            for strategy in ('represent','compact'):smith.observe(state,strategy,False,context)
         self.assertEqual(smith.choose(state,0),'explore')
         self.assertEqual(smith.choose(state,1),'consolidate')
 

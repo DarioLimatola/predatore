@@ -17,7 +17,7 @@ class VectorGUI(CallbackContracts):
                 ui['refresh_all']();self.assertIn('revisione 1',ui['eva_status'].get())
                 for mode in ('preview','replay'):
                     ui['mode'].set(mode);ui['next_step']()
-                    self.assertEqual(ui['inspector'].brain['engine'],'boolean-vector/4')
+                    self.assertEqual(ui['inspector'].brain['engine'],'boolean-vector/5')
                     self.assertIn('vector_state',ui['inspector'].frame)
                 ui['refresh_diagnostics']()
                 self.assertIn('associative_off',ui['diagnostics_text'].text)
@@ -46,6 +46,9 @@ class SupervisorTests(unittest.TestCase):
         state={};first=smith.choose(state);smith.observe(state,first,False)
         second=smith.choose(state);self.assertNotEqual(first,second)
         smith.observe(state,second,True)
+        for name in ("represent","compact"):
+            self.assertEqual(smith.choose(state),name)
+            smith.observe(state,name,False)
         self.assertEqual(smith.choose(state),second)
         self.assertEqual(state['arms'][second],[1,1])
 

@@ -24,7 +24,7 @@ from .settings import Limits
 from .paired_evidence import paired_capture_evidence
 from . import smith
 from .boolean_net import BooleanNet
-from .challenges import prepare_suites, seeds_for
+from .challenges import prepare_suites, seeds_for, training_generation
 from .evaluation import rollout, evaluate_suite, baseline_suite, rank
 from .progress_monitor import population_completion
 from .vault import (atomic_json, append_jsonl, read_json, save_checkpoint,
@@ -67,7 +67,7 @@ def load_profile(root, name=Limits.DEFAULT_SMITH_PROFILE):
     if latest:
         state = read_json(latest)
         if state.get('schema') != Limits.PROFILE_SCHEMA:
-            raise ValueError('Formato non supportato: usare una cartella V6.04 pulita.')
+            raise ValueError('Formato non supportato: usare una cartella V6.05 pulita.')
         return state
     if (path/'latest.json').exists():
         raise ValueError('Memoria SMITH non leggibile: recuperare un checkpoint valido')
@@ -177,7 +177,8 @@ def fit_topology(net, minimum, maximum, seed):
     while len(net.nodes)>maximum:
         net.remove_neuron(len(net.nodes)-1)
     while len(net.nodes)<minimum:
-        net.grow(seed+len(net.nodes)*7919, maximum)
+        if not net.grow(seed+len(net.nodes)*7919, maximum):
+            raise ValueError('Minimo moduli oltre il budget di stato')
     # Training evolves physical graph size; inactive modules are diagnostic interventions.
     if any(not node.active for node in net.nodes):
         raise ValueError('Il circuito contiene moduli inattivi non supportati')
@@ -311,11 +312,11 @@ def _run(root, c, resume, progress, should_stop, observer, monitor, directory):
             Limits.MIN_WORLD_SIZE<=c.size<=Limits.MAX_WORLD_SIZE and
             Limits.MIN_NEURONS<=c.minimum_active_neurons<=c.initial_neurons<=c.max_neurons<=Limits.MAX_NEURONS and
             c.validation_episodes>=1 and c.holdout_episodes>=1 and
-            Limits.MIN_WIDTH<=c.vector_width<=Limits.MAX_WIDTH and c.memory_capacity>=Limits.MIN_MEMORY and
+            Limits.MIN_WIDTH<=c.vector_width<=c.max_vector_width<=Limits.MAX_WIDTH and c.memory_capacity>=Limits.MIN_MEMORY and
             c.experience_capacity>=c.population+1 and c.retention_tasks>=1):
         raise ValueError('Configurazione non valida: 32 <= min <= base <= max <= 4096 e budget positivi')
-    shape = tuple(int(x) for x in c.vector_shape.split(',')) if c.vector_shape else (c.vector_width,)
-    if not shape or any(x<=0 for x in shape) or math.prod(shape)!=c.vector_width:
+    shape = tuple(int(x) for x in c.vector_shape.split(',')) if c.vector_shape else (Limits.DEFAULT_SHAPE if c.vector_width==Limits.DEFAULT_WIDTH else (c.vector_width,))
+    if not shape or len(shape)>Limits.MAX_AXES or any(x<=0 for x in shape) or math.prod(shape)!=c.vector_width:
         raise ValueError('Il prodotto della forma dei moduli deve essere uguale a vector_width')
     folder = Path(root)/'EvolutionVault'/'experiments'/f'EXP_seed{c.seed}_size{c.size}'
     existing = load_profile(root, c.smith_profile)
@@ -348,9 +349,9 @@ def _run(root, c, resume, progress, should_stop, observer, monitor, directory):
         if existing:
             state = copy.deepcopy(existing)
             base = BooleanNet.restore(state['eva'])
-            if (base.shape!=shape or base.memory_capacity!=c.memory_capacity or
+            if (base.width>c.max_vector_width or base.memory_capacity!=c.memory_capacity or
                     base.internal_ticks!=c.internal_ticks or base.trace_depth!=c.trace_depth):
-                raise ValueError('Forma/memoria diverse dal profilo SMITH: usare i valori salvati o un nuovo profilo')
+                raise ValueError('Budget larghezza/memoria incompatibili dal profilo SMITH: usare i valori salvati o un nuovo profilo')
             fit_topology(base, c.minimum_active_neurons, c.max_neurons, c.seed)
             state['eva'] = base.export()
         else:
@@ -365,14 +366,15 @@ def _run(root, c, resume, progress, should_stop, observer, monitor, directory):
         for i in range(c.population):
             pool = state['explorers']
             net = BooleanNet.restore(pool[i]['brain'] if i<len(pool) else base.export())
+            if net.width>c.max_vector_width:raise ValueError('Specialista oltre budget di larghezza')
             fit_topology(net, c.minimum_active_neurons, c.max_neurons, c.seed+i)
             if i>=len(pool) and i>0:
                 net.recovery_mutate(c.seed+i*7919, c.max_neurons, allow_growth=False, allow_reactivate=False)
                 net.vary_topology(c.seed+i*257, c.minimum_active_neurons, c.max_neurons)
             population.append(net)
-        state['runs'].append(folder.name)
+        state['runs']=(state['runs']+[folder.name])[-Limits.RUN_NAMES_LIMIT:]
         atomic_json(folder/'config.json', asdict(c))
-        atomic_json(folder/'manifest.json', {'schema': SCHEMA, 'engine': 'Predatore V6.04 Boolean Vector',
+        atomic_json(folder/'manifest.json', {'schema': SCHEMA, 'engine': 'Predatore V6.05 Boolean Vector',
                     'experiment_id': folder.name, 'seed': c.seed, 'created_unix': time.time(),
                     'smith_profile': c.smith_profile, 'initial_revision': state['generation'],
                     'training_protocol': 'Independent adaptive explorers; teacher transfer; adaptive EVA; isolated validation/test copies'})
@@ -402,12 +404,16 @@ def _run(root, c, resume, progress, should_stop, observer, monitor, directory):
         smith.choose(supervisor)
         strategy_context = state.get('pending_context', supervisor.get('last_context',0))
         strategy = state.get('pending_strategy', smith.choose(supervisor,strategy_context))
+        train_suites,replay_archive,replayed=training_generation(c.size,c.seed,gen,counts['train'],
+            state.get('training_replay',[]),folder.name)
+        if monitor:monitor.training_suites=train_suites
+        before_key=selection_key(probe_scores(eva,state['tasks'],cache),len(eva.nodes))
         incoming, scored, contributions = [], [], {}
         for slot, net in enumerate(population):
             source = f'{folder.name}/g{gen}/explorer{slot+1}'
             if observer:
                 observer.set_context(generation=gen,individual=slot,phase='explorer',genome_id=net.snapshot_id())
-            m, sample, seen = train_actor(net, source, suites['train'], c, counts['train'], c.seed*99991+gen*257+slot, observer)
+            m, sample, seen = train_actor(net, source, train_suites, c, counts['train'], c.seed*99991+gen*257+slot, observer)
             incoming.extend(sample)
             contributions[source] = seen
             m['novelty'] = novelty(behavior(m), state['novelty'])
@@ -434,13 +440,19 @@ def _run(root, c, resume, progress, should_stop, observer, monitor, directory):
                             accepted=promoted and reason in ('contextual_distillation','teacher_distilled'))
         # EVA is a separate real learner, with the same train episodes/seeds as explorers.
         eva_before_training = eva.snapshot_id()
+        pre_key=selection_key(probe_scores(eva,state['tasks'],cache),len(eva.nodes))
         if observer:
             observer.set_context(generation=gen,individual=c.population,phase='eva',genome_id=eva_before_training)
-        best, sample, seen = train_actor(eva, f'{folder.name}/g{gen}/EVA', suites['train'], c,
+        best, sample, seen = train_actor(eva, f'{folder.name}/g{gen}/EVA', train_suites, c,
                                          counts['train'], c.seed*99991+gen*257+c.population, observer)
         incoming.extend(sample)
+        after_key=selection_key(probe_scores(eva,state['tasks'],cache),len(eva.nodes))
         contributions[best['source']] = seen
+        state['training_replay']=replay_archive
+        state['transitions_total']=state.get('transitions_total',0)+sum(contributions.values())
+        state['contributor_order']=(state.get('contributor_order',[])+list(contributions))[-Limits.CONTRIBUTOR_LIMIT:]
         state['contributors'].update(contributions)
+        state['contributors']={k:state['contributors'][k] for k in state['contributor_order']}
         state['events'] = select_events(state['events'], incoming, c.experience_capacity, c.seed*100003+gen)
         present_sources = {e['source'] for e in state['events']}
         state['teacher_sources'] = sorted(eligible_sources & present_sources)
@@ -466,6 +478,9 @@ def _run(root, c, resume, progress, should_stop, observer, monitor, directory):
             'eva_active_neurons': len(eva.nodes), 'minimum_active_neurons': c.minimum_active_neurons,
             'initial_neurons': c.initial_neurons, 'max_neurons': c.max_neurons,
             'topology_delta': len(eva.nodes)-neurons_before,
+            'post_learning_regression':after_key<pre_key,'post_learning_improvement':after_key>pre_key,
+            'replayed_training_episodes':replayed,'context_history':eva.context_codec.history,
+            'associative_entries':len(eva.associative_memory.entries),
             'shared_events': len(state['events']), 'agent_contributors': len(scored),
             'local_circuit_candidates': sum(label.startswith('local_circuit_') for label,_,_ in proposals),
             'circuit_plasticity_enabled': c.circuit_plasticity_enabled,
@@ -475,7 +490,7 @@ def _run(root, c, resume, progress, should_stop, observer, monitor, directory):
             'archive_count': len(state['novelty']), 'genetic_diversity': len({n.snapshot_id() for _,n in scored})/len(scored),
             'plastic_updates': sum(n.update_count for _,n in scored)+eva.update_count,
             'smith_strategy': strategy}
-        smith.observe(supervisor, strategy, improved, context=strategy_context)
+        smith.observe(supervisor, strategy, after_key>before_key, context=strategy_context)
         next_context = smith.context_for(summary)
         next_strategy = smith.choose(supervisor,next_context)
         supervisor['last_context'] = next_context
@@ -501,7 +516,10 @@ def _run(root, c, resume, progress, should_stop, observer, monitor, directory):
                 distill_into(child, teaching_stream, focus_terminal=next_strategy=='consolidate')
             mutation = child.recovery_mutate(rng.randrange(2**31),c.max_neurons,
                                              exploratory=next_strategy=='explore',allow_growth=False,allow_reactivate=False)
-            mutation.update(child.vary_topology(rng.randrange(2**31),c.minimum_active_neurons,c.max_neurons))
+            mutation.update(child.vary_topology(rng.randrange(2**31),c.minimum_active_neurons,c.max_neurons,
+                                                compact=next_strategy=='compact'))
+            if next_strategy=='represent' or (gen+slot)%Limits.REPRESENTATION_MUTATION_PERIOD==0:
+                mutation['representation']=child.mutate_representation(rng.randrange(2**31),c.max_vector_width)
             append_jsonl(folder/'evolution/mutations.jsonl',{'generation':gen+1,
                          'parent':parent.snapshot_id(),'child':child.snapshot_id(),**mutation})
             next_pop.append(child)
@@ -521,11 +539,17 @@ def _run(root, c, resume, progress, should_stop, observer, monitor, directory):
             'run':folder.name,'generation':gen,'promotions':state['promotions'],
             'roles':state['roles'],'knowledge_entries':len(eva.knowledge),'contextual_entries':len(eva.contextual_memory.rows),
             'distillation':distillation,'smith_knowledge':smith.describe(supervisor),'shared_events':len(state['events']),
-            'contributors':len(state['contributors']),'transitions':sum(state['contributors'].values()),
+            'contributors':len(state['contributors']),'transitions':state['transitions_total'],
             'last_decisions':decisions,'transfer_accepted':promoted,'transfer_reason':reason,
             'retention_tasks':len(state['tasks']),'snapshot_id':eva.snapshot_id(),'meta':supervisor,
             'eva_neurons':len(eva.nodes),'eva_updated':summary['eva_updated']})
         atomic_json(folder/'brains/eva.json', eva.export())
+        atomic_json(folder/f'environment/training/g{gen:06}.json',train_suites)
+        circuits=folder/'neuroscience/generations'
+        data=eva.export()
+        keys=('engine','nodes','outputs','shape','rules','sensors','output_lanes')
+        atomic_json(circuits/f'g{gen:06}.json',{**{k:data[k] for k in keys},'generation':gen})
+        for old in sorted(circuits.glob('g*.json'))[:-Limits.CIRCUIT_HISTORY_LIMIT]:old.unlink()
         append_jsonl(folder/'evolution/generations.jsonl', summary)
         append_jsonl(folder/'evolution/consolidation.jsonl', {'generation':gen,'decisions':decisions,
             'transfer_selected':reason,'distillation':distillation,'contributors':contributions,
@@ -544,6 +568,10 @@ def _finish(folder,c,eva,suites,valid_count,test_count,begin,cpu,state,evaluated
     assessments = {split:assessment(eva,suites[split],c.seed,count,c.steps,split)
                    for split,count in (('validation',valid_count),('holdout',test_count))}
     atomic_json(folder/'benchmarks/results.json', assessments)
+    initial=BooleanNet.restore(read_json(folder/'brains/initial_eva.json'))
+    initial_test=assessment(initial,suites['holdout'],c.seed,test_count,c.steps,'holdout')
+    atomic_json(folder/'benchmarks/learning_comparison.json',{'initial':initial_test,'final':assessments['holdout'],
+        'capture_delta':assessments['holdout']['capture_rate']-initial_test['capture_rate']})
     population_tests = [assessment(net,suites['holdout'],c.seed,test_count,c.steps,'holdout') for net in evaluated_population]
     atomic_json(folder/'benchmarks/population_comparison.json', {
         'protocol':'Identical held-out maps/seeds/count/steps; adaptive isolated copies; no test feedback to agents or SMITH.',

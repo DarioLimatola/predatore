@@ -51,7 +51,7 @@ def main():
                 print(json.dumps({k:v for k,v in item.items() if k!='config'}),flush=True)
     report={'protocol':'Three independent lineages, two sequential runs each; default neuron bounds. Same adaptive held-out evaluation for initial EVA, final EVA and explorers. Descriptive small sample; no causal ablation or significance claim.',
             'runs':records,'elapsed_seconds':time.perf_counter()-start}
-    target=Path(__file__).resolve().parents[1]/'validation/v604/benchmark.json'
+    target=Path(__file__).resolve().parents[1]/'validation/v605/benchmark.json'
     target.parent.mkdir(parents=True,exist_ok=True)
     target.write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
 

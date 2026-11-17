@@ -9,7 +9,7 @@ import warnings
 import re
 from pathlib import Path
 
-SCHEMA = 'predatore.evolution-vault/2.0'
+SCHEMA = 'predatore.evolution-vault/3.0'
 
 # UI-generated logs and stop signals are volatile: do not include them in an immutable experiment seal.
 VOLATILE_FILES = {'gui_worker.log', 'stop_requested'}
@@ -36,7 +36,7 @@ def atomic_json(path, obj):
     fd, tmp = tempfile.mkstemp(prefix='.' + path.name + '-', suffix='.tmp', dir=path.parent)
     try:
         with os.fdopen(fd, 'w', encoding='utf-8') as f:
-            json.dump(obj, f, indent=2, sort_keys=True)
+            json.dump(obj, f, separators=(',',':'), sort_keys=True)
             f.flush(); os.fsync(f.fileno())
         _replace_with_retry(tmp, path)
     finally:
@@ -69,7 +69,7 @@ def latest_checkpoint_path(directory):
             state = read_json(primary)
             if (type(state.get('generation')) is int and state['generation'] >= 0
                     and (isinstance(state.get('population'), list) or
-                         state.get('schema') == 'smith.supervisor/1' and isinstance(state.get('eva'), dict))
+                         state.get('schema') == 'smith.supervisor/2' and isinstance(state.get('eva'), dict))
                     and isinstance(state.get('history'), list)
                     and isinstance(state.get('config'), dict)):
                 best_generation, best_path = state['generation'], primary
@@ -90,7 +90,7 @@ def latest_checkpoint_path(directory):
             state = read_json(path)
             if (type(state.get('generation')) is int and state['generation'] == generation
                     and (isinstance(state.get('population'), list) or
-                         state.get('schema') == 'smith.supervisor/1' and isinstance(state.get('eva'), dict))
+                         state.get('schema') == 'smith.supervisor/2' and isinstance(state.get('eva'), dict))
                     and isinstance(state.get('history'), list)
                     and isinstance(state.get('config'), dict)):
                 return path
