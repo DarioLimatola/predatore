@@ -1,36 +1,6 @@
-"""GUI-independent Arena settings; safe when experiments move or disappear."""
+"""GUI-independent Arena helpers (V7: real episodes only, no previews)."""
 from pathlib import Path
 from engine.vault import read_json
-
-
-def preview_settings(experiment, scenario_name=None):
-    """Return cached settings once per preview load, never per Tkinter tick.
-
-    Missing/incomplete experiments are ordinary UI states, not uncaught callbacks.
-    """
-    if not experiment:return None
-    exp=Path(experiment)
-    try:
-        config=read_json(exp/'config.json')
-        limit=int(config['steps'])
-        if limit<1:raise ValueError('steps must be positive')
-        if scenario_name and (exp/'environment'/'suites'/f'holdout_{scenario_name}.json').is_file():
-            from engine.challenges import ALL_SCENARIOS
-            options=ALL_SCENARIOS[scenario_name]
-            map_path=exp/'environment'/'suites'/f'holdout_{scenario_name}.json'
-            return {'map':read_json(map_path),'limit':limit,'seed':config['seed'],
-                    'visibility':options['visibility'],'prey_moves':options['prey_moves'],
-                    'name':scenario_name,'scenario':scenario_name}
-        map_path=exp/'environment'/'holdout.json'
-        if not map_path.is_file():map_path=exp/'environment'/'train.json'
-        return {'map':read_json(map_path),'limit':limit,'seed':config['seed'],
-                'visibility':6,'prey_moves':False,'scenario':'static fallback'}
-    except (OSError, ValueError, KeyError, TypeError, IndexError):
-        return None
-
-
-def episode_finished(actors, limit):
-    return bool(actors) and all(a['world'].captured or a['world'].steps>=limit for a in actors)
 
 
 def frame_summary(frame):
@@ -56,3 +26,54 @@ def frame_summary(frame):
     if type(prey_action) is int and 0 <= prey_action < len(ACTIONS):
         fields.append(f'azione preda {ACTIONS[prey_action]}')
     return ' · '.join(fields)
+
+
+def brain_difference(after, before):
+    """Readable structural and memory differences between two exported brains.
+
+    Neutral categories only: the interface never attributes a cause.
+    """
+    lines = []
+    na, nb = after.get('nodes', []), before.get('nodes', [])
+    ra, rb = after.get('rules', []), before.get('rules', [])
+    lines.append(f'Moduli: {len(nb)} → {len(na)}' + (f'  (larghezza {before.get("shape")} → {after.get("shape")})'
+                                                   if after.get('shape') != before.get('shape') else ''))
+    common = min(len(na), len(nb), len(ra), len(rb))
+    if len(na) != len(nb):
+        lines.append('Nota: il numero di moduli è cambiato; i moduli sono confrontati per posizione, '
+                     'quindi dopo un’aggiunta o una rimozione le differenze per modulo sono indicative.')
+    wired = [i for i in range(common) if (na[i]['a'], na[i]['b'], ra[i].get('hold')) != (nb[i]['a'], nb[i]['b'], rb[i].get('hold'))]
+    toggled = [i for i in range(common) if na[i].get('active') != nb[i].get('active')]
+    lut = [i for i in range(common) if list(ra[i].get('lut', [])) != list(rb[i].get('lut', []))]
+    lut_bits = sum(bin(int(x) ^ int(y)).count('1') for i in lut for x, y in zip(ra[i]['lut'], rb[i]['lut']))
+    keys = ('shift_a', 'shift_b', 'operator_a', 'operator_b', 'axis_a', 'axis_b', 'delay_a', 'delay_b', 'write', 'shape')
+    tensor = [i for i in range(common) if any(ra[i].get(k) != rb[i].get(k) for k in keys)]
+    lines.append(f'Tabelle LUT modificate: {len(lut)} moduli, {lut_bits} bit' + (f'  {lut[:12]}' if lut else ''))
+    lines.append(f'Operatori, spostamenti, ritardi o maschere modificati: {len(tensor)}' + (f'  {tensor[:12]}' if tensor else ''))
+    lines.append(f'Collegamenti cambiati (ingressi, hold): {len(wired)}' + (f'  {wired[:12]}' if wired else ''))
+    if toggled:
+        lines.append(f'Moduli attivati/disattivati: {toggled[:12]}')
+    if (after.get('outputs'), after.get('output_lanes')) != (before.get('outputs'), before.get('output_lanes')):
+        lines.append(f'Uscite: {before.get("outputs")}/{before.get("output_lanes")} → {after.get("outputs")}/{after.get("output_lanes")}')
+    else:
+        lines.append('Uscite invariate')
+
+    def rows(brain, name):
+        block = brain.get(name)
+        if not isinstance(block, dict) or block.get('rows') is None:
+            return None
+        return {row[0]: tuple(row[1:4]) for row in block['rows']}
+
+    for name, label in (('contextual_memory', 'Memoria contestuale'), ('knowledge', 'Memoria breve')):
+        a, b = rows(after, name), rows(before, name)
+        if a is None or b is None:
+            lines.append(f'{label}: non disponibile in uno dei due cervelli')
+            continue
+        new = len(a.keys() - b.keys()); gone = len(b.keys() - a.keys())
+        changed = sum(1 for k in a.keys() & b.keys() if a[k] != b[k])
+        lines.append(f'{label}: {len(b)} → {len(a)} righe · nuove {new} · rimosse {gone} · modificate {changed}')
+    ea = (after.get('associative_memory') or {}).get('entries')
+    eb = (before.get('associative_memory') or {}).get('entries')
+    if ea is not None and eb is not None:
+        lines.append(f'Memoria associativa (HDC): {len(eb)} → {len(ea)} voci')
+    return '\n'.join(lines)

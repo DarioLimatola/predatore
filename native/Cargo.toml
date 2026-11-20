@@ -1,8 +1,26 @@
 [package]
-name = "predatore-lut-probe"
-version = "0.1.0"
+name = "predatore-native"
+version = "7.0.0"
 edition = "2021"
 publish = false
+description = "Predatore V7 native episode kernel: circuit, memories, worlds"
+
+[lib]
+name = "predatore_native"
+crate-type = ["cdylib", "rlib"]
+
+[features]
+default = ["python"]
+python = ["dep:pyo3"]
 
 [dependencies]
+pyo3 = { version = "0.27", features = ["abi3-py310", "extension-module"], optional = true }
+# Shared foundations, pinned: Monade words (popcount/Hamming) and the Tesseract generator.
 monade-core = { git = "https://github.com/DarioLimatola/monade.git", rev = "d6e1b8a99b408a288529d059c81551a9135a5ffc" }
+sha2 = "0.10"
+tesseract-core = { git = "https://github.com/DarioLimatola/tesseract.git", rev = "7347342eda38a50bc97d9cf57b889f616b00e78a", default-features = false }
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1

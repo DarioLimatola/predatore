@@ -10,13 +10,13 @@ from engine import smith
 
 
 class VectorGUI(CallbackContracts):
-    def test_vector_preview_replay_and_eva_panel(self):
+    def test_vector_recordings_and_eva_panel(self):
         with tempfile.TemporaryDirectory() as tmp:
             run(tmp,config(generations=1))
             def hook(app,ui):
                 ui['refresh_all']();self.assertIn('revisione 1',ui['eva_status'].get())
-                for mode in ('preview','replay'):
-                    ui['mode'].set(mode);ui['next_step']()
+                for source in ('Training','Test finale'):
+                    ui['mode'].set('replay');ui['replay_source'].set(source);ui['next_step']()
                     self.assertEqual(ui['inspector'].brain['engine'],'boolean-vector/5')
                     self.assertIn('vector_state',ui['inspector'].frame)
                 ui['refresh_diagnostics']()

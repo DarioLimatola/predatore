@@ -3,7 +3,7 @@ from engine.settings import Limits
 import json
 import math
 import tkinter as tk
-from tkinter import ttk, filedialog
+from tkinter import ttk
 from engine.boolean_net import GATES, gate
 
 SENSORS = ('Preda visibile', 'Preda N', 'Preda S', 'Preda O', 'Preda E',
@@ -30,7 +30,13 @@ class BrainInspector(ttk.Frame):
         zoom_control.pack(side='left',padx=(4,12))
         for selector in (control,zoom_control):
             selector.bind('<<ComboboxSelected>>',self.redraw)
-        ttk.Button(tools, text='Confronta con cervello JSON…', command=self.compare).pack(side='left')
+        # V7: automatic before/after comparison of EVA from the experiment archive.
+        ttk.Label(tools,text='EVA prima/dopo').pack(side='left')
+        self.reference=tk.StringVar(value='Generazione precedente')
+        ttk.Combobox(tools,textvariable=self.reference,values=('Generazione precedente','Inizio run'),
+                     state='readonly',width=22).pack(side='left',padx=(4,4))
+        ttk.Button(tools,text='Confronta',command=self.compare).pack(side='left')
+        self.reference_provider=None
         area = ttk.Frame(self)
         area.pack(fill='both', expand=True)
         self.canvas = tk.Canvas(area, bg='#ffffff', highlightthickness=0)
@@ -39,7 +45,7 @@ class BrainInspector(ttk.Frame):
         self.canvas.configure(yscrollcommand=sy.set, xscrollcommand=sx.set)
         sy.pack(side='right', fill='y');sx.pack(side='bottom', fill='x')
         self.canvas.pack(fill='both', expand=True)
-        self.details = tk.Text(self, height=6, wrap='word', font=('Consolas', 10))
+        self.details = tk.Text(self, height=10, wrap='word', font=('Consolas', 10))
         self.details.pack(fill='x', padx=8, pady=5)
         self.signature = None
         self.brain = None
@@ -99,7 +105,7 @@ class BrainInspector(ttk.Frame):
         if brain.get('engine') in Limits.SUPPORTED_ENGINES:
             width=frame.get('vector_width',math.prod(brain['shape']))
             for label in self.gate_labels.values():self.canvas.itemconfigure(label,text=f'LUT {width}b')
-            self.info.set(f'{source} · passo {frame.get("t","—")} · {len(computed)}/{len(brain["nodes"])} moduli × {width} bit · azione {frame.get("action","—")} ({frame.get("decoder",{}).get("source","—")}) · memorie {frame.get("knowledge_entries",len(brain.get("knowledge",{}).get("rows",[])))} · verde/blu: bit 0 acceso/spento · grigio: inattivo o non misurato')
+            self.info.set(f'{source} · passo {frame.get("t","—")} · {len(computed)}/{len(brain["nodes"])} moduli × {width} bit · azione {frame.get("action","—")} ({frame.get("decoder",{}).get("source","—")}) · memorie {frame.get("knowledge_entries",len((brain.get("knowledge") or {}).get("rows",[])))} · verde/blu: bit 0 acceso/spento · grigio: inattivo o non misurato')
         credit=frame.get('relation_credit')
         if credit is not None:
             self.info.set(self.info.get()+f' · {credit["count"]} relazioni · traccia {credit["horizon"]} passi')
@@ -203,7 +209,7 @@ class BrainInspector(ttk.Frame):
                     text+=(f'  lane {row["lane"]} · stato {row["state"]} → bit azione {row["action_bit"]}: '
                            f'{row["before"]:+d} → {row["after"]:+d} ({row["width"]} bit)\n')
             text+=f'Decodificatore RAM e contesto: {frame.get("decoder",{})}\n'
-            text+=f'Memorie contestuali: {frame.get("contextual_entries",len(self.brain.get("contextual_memory",{}).get("rows",[])))}\n'
+            text+=f'Memorie contestuali: {frame.get("contextual_entries",len((self.brain.get("contextual_memory") or {}).get("rows",[])))}\n'
             text+=f'Scritture dopo feedback: {frame.get("vector_updates",[])}\n'
             text+=f'Errore previsione XOR: {frame.get("prediction_error")} (None = contesto sconosciuto)\n'
             text+='Il bit 0 nel grafo è una proiezione; gli output usano le corsie '+str(self.brain['output_lanes'])
@@ -217,15 +223,13 @@ class BrainInspector(ttk.Frame):
         self.details.delete('1.0','end');self.details.insert('end',text)
 
     def compare(self):
-        if not self.brain:return
-        filename=filedialog.askopenfilename(filetypes=[('Cervello JSON','*.json')])
-        if not filename:return
-        try:
-            with open(filename,encoding='utf-8') as stream:other=json.load(stream)
-            nodes=other['nodes']
-            changed=[i for i,(a,b) in enumerate(zip(self.brain['nodes'],nodes)) if
-                     {k:a[k] for k in ('a','b','op','active')}!={k:b[k] for k in ('a','b','op','active')}]
-            result=f'Confronto strutturale con {filename}\nNodi: {len(self.brain["nodes"])} / {len(nodes)}; nodi comuni diversi: {changed}\nUscite: {self.brain["outputs"]} / {other["outputs"]}\nForme: {self.brain.get("shape")} / {other.get("shape")}\nCorsie: {self.brain.get("output_lanes")} / {other.get("output_lanes")}\nRegole modificate: {[i for i,(a,b) in enumerate(zip(self.brain["rules"],other["rules"])) if a!=b]}'
-        except (OSError,ValueError,KeyError,TypeError) as exc:result=f'Confronto non disponibile: {exc}'
+        """EVA now versus the chosen reference, both read from the experiment archive."""
+        from gui.arena_state import brain_difference
+        refs=self.reference_provider() if self.reference_provider else {}
+        current,other=refs.get('EVA attuale'),refs.get(self.reference.get())
+        if current is None or other is None:
+            result=f'Confronto non disponibile: manca {"EVA attuale" if current is None else self.reference.get().lower()} in questo esperimento.'
+        else:
+            result=f'EVA attuale rispetto a: {self.reference.get().lower()}\n'+brain_difference(current,other)
         self.selected=None
         self.details.delete('1.0','end');self.details.insert('end',result)

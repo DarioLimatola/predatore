@@ -16,7 +16,7 @@ from tkinter import ttk
 from engine.evolution import run
 from engine.telemetry import LiveObserver
 from test_vector_engine import config
-from gui.arena_state import preview_settings, episode_finished
+from gui.arena_state import brain_difference
 
 
 class Var:
@@ -121,12 +121,15 @@ class CallbackContracts(unittest.TestCase):
                 ui['toggle_play']();frame=ui['inspector'].frame
                 ui['poll_live']();self.assertEqual(ui['inspector'].frame,frame)
                 ui['step_observed']();self.assertFalse(ui['playing'][0])
-                ui['mode'].set('preview');ui['next_step']()
-                self.assertIn('Simulazioni indipendenti',ui['arena_status'].get())
-                self.assertTrue(ui['inspector'].brain)
+                # V7: no simulated agents; only live frames and recorded real episodes.
+                self.assertNotIn('preview_actors',ui)
                 ui['mode'].set('replay');ui['next_step']()
-                self.assertIn('Recorded Replay',ui['arena_status'].get())
+                self.assertIn('training reale',ui['arena_status'].get())
                 self.assertEqual(ui['inspector'].frame,ui['replay_frames'][0][ui['replay_index'][0]])
+                self.assertTrue(ui['inspector'].brain)
+                ui['replay_source'].set('Test finale');ui['next_step']()
+                self.assertIn('TEST finale',ui['arena_status'].get())
+                ui['replay_source'].set('Training')
                 ui['refresh_diagnostics']()
                 self.assertIn('plasticity_off',ui['diagnostics_text'].text)
                 shutil.rmtree(exp)
@@ -137,28 +140,23 @@ class CallbackContracts(unittest.TestCase):
 
 
 class ArenaFaultTolerance(unittest.TestCase):
-    def test_orphan_directory_and_removed_config_are_handled(self):
+    def test_orphan_directory_is_ignored_and_brain_difference_is_neutral(self):
         with tempfile.TemporaryDirectory() as tmp:
-            folder=Path(tmp)/'orphan'
-            folder.mkdir()
+            folder=Path(tmp)/'EvolutionVault/experiments/EXP_orphan'
+            folder.mkdir(parents=True)
             (folder/'gui_worker.log').write_text('hello')
-            self.assertIsNone(preview_settings(folder))
-            self.assertFalse(episode_finished([],100))
-
-            (folder/'environment').mkdir()
-            (folder/'config.json').write_text(json.dumps({'steps':21,'seed':7}))
-            (folder/'environment'/'holdout.json').write_text(
-                json.dumps({'size':6,'obstacles':[]}))
-            settings=preview_settings(folder)
-            self.assertEqual(settings['limit'],21)
-            (folder/'config.json').unlink()
-            self.assertIsNone(preview_settings(folder))
-
-            class MockWorld:
-                steps=21
-                captured=False
-
-            self.assertTrue(episode_finished([{'world':MockWorld()}],settings['limit']))
+            from gui.laboratory import available_agent_specs
+            self.assertEqual(available_agent_specs(folder),[])
+        from engine.vector_boolean import VectorBooleanNet
+        before=VectorBooleanNet(3,neurons=6)
+        after=VectorBooleanNet.restore(before.export())
+        after.rules[0]['lut'][1]^=0b101
+        after.nodes[1].a=0
+        after.contextual_memory.update(after.context_codec.encode(5,[]),2,True)
+        text=brain_difference(after.export(),before.export())
+        self.assertIn('Tabelle LUT modificate: 1 moduli, 2 bit',text)
+        self.assertIn('Collegamenti cambiati (ingressi, hold): 1',text)
+        self.assertIn('Memoria contestuale: 0 → 1 righe · nuove 1',text)
 
 
 class NativeTkSmoke(unittest.TestCase):
@@ -174,7 +172,7 @@ class NativeTkSmoke(unittest.TestCase):
                 errors=[]
                 app.report_callback_exception=lambda *args:errors.append(args)
                 app.update()
-                for mode in ('preview','replay','live'):
+                for mode in ('replay','live'):
                     ui['mode'].set(mode);ui['step_observed']();app.update()
                 ui['close_window']()
                 self.assertEqual(errors,[])

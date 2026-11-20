@@ -99,6 +99,9 @@ class AssociativeMemory:
         self.buckets.setdefault(anchor,OrderedDict())[key]=None
         if len(self.entries)>self.capacity:self._remove(next(iter(self.entries)))
 
+    def bucket_tail(self,anchor):
+        return list(self.buckets.get(anchor,{}))[-L.HDC_CANDIDATES:]
+
     def choose(self,key,proposed,rejected=0,allowed=None):
         current,_=self.codec.decode(key)
         bucket=self.buckets.get(current & self.sensor_mask,{})
@@ -128,6 +131,10 @@ class AssociativeMemory:
     def export(self):
         return {'width':self.width,'capacity':self.capacity,'sensor_mask':str(self.sensor_mask),
                 'entries':[[k,hex(v),str(a),p,n] for k,(v,a,p,n) in self.entries.items()]}
+
+    def digest(self):
+        import hashlib, json
+        return hashlib.sha256(json.dumps(self.export(),sort_keys=True).encode()).hexdigest()
 
     def restore(self,data):
         if data['width']!=self.width or data['capacity']!=self.capacity or int(data['sensor_mask'])!=self.sensor_mask:

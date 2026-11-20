@@ -21,8 +21,8 @@ Due prove esplorative da nove repliche hanno dato risultati ai due lati della pa
 Dalla directory principale, con Rust e Cargo 1.97 e Python 3.10+:
 
 ```sh
-cargo test --manifest-path native/Cargo.toml --locked
-cargo build --release --manifest-path native/Cargo.toml --locked
+cargo test --manifest-path legacy/v6_lut_probe/Cargo.toml --locked
+cargo build --release --manifest-path legacy/v6_lut_probe/Cargo.toml --locked
 python tools/benchmark_native.py --repetitions 31 --output validation/p2/benchmark-repeat.json
 ```
 

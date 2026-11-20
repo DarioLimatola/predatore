@@ -1,4 +1,5 @@
-"""Verifica la LUT Rust su episodi V6.05 e misura anche il costo del rollout completo."""
+"""V6.06 historical P2 probe (V6 random generator). Kept for reproducibility; V7 uses native/ (predatore_native).
+Verifica la LUT Rust su episodi V6.05 e misura anche il costo del rollout completo."""
 import argparse
 import hashlib
 import json
@@ -18,7 +19,7 @@ from boolean_engine import BinaryVectorNetwork, pack
 from engine.world import World
 
 GOLDEN = ROOT / 'validation' / 'p2' / 'golden.json'
-BINARY = ROOT / 'native' / 'target' / 'release' / ('predatore-lut-probe.exe' if os.name == 'nt' else 'predatore-lut-probe')
+BINARY = ROOT / 'legacy' / 'v6_lut_probe' / 'target' / 'release' / ('predatore-lut-probe.exe' if os.name == 'nt' else 'predatore-lut-probe')
 END = 2**32 - 1
 
 
@@ -209,7 +210,7 @@ def main():
     parser.add_argument('--resource-worker', choices=('python', 'rust'), help=argparse.SUPPRESS)
     args = parser.parse_args()
     if not args.binary.is_file():
-        parser.error('compile first with cargo build --release --locked --manifest-path native/Cargo.toml')
+        parser.error('compile first with cargo build --release --locked --manifest-path legacy/v6_lut_probe/Cargo.toml')
     if args.repetitions < 1:
         parser.error('positive repetition count required')
     cases = json.loads(GOLDEN.read_text())['cases']

@@ -1,0 +1,18 @@
+{"child": "a35a881ad7e35dd83779", "generation": 2, "kind": "vector_write", "neuron": 22, "neurons_after": 32, "neurons_before": 32, "parent": "c46ead4a58390d4f2dc6", "topology_delta": 0}
+{"child": "4b432196988af73cc401", "generation": 2, "kind": "vector_table", "neuron": 29, "neurons_after": 32, "neurons_before": 32, "parent": "069a066b9ae304532a6f", "representation": {"history": 6, "kind": "history", "node": 19, "width": 64}, "topology_delta": 0}
+{"child": "ad74d55d0985155456b7", "generation": 2, "kind": "vector_wire", "neuron": 23, "neurons_after": 32, "neurons_before": 32, "parent": "f4ecd7701a6c79f37b85", "topology_delta": 0}
+{"child": "56d4a64aefbe4005cbdb", "generation": 2, "kind": "vector_output", "neuron": 8, "neurons_after": 32, "neurons_before": 32, "parent": "069a066b9ae304532a6f", "topology_delta": 0}
+{"child": "878075f11fc26aef54d8", "generation": 2, "kind": "vector_hold", "neuron": 12, "neurons_after": 32, "neurons_before": 32, "parent": "f4ecd7701a6c79f37b85", "topology_delta": 0}
+{"child": "9a8559a7536186850091", "generation": 2, "kind": "vector_output", "neuron": 21, "neurons_after": 32, "neurons_before": 32, "parent": "069a066b9ae304532a6f", "representation": {"history": 1, "kind": "history", "node": 19, "width": 64}, "topology_delta": 0}
+{"child": "307ce8b5230a3cdce975", "generation": 3, "kind": "vector_wire", "neuron": 9, "neurons_after": 32, "neurons_before": 32, "parent": "7dbb4955570a9e7165ec", "representation": {"history": 1, "kind": "axis", "node": 29, "width": 64}, "topology_delta": 0}
+{"child": "e63982f05b9ac4332fbd", "generation": 3, "kind": "vector_write", "neuron": 25, "neurons_after": 32, "neurons_before": 32, "parent": "efa5b480a980e6eb0073", "topology_delta": 0}
+{"child": "bb787f3f7b093b295a33", "generation": 3, "kind": "vector_output", "neuron": 6, "neurons_after": 32, "neurons_before": 32, "parent": "0171c7abb769453722f2", "topology_delta": 0}
+{"child": "b8e72c4bed8f25b69f20", "generation": 3, "kind": "vector_wire", "neuron": 11, "neurons_after": 32, "neurons_before": 32, "parent": "1ef777c00212b40e8720", "topology_delta": 0}
+{"child": "9c511db0daae6137e4ac", "generation": 3, "kind": "vector_table", "neuron": 6, "neurons_after": 32, "neurons_before": 32, "parent": "0171c7abb769453722f2", "representation": {"history": 1, "kind": "operator", "node": 13, "width": 64}, "topology_delta": 0}
+{"child": "2bf8df8c50ebbb8b52d9", "generation": 3, "kind": "vector_output", "neuron": 27, "neurons_after": 32, "neurons_before": 32, "parent": "1ef777c00212b40e8720", "topology_delta": 0}
+{"child": "f6b5704192bdc326a105", "generation": 4, "kind": "vector_output", "neuron": 9, "neurons_after": 32, "neurons_before": 32, "parent": "5c806104131e5ffee6b6", "topology_delta": 0}
+{"child": "3249bcbe07be1f06775c", "generation": 4, "kind": "vector_wire", "neuron": 20, "neurons_after": 32, "neurons_before": 32, "parent": "5fd6c350612d7557df58", "topology_delta": 0}
+{"child": "0b7d9b4320010fd95817", "generation": 4, "kind": "vector_table", "neuron": 18, "neurons_after": 32, "neurons_before": 32, "parent": "1d0998bdc4b971ef1af9", "topology_delta": 0}
+{"child": "897e5baf7855259d600e", "generation": 4, "kind": "vector_table", "neuron": 3, "neurons_after": 32, "neurons_before": 32, "parent": "5fd6c350612d7557df58", "representation": {"history": 1, "kind": "shape", "node": 30, "width": 64}, "topology_delta": 0}
+{"child": "80a48c6817f1e9f3a27e", "generation": 4, "kind": "vector_table", "neuron": 28, "neurons_after": 32, "neurons_before": 32, "parent": "1d0998bdc4b971ef1af9", "topology_delta": 0}
+{"child": "b15d09cbb7d20d1440d4", "generation": 4, "kind": "vector_write", "neuron": 13, "neurons_after": 32, "neurons_before": 32, "parent": "5fd6c350612d7557df58", "topology_delta": 0}

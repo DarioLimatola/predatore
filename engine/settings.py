@@ -5,13 +5,15 @@ from boolean_engine.limits import CoreLimits
 
 
 class Limits(CoreLimits):
-    VERSION = '6.06'
+    VERSION = '7.0'
     PROFILE_SCHEMA = 'smith.supervisor/2'
     MIN_NEURONS = 32
     DEFAULT_MIN_NEURONS = 32
     MIN_MEMORY = 8
     DEFAULT_EXPERIENCES = 2048
     DEFAULT_RETENTION_TASKS = 8
+    # V7: one real training episode per actor per generation is recorded for the Arena.
+    RECORDING_GENERATIONS = 5
     TEACHER_CANDIDATES = 3
     MIN_AGENT_SAMPLE = 8
     PROBE_CACHE_ENTRIES = 512

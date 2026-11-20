@@ -19,6 +19,7 @@ from .context import ContextCodec
 from .memory import ContextMemory, add
 from .hdc import BinarySpace, AssociativeMemory
 from .tensor import validate_shape, transform, mutate_shape, OPERATORS
+from . import native_backend as nb
 
 ENGINE = Limits.ENGINE
 
@@ -77,11 +78,12 @@ class VectorBooleanNet(BooleanNet):
         self.rules = [self._rule(n, rng) for n in self.nodes]
         self.output_lanes = [rng.randrange(width) for _ in range(self.action_bits)]
         self.sensor_encoding = "mixed"
-        self.short_memory = ContextMemory(memory_capacity,self.actions)
+        # V7: native memories (same API) when the kernel is available.
+        self.short_memory = nb.make_context_memory(memory_capacity,self.actions)
         self.knowledge = self.short_memory.rows
-        self.predictions = OrderedDict()
-        self.contextual_memory = ContextMemory(memory_capacity,self.actions)
-        self.associative_memory = AssociativeMemory(self.context_codec,min(hdc_capacity,memory_capacity),hdc_width)
+        self.predictions = nb.make_predictions()
+        self.contextual_memory = nb.make_context_memory(memory_capacity,self.actions)
+        self.associative_memory = nb.make_associative(self.context_codec,min(hdc_capacity,memory_capacity),hdc_width)
         self.hdc_enabled=True;self.sparse_enabled=True;self.tensor_enabled=True
         self.contextual_enabled = True
         self.plasticity_enabled = True; self.memory_enabled = True
@@ -90,7 +92,7 @@ class VectorBooleanNet(BooleanNet):
         self.collect_experience = False
         self.experience_sink = None
         self.relation_credit = None
-        self.circuit_evidence = {}
+        self.circuit_evidence = nb.make_evidence(self.width)
         self._ancestor_cache = None
         self.reset()
 
@@ -218,7 +220,7 @@ class VectorBooleanNet(BooleanNet):
                 if contextual_action is not None:action=contextual_action;origin='context'
                 elif self.hdc_enabled:
                     anchor=obs & self.associative_memory.sensor_mask
-                    for neighbor in list(self.associative_memory.buckets.get(anchor,{}))[-Limits.HDC_CANDIDATES:]:
+                    for neighbor in self.associative_memory.bucket_tail(anchor):
                         self.sync_associative(neighbor)
                     e=self.contextual_memory.evidence(key)
                     similar=self.associative_memory.choose(key,action,e[1] if e else 0,self.contextual_memory.rows)
@@ -472,8 +474,8 @@ class VectorBooleanNet(BooleanNet):
 
     def rebuild_associative(self,mask=None):
         old=self.associative_memory
-        self.associative_memory=AssociativeMemory(self.context_codec,old.capacity,old.width,
-                                                 old.sensor_mask if mask is None else mask)
+        self.associative_memory=nb.make_associative(self.context_codec,old.capacity,old.width,
+                                                    old.sensor_mask if mask is None else mask)
         for key in list(self.contextual_memory.rows)[-old.capacity:]:
             self.sync_associative(key)
 
@@ -481,7 +483,11 @@ class VectorBooleanNet(BooleanNet):
         if depth==self.context_codec.history:return
         old_codec=self.context_codec
         codec=ContextCodec(self.sensors,depth,self.action_bits)
-        old=self.contextual_memory;new=ContextMemory(old.capacity,self.actions)
+        old=self.contextual_memory;native=nb.is_native(old)
+        if native:
+            # Rare structural change: rewrite with the Python reference, then load natively.
+            reference=ContextMemory(old.capacity,self.actions);reference.restore(old.export());old=reference
+        new=ContextMemory(old.capacity,self.actions)
         new.clock=old.clock
         for key in old.rows:
             old._expire(key)
@@ -496,6 +502,8 @@ class VectorBooleanNet(BooleanNet):
             meta['sources']=sorted(set(meta['sources'])|set(before['sources']))[:Limits.MEMORY_SOURCE_LIMIT]
             meta['last']=before['last']
             new.rows.move_to_end(target)
+        if native:
+            loaded=nb.make_context_memory(new.capacity,self.actions);loaded.restore(new.export());new=loaded
         self.context_codec,self.contextual_memory=codec,new
         self.rebuild_associative()
         self.reset()
@@ -530,6 +538,10 @@ class VectorBooleanNet(BooleanNet):
         if width<self.width or width*len(self.nodes)>Limits.MAX_STATE_BITS:
             raise ValueError('Width/state budget exceeded')
         self.shape,self.width,self.mask=shape,width,(1<<width)-1
+        if nb.is_native(self.circuit_evidence):
+            wider=nb.make_evidence(width)
+            for key,value in self.circuit_evidence.items():wider[key]=value
+            self.circuit_evidence=wider
         for rule in self.rules:rule['shape']=list(shape)
         self.invalidate()
         self.reset()
@@ -539,17 +551,20 @@ class VectorBooleanNet(BooleanNet):
         return Limits.RELATION_ENGINE if self.relation_credit is not None else ENGINE
 
     def export(self):
+        return self._export(full=True)
+
+    def _export(self, full):
         data = {'engine':self.engine_id,'sensors':self.sensors,'action_bits':self.action_bits,'nodes':[asdict(n) for n in self.nodes],
                 'outputs':list(self.outputs),'state':list(self.state),
                 'shape':list(self.shape),'sensor_encoding':self.sensor_encoding,'rules':[{**r,'lut':list(r['lut']),'shape':list(r.get('shape',self.shape))} for r in self.rules],
                 'output_lanes':list(self.output_lanes),'memory_capacity':self.memory_capacity,
                 'internal_ticks':self.internal_ticks,'trace_depth':self.trace_depth,
-                'knowledge':self.short_memory.export(),
-                'contextual_memory':self.contextual_memory.export(),
+                'knowledge':self.short_memory.export() if full else None,
+                'contextual_memory':self.contextual_memory.export() if full else None,
                 'context_history_depth':self.context_codec.history,
-                'associative_memory':self.associative_memory.export(),
-                'circuit_evidence':[[list(k),list(v)] for k,v in sorted(self.circuit_evidence.items())],
-                'predictions':list(self.predictions.items()),
+                'associative_memory':self.associative_memory.export() if full else None,
+                'circuit_evidence':[[list(k),list(v)] for k,v in sorted(self.circuit_evidence.items())] if full else None,
+                'predictions':list(self.predictions.items()) if full else None,
                 'vector_runtime':{'vectors':list(self.vectors),'context':self.context,
                                   'context_valid':self.context_valid,'trace':list(self.trace),
                                   'last':self.last,'updates':self.update_count,
@@ -600,11 +615,13 @@ class VectorBooleanNet(BooleanNet):
         obj.contextual_memory.restore(data['contextual_memory'],obj.context_codec)
         obj.short_memory.restore(data['knowledge']);obj.knowledge=obj.short_memory.rows
         a=data['associative_memory']
-        obj.associative_memory=AssociativeMemory(obj.context_codec,a['capacity'],a['width'],int(a['sensor_mask']))
+        obj.associative_memory=nb.make_associative(obj.context_codec,a['capacity'],a['width'],int(a['sensor_mask']))
         obj.associative_memory.restore(a)
-        obj.predictions=OrderedDict(data.get('predictions',[]))
+        obj.predictions=nb.make_predictions()
+        for key,value in data.get('predictions',[]):obj.predictions[key]=value
         if len(obj.predictions)>obj.memory_capacity:raise ValueError('Prediction capacity exceeded')
-        obj.circuit_evidence={tuple(k):list(v) for k,v in data['circuit_evidence']}
+        obj.circuit_evidence=nb.make_evidence(obj.width)
+        for key,value in data['circuit_evidence']:obj.circuit_evidence[tuple(key)]=list(value)
         obj.reset();runtime=data.get('vector_runtime',{})
         if runtime:
             obj.vectors=list(runtime['vectors']);obj.context=runtime['context']
@@ -630,9 +647,68 @@ class VectorBooleanNet(BooleanNet):
             obj.decoder_counts['relation'] = 0
         return obj
 
+    def clone(self):
+        """Independent copy, equal to restore(export()) but without serialisation.
+
+        Mutable structure (modules, rules, memories) is copied; working-state
+        containers are copied one level deep (their items are never mutated).
+        """
+        import copy as _copy
+        obj=self.__class__.__new__(self.__class__)
+        skip=('nodes','rules','short_memory','knowledge','contextual_memory','associative_memory','predictions',
+              'circuit_evidence','relation_credit','experience_sink')
+        for name,value in self.__dict__.items():
+            if name in skip:continue
+            if isinstance(value,deque):value=deque(value,maxlen=value.maxlen)
+            elif isinstance(value,list):value=list(value)
+            elif isinstance(value,dict):value=dict(value)
+            obj.__dict__[name]=value
+        obj.nodes=[Neuron(n.a,n.b,n.op,n.active,n.permanent) for n in self.nodes]
+        obj.rules=[{**r,'lut':list(r['lut']),**({'shape':list(r['shape'])} if 'shape' in r else {})} for r in self.rules]
+        obj.context_codec=self.context_codec
+        for name in ('short_memory','contextual_memory','predictions','circuit_evidence'):
+            value=getattr(self,name)
+            obj.__dict__[name]=value.copy() if hasattr(value,'copy') and not isinstance(value,dict) else _copy.deepcopy(value)
+        obj.knowledge=obj.short_memory.rows
+        a=self.associative_memory
+        if hasattr(a,'copy'):obj.associative_memory=a.copy()
+        else:
+            obj.associative_memory=_copy.deepcopy(a);obj.associative_memory.codec=obj.context_codec
+        obj.relation_credit=_copy.deepcopy(self.relation_credit)
+        obj.experience_sink=None
+        return obj
+
+    def _snapshot_key(self):
+        """Content stamp when every memory is native (their versions change on any write)."""
+        if self.relation_credit is not None:return None
+        parts=(self.contextual_memory,self.short_memory,self.associative_memory,self.predictions,self.circuit_evidence)
+        versions=[]
+        for part in parts:
+            part=getattr(part,'_core',part)
+            if not nb.is_native(part):return None
+            versions.append(part.version)
+        a=self.associative_memory
+        return (nb._structure_key(self),self.sensors,self.action_bits,
+                tuple((n.op,n.permanent) for n in self.nodes),a.width,a.capacity,a.sensor_mask,tuple(versions))
+
     def snapshot_id(self):
-        d=self.export();d.pop('state');d.pop('vector_runtime')
-        return hashlib.sha256(json.dumps(d,sort_keys=True).encode()).hexdigest()[:20]
+        key=self._snapshot_key()
+        cached=getattr(self,'_snapshot_cache',None)
+        if key is not None and cached is not None and cached[0]==key:
+            return cached[1]
+        # V7 identity: structure + content digests of each memory (memories hashed natively).
+        def digest(obj):
+            return hashlib.sha256(json.dumps(obj,sort_keys=True).encode()).hexdigest()
+        d=self._export(full=False);d.pop('state');d.pop('vector_runtime')
+        d['knowledge']=self.short_memory.digest()
+        d['contextual_memory']=self.contextual_memory.digest()
+        d['associative_memory']=self.associative_memory.digest()
+        p,e=self.predictions,self.circuit_evidence
+        d['predictions']=p.digest() if nb.is_native(p) else digest(list(p.items()))
+        d['circuit_evidence']=e.digest() if nb.is_native(e) else digest([[list(k),list(v)] for k,v in sorted(e.items())])
+        value=hashlib.sha256(json.dumps(d,sort_keys=True).encode()).hexdigest()[:20]
+        if key is not None:self._snapshot_cache=(key,value)
+        return value
 
     def frame_data(self):
         data = {'vector_state':[hex(v) for v in self.vectors],

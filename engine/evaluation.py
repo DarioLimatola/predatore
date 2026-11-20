@@ -22,11 +22,22 @@ def genome_id(net):
 
 
 def rollout(net, scenario, seed, steps, record=False, observer=None, measure=False):
+    """One episode. V7: runs in the native kernel when available; the Python path
+    (bit-identical) is used for recorded frames, sampled live frames and brains
+    without a native twin."""
+    from boolean_engine import native_backend as nb
+    live_started = False
+    if not record and nb.supports(net):
+        if observer is not None:
+            net.reset()
+            live_started = observer.begin_episode(net, scenario, seed)
+        if not live_started:
+            return nb.rollout(net, scenario, seed, steps, measure), None
     world = make_world(scenario, seed)
     decision_ns = 0
     net.reset()
     frames = [{'t': 0, 'predator': list(world.predator), 'prey': list(world.prey)}] if record else None
-    live = observer is not None and observer.begin_episode(net, scenario, seed)
+    live = live_started or (observer is not None and observer.begin_episode(net, scenario, seed))
     if live:
         observer.add_frame({'t': 0, 'predator': list(world.predator), 'prey': list(world.prey),
                             'neural_state': list(net.state), 'initial': True})
@@ -103,12 +114,46 @@ def sensor_greedy(observation, rng):
     return rng.choice(toward or options or [0])
 
 
-def evaluate_suite(net, suites, seed, split, episodes, steps, observer=None):
+def evaluate_suite(net, suites, seed, split, episodes, steps, observer=None, record_at=None, recorded=None):
+    """Episodes of every scenario on one adaptive brain, in order.
+
+    record_at=(scenario index, episode index) records that episode's real frames into
+    `recorded` (a list) as {'scenario', 'seed', 'frames'}; results are unchanged.
+    """
+    from boolean_engine import native_backend as nb
     rows = []
     task_metrics = {}
-    for scenario in suites:
-        scenario_rows = [rollout(net, task, sample_seed, steps, observer=observer)[0]
-                         for task,sample_seed in episode_specs(scenario,seed,split,episodes)]
+    plan = [(index, position, task, sample_seed) for index, scenario in enumerate(suites)
+            for position, (task, sample_seed) in enumerate(episode_specs(scenario, seed, split, episodes))]
+
+    def recorded_episode(task, sample_seed):
+        row, frames = rollout(net, task, sample_seed, steps, record=True, observer=observer)
+        if recorded is not None:
+            recorded.append({'scenario': task, 'seed': sample_seed, 'frames': frames})
+        return row
+
+    batched = {}
+    if observer is None and nb.supports(net):
+        # V7: the suite runs in native batches; a recorded episode uses the identical Python path.
+        cut = next((i for i, item in enumerate(plan) if (item[0], item[1]) == record_at), None)
+        pieces = [plan] if cut is None else [plan[:cut], plan[cut:cut+1], plan[cut+1:]]
+        results = []
+        for part, piece in enumerate(pieces):
+            if not piece:
+                continue
+            if cut is not None and part == 1:
+                results.append(recorded_episode(piece[0][2], piece[0][3]))
+            else:
+                results.extend(nb.run_episodes(net, [(task, s) for _, _, task, s in piece], steps))
+        for item, row in zip(plan, results):
+            batched.setdefault(item[0], []).append(row)
+    else:
+        for index, position, task, sample_seed in plan:
+            row = (recorded_episode(task, sample_seed) if (index, position) == record_at else
+                   rollout(net, task, sample_seed, steps, observer=observer)[0])
+            batched.setdefault(index, []).append(row)
+    for index, scenario in enumerate(suites):
+        scenario_rows = batched.get(index, [])
         task_metrics[scenario['name']] = {
             **completion_metrics(scenario_rows),
             **capture_summary(scenario_rows),
