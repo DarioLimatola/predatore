@@ -1,0 +1,138 @@
+{
+  "python": "3.12.14",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "configuration": "classic; 4 explorers, 2 generations, 8 episodes/split, 24 steps, 8x8; fresh profiles",
+  "main_process": "whole training including final diagnostics, saves and observer shutdown; no Tk window",
+  "predeclared_threshold_pct": 10,
+  "rows": [
+    {
+      "seed": 611,
+      "live": false,
+      "wall_s": 0.700942816999941,
+      "cpu_s": 0.700460551,
+      "packets": 0,
+      "sampled_episodes": 0,
+      "champion_id": "7f33fad5dae549d8c0d8",
+      "holdout_captures": 0
+    },
+    {
+      "seed": 611,
+      "live": true,
+      "wall_s": 0.7332829780000338,
+      "cpu_s": 0.7235272939999999,
+      "packets": 9,
+      "sampled_episodes": 4,
+      "champion_id": "7f33fad5dae549d8c0d8",
+      "holdout_captures": 0
+    },
+    {
+      "seed": 612,
+      "live": true,
+      "wall_s": 0.863411645999804,
+      "cpu_s": 0.8621327749999999,
+      "packets": 9,
+      "sampled_episodes": 4,
+      "champion_id": "4d0b6c9bf1e665007a1f",
+      "holdout_captures": 1
+    },
+    {
+      "seed": 612,
+      "live": false,
+      "wall_s": 0.7642951799998627,
+      "cpu_s": 0.7564342550000003,
+      "packets": 0,
+      "sampled_episodes": 0,
+      "champion_id": "4d0b6c9bf1e665007a1f",
+      "holdout_captures": 1
+    },
+    {
+      "seed": 613,
+      "live": false,
+      "wall_s": 0.8792254649999904,
+      "cpu_s": 0.8791669999999998,
+      "packets": 0,
+      "sampled_episodes": 0,
+      "champion_id": "4d64e416f1c9a2f1f005",
+      "holdout_captures": 2
+    },
+    {
+      "seed": 613,
+      "live": true,
+      "wall_s": 0.8787327049999476,
+      "cpu_s": 0.8794368310000005,
+      "packets": 9,
+      "sampled_episodes": 4,
+      "champion_id": "4d64e416f1c9a2f1f005",
+      "holdout_captures": 2
+    },
+    {
+      "seed": 614,
+      "live": true,
+      "wall_s": 0.984249421999948,
+      "cpu_s": 0.9822426470000005,
+      "packets": 13,
+      "sampled_episodes": 6,
+      "champion_id": "311e66c44bf2b3668e6f",
+      "holdout_captures": 1
+    },
+    {
+      "seed": 614,
+      "live": false,
+      "wall_s": 0.9225212579999607,
+      "cpu_s": 0.9200846910000005,
+      "packets": 0,
+      "sampled_episodes": 0,
+      "champion_id": "311e66c44bf2b3668e6f",
+      "holdout_captures": 1
+    },
+    {
+      "seed": 615,
+      "live": false,
+      "wall_s": 0.9787061539998376,
+      "cpu_s": 0.9714642849999997,
+      "packets": 0,
+      "sampled_episodes": 0,
+      "champion_id": "e3af9db2ae3f34fcc687",
+      "holdout_captures": 1
+    },
+    {
+      "seed": 615,
+      "live": true,
+      "wall_s": 0.9550935219999701,
+      "cpu_s": 0.9502887759999998,
+      "packets": 11,
+      "sampled_episodes": 5,
+      "champion_id": "e3af9db2ae3f34fcc687",
+      "holdout_captures": 1
+    },
+    {
+      "seed": 616,
+      "live": true,
+      "wall_s": 0.759577790000094,
+      "cpu_s": 0.753718473000001,
+      "packets": 9,
+      "sampled_episodes": 4,
+      "champion_id": "ff953ceab053d04758eb",
+      "holdout_captures": 4
+    },
+    {
+      "seed": 616,
+      "live": false,
+      "wall_s": 0.7637199719999899,
+      "cpu_s": 0.7636490810000005,
+      "packets": 0,
+      "sampled_episodes": 0,
+      "champion_id": "ff953ceab053d04758eb",
+      "holdout_captures": 4
+    }
+  ],
+  "paired_wall_delta_pct": [
+    4.613808746697745,
+    12.968348956480291,
+    -0.05604478255675227,
+    6.691245699184756,
+    -2.4126375320484006,
+    -0.5423692127689894
+  ],
+  "median_paired_wall_delta_pct": 2.278881982070496
+}

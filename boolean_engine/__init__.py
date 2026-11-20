@@ -5,4 +5,4 @@ from .hdc import BinarySpace
 from .distillation import distill_into
 
 BinaryVectorNetwork = VectorBooleanNet
-__version__ = '6.05'
+__version__ = '6.06'

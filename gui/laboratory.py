@@ -19,9 +19,11 @@ from pathlib import Path
 from engine.boolean_net import BooleanNet
 from engine.settings import Limits
 from engine.evolution import Config
-from engine.world import World, DIRS
+from engine.world import DIRS
+from engine.challenge_worlds import make_world
+from engine.challenges import ALL_SCENARIOS
 from engine.vault import read_json, latest_checkpoint_path, checkpoint_paths
-from gui.arena_state import preview_settings, episode_finished
+from gui.arena_state import preview_settings, episode_finished, frame_summary
 from engine.telemetry import LiveBuffer, write_mailbox
 from gui.brain_inspector import BrainInspector
 from gui.progress_chart import EVA_COLOR, POPULATION_COLOR
@@ -34,7 +36,9 @@ ACCENT = '#2563eb'
 COLORS = ['#2563eb', '#16a34a', '#8b5cf6', '#d97706', '#db2777', '#0891b2', '#a16207', '#64748b']
 
 
-SCENARIO_LABELS={'static':'Preda ferma','moving':'Preda mobile','maze':'Ostacoli','hidden':'Visibilità ridotta (3 celle)'}
+SCENARIO_LABELS={'static':'Preda ferma','moving':'Preda mobile','maze':'Ostacoli classici','hidden':'Visibilità ridotta (3 celle)',
+                 'maze_novel':'Labirinto a corridoi','delayed_reward':'Ricompensa ritardata',
+                 'intelligent_prey':'Preda neurale'}
 SCENARIO_IDS={value:key for key,value in SCENARIO_LABELS.items()}
 def scenario_id(value):return SCENARIO_IDS.get(value,value)
 def agent_color(index):
@@ -42,9 +46,9 @@ def agent_color(index):
     return '#'+''.join(f'{round(v*255):02x}' for v in rgb)
 def friendly(value):
     return {'train':'Addestramento','validation':'Validazione','holdout':'Test finale',
-            'random':'Movimenti casuali (4 direzioni)','greedy':'Inseguitore privilegiato',**SCENARIO_LABELS}.get(value,value)
+            'random':'Movimenti casuali (4 direzioni)','greedy':'Inseguitore privilegiato','sensor_greedy':'Inseguitore con sensori',**SCENARIO_LABELS}.get(value,value)
 
-def available_agent_specs(exp):
+def available_agent_specs(exp, comparison="greedy"):
     """The actual EVA and explorers evaluated in this generation."""
     exp = Path(exp)
     specs = []
@@ -64,7 +68,7 @@ def available_agent_specs(exp):
                               'color': agent_color(i+2), 'brain': BooleanNet.restore(item)})
         except (OSError, ValueError, KeyError, TypeError, IndexError):
             pass
-    specs.append({'name': 'Inseguitore privilegiato', 'color': '#ef4444', 'baseline': 'greedy'})
+    specs.append({'name': friendly(comparison), 'color': '#d97706', 'baseline': comparison})
     specs.append({'name': 'Movimenti casuali (4 direzioni)', 'color': '#64748b', 'baseline': 'random'})
     return specs
 
@@ -73,6 +77,9 @@ def preview_action(actor):
     world = actor['world']
     if actor.get('baseline') == 'random':
         return actor['rng'].randrange(4)
+    if actor.get('baseline') == 'sensor_greedy':
+        from engine.evaluation import sensor_greedy
+        return sensor_greedy(world.observe(),actor['rng'])
     if actor.get('baseline') == 'greedy':
         # Diagnostic heuristic; accesses true prey coordinates, unlike the EVA sensors.
         options = []
@@ -90,7 +97,7 @@ def launch(root_dir=None, *, test_hook=None):
     vault.mkdir(parents=True, exist_ok=True)
 
     app = tk.Tk()
-    app.title('PREDATORE V6.05 | EVA + SMITH')
+    app.title(f'Predatore {Limits.VERSION} · Laboratorio evolutivo')
     app.geometry('1240x830')
     app.minsize(950, 640)
     app.configure(background=BG)
@@ -117,18 +124,27 @@ def launch(root_dir=None, *, test_hook=None):
     header.pack(fill='x')
     header.pack_propagate(False)
     tk.Label(header, text='PREDATORE', font=('Segoe UI', 19, 'bold'), bg='#14263e', fg='white').pack(side='left', padx=(22, 7), pady=12)
-    tk.Label(header, text='V6.05  /  BOOLEAN VECTOR LAB', font=('Segoe UI', 10, 'bold'), bg='#14263e', fg='#93c5fd').pack(side='left', pady=16)
-    header_state = tk.StringVar(value='Ready · No experiment running')
+    tk.Label(header, text=f'{Limits.VERSION}   /   Laboratorio evolutivo', font=('Segoe UI', 10, 'bold'), bg='#14263e', fg='#93c5fd').pack(side='left', pady=16)
+    header_state = tk.StringVar(value='Nessun addestramento in corso')
     tk.Label(header, textvariable=header_state, font=('Segoe UI', 10), bg='#14263e', fg='#cbd5e1').pack(side='right', padx=22)
 
     tabs = ttk.Notebook(app)
     tabs.pack(fill='both', expand=True, padx=14, pady=(12, 8))
     panels = {}
-    for key, name in [('training','Addestramento'), ('arena','Arena'), ('evolution','Evoluzione'),
-                      ('benchmark','Benchmark'), ('brain','Brain Inspector'), ('diagnostics','Diagnostica'), ('supervisor','SMITH')]:
+    for key, name in [('training','Esperimento'), ('arena','Arena e replay'), ('results','Risultati'),
+                      ('brain','Cervello e memoria'), ('archive','Archivio')]:
         panels[key] = ttk.Frame(tabs)
         tabs.add(panels[key], text=name)
-    footer = tk.Label(app, text='V6.05  •  EVA - learning agent  •  SMITH - agent supervisor',
+    notebooks = {}
+    for group, views in [('results', [('evolution','Evoluzione'), ('benchmark','Benchmark')]),
+                         ('archive', [('supervisor','SMITH e checkpoint'), ('diagnostics','Diagnostica')])]:
+        notebook = ttk.Notebook(panels[group])
+        notebook.pack(fill='both', expand=True)
+        notebooks[group] = notebook
+        for key, name in views:
+            panels[key] = ttk.Frame(notebook)
+            notebook.add(panels[key], text=name)
+    footer = tk.Label(app, text=f'Predatore {Limits.VERSION}   ·   EvolutionVault',
                       bg=BG, fg=MUTED, font=('Segoe UI', 9))
     footer.pack(anchor='w', padx=22, pady=(0, 8))
 
@@ -140,7 +156,7 @@ def launch(root_dir=None, *, test_hook=None):
     exp_name = tk.StringVar()
     exp_combo = ttk.Combobox(chooser, textvariable=exp_name, state='readonly', width=36)
     exp_combo.pack(side='left', padx=4)
-    ttk.Label(chooser, text='Live: training reale · Preview: simulazione indipendente',
+    ttk.Label(chooser, text='Esperimenti salvati in EvolutionVault',
               style='Muted.TLabel').pack(side='right', padx=7)
     def active_experiment():
         return vault / exp_name.get() if exp_name.get() else None
@@ -155,7 +171,7 @@ def launch(root_dir=None, *, test_hook=None):
         col, row = idx % 3, idx // 3
         slot = ttk.Frame(cfg_box)
         slot.grid(row=row, column=col, sticky='ew', padx=14, pady=8)
-        ttk.Label(slot, text=key.upper(), style='Muted.TLabel', font=('Segoe UI', 9, 'bold')).pack(anchor='w')
+        ttk.Label(slot, text={'population':'Esploratori','generations':'Generazioni','episodes':'Episodi','steps':'Passi massimi','size':'Lato della mappa','seed':'Seed'}[key], style='Muted.TLabel', font=('Segoe UI', 9, 'bold')).pack(anchor='w')
         v = tk.StringVar(value=str(val))
         fields[key] = v
         ttk.Entry(slot, textvariable=v, width=20).pack(anchor='w', pady=(4, 0))
@@ -202,6 +218,22 @@ def launch(root_dir=None, *, test_hook=None):
                               'toggle':toggle,'default':default}
     ttk.Label(cfg_box,text='Predefiniti: min 32 · base 64 · max 128. La base inizializza nuove reti; le strutture vincenti si ereditano.',
               style='Muted.TLabel').grid(row=5,column=0,columnspan=3,sticky='w',padx=14,pady=5)
+    experiments = ttk.Frame(cfg_box)
+    experiments.grid(row=6,column=0,columnspan=3,sticky='w',padx=14,pady=6)
+    scenario_set=tk.StringVar(value='Classici')
+    ttk.Label(experiments,text='Scenari').pack(side='left')
+    ttk.Combobox(experiments,textvariable=scenario_set,values=('Classici','Estesi'),state='readonly',
+                 width=8).pack(side='left',padx=(4,12))
+    relation_horizon=tk.StringVar(value='0')
+    ttk.Label(experiments,text='Traccia relazioni (passi)').pack(side='left')
+    ttk.Spinbox(experiments,from_=0,to=64,width=4,textvariable=relation_horizon).pack(side='left',padx=(4,12))
+    scenario_loss=tk.StringVar(value='')
+    ttk.Label(experiments,text='Perdite ammesse/scenario¹').pack(side='left')
+    ttk.Entry(experiments,textvariable=scenario_loss,width=4).pack(side='left',padx=(4,12))
+    select_for_learning=tk.BooleanVar(value=False)
+    ttk.Checkbutton(experiments,text='Seleziona capacità di apprendere',variable=select_for_learning).pack(side='left')
+    ttk.Label(cfg_box,text='¹ Vuoto disattiva la soglia. Una traccia di 0 passi disattiva il credito relazionale.',
+              style='Muted.TLabel').grid(row=7,column=0,columnspan=3,sticky='w',padx=14,pady=(0,4))
     eva_status=tk.StringVar(value=Limits.EVA_LABEL+': in attesa della prima run')
     ttk.Label(panels['training'],textvariable=eva_status,wraplength=1100).pack(anchor='w',padx=18,pady=5)
     state_cache=[None,None]
@@ -229,7 +261,7 @@ def launch(root_dir=None, *, test_hook=None):
     smith_profile.trace_add('write',lambda *_:refresh_eva())
     tbar = ttk.Frame(panels['training'])
     tbar.pack(fill='x', padx=16, pady=8)
-    train_status = tk.StringVar(value='Ready: set parameters and choose Start training.')
+    train_status = tk.StringVar(value='Imposta i parametri e avvia una nuova run.')
     ttk.Label(panels['training'], textvariable=train_status, font=('Segoe UI', 11, 'bold'), wraplength=1020).pack(anchor='w', padx=18, pady=(2, 8))
     logs = tk.Text(panels['training'], height=12, wrap='word', bg='#17243b', fg='#e2e8f0',
                    insertbackground='white', borderwidth=0, padx=13, pady=12, font=('Consolas', 10))
@@ -273,6 +305,15 @@ def launch(root_dir=None, *, test_hook=None):
         if not resume:
             from engine.continual import load_profile
             try:
+                horizon=int(relation_horizon.get())
+                if not 0 <= horizon <= 64:raise ValueError('Traccia relazioni: scegliere 0–64 passi.')
+                cmd.extend(['--scenario-set','extended' if scenario_set.get()=='Estesi' else 'classic',
+                            '--relation-credit-horizon',str(horizon)])
+                if scenario_loss.get().strip():
+                    loss=int(scenario_loss.get())
+                    if loss < 0:raise ValueError('Le perdite ammesse devono essere un intero positivo o zero.')
+                    cmd.extend(['--max-scenario-loss',str(loss)])
+                if select_for_learning.get():cmd.append('--select-for-learning')
                 bounds={key:int(control['value'].get()) if control['enabled'].get() else control['default']
                         for key,control in neuron_controls.items()}
                 if not Limits.MIN_NEURONS<=bounds['minimum']<=bounds['base']<=bounds['maximum']<=Limits.MAX_NEURONS:
@@ -300,7 +341,7 @@ def launch(root_dir=None, *, test_hook=None):
             worker_log[0] = logpath
             worker_experiment[0] = folder
             displayed_log[0] = None
-            train_status.set('Training running in a separate process; interface stays responsive.')
+            train_status.set('Addestramento in corso.')
             header_state.set(f'Training · {folder.name}')
             refresh_experiments(prefer=folder.name)
             exp_name.set(folder.name)
@@ -311,8 +352,11 @@ def launch(root_dir=None, *, test_hook=None):
         if worker[0] and worker[0].poll() is None:
             folder=worker_experiment[0]
             if folder:
-                (folder/'stop_requested').write_text('stop', encoding='utf-8')
-                train_status.set('Stop requested: training will save at a generation boundary.')
+                try:
+                    (folder/'stop_requested').write_text('stop', encoding='utf-8')
+                    train_status.set('Arresto richiesto. Il salvataggio avviene a fine generazione.')
+                except OSError as exc:
+                    train_status.set('Richiesta di arresto non salvata: '+str(exc))
     ttk.Button(tbar, text='▶ Avvia nuova run', style='Primary.TButton', command=lambda:start_training(False)).pack(side='left', padx=(0,8))
     ttk.Button(tbar, text='↻ Riprendi checkpoint', command=lambda:start_training(True)).pack(side='left', padx=5)
     ttk.Button(tbar, text='■ Ferma e salva', command=request_stop).pack(side='left', padx=5)
@@ -329,29 +373,54 @@ def launch(root_dir=None, *, test_hook=None):
     live_mosaic=tk.BooleanVar(value=False)
     closing = [False]
     replay_brain = [None]
+    replay_meta = [{}]
     display_trail = []
     trail_key = [None]
     ttk.Radiobutton(toolbar, text='Training reale', variable=mode, value='live').pack(side='left', padx=4)
     ttk.Radiobutton(toolbar, text='Simulazione agenti', variable=mode, value='preview').pack(side='left', padx=4)
     ttk.Radiobutton(toolbar, text='Replay registrato', variable=mode, value='replay').pack(side='left', padx=4)
     replay_name = tk.StringVar()
-    replay_combo = ttk.Combobox(toolbar, textvariable=replay_name, state='readonly', width=23)
-    replay_combo.pack(side='left', padx=(14, 5))
-    ttk.Label(toolbar,text='Scenario').pack(side='left',padx=(10,4))
+
+
     scenario_name=tk.StringVar(value='Preda ferma')
-    scenario_combo=ttk.Combobox(toolbar,textvariable=scenario_name,state='readonly',width=27,
-                                values=list(SCENARIO_LABELS.values()))
-    scenario_combo.pack(side='left',padx=2)
+
     speed = tk.IntVar(value=130)
     ttk.Label(toolbar, text='Velocità visiva').pack(side='left', padx=(14,4))
     ttk.Scale(toolbar, from_=320, to=45, variable=speed, orient='horizontal', length=120).pack(side='left')
-    selection_bar=ttk.Frame(panels['arena'])
-    selection_bar.pack(fill='x',padx=15,pady=2)
+    source_area=ttk.Frame(panels['arena'])
+    source_area.pack(fill='x',padx=15,pady=2)
+    selection_bar=ttk.Frame(source_area)
+    preview_bar=ttk.Frame(source_area)
+    replay_bar=ttk.Frame(source_area)
+    source_bars={'live':selection_bar,'preview':preview_bar,'replay':replay_bar}
+    for bar in source_bars.values():bar.grid(row=0,column=0,sticky='w')
+    ttk.Label(preview_bar,text='Scenario').pack(side='left')
+    scenario_combo=ttk.Combobox(preview_bar,textvariable=scenario_name,values=list(SCENARIO_LABELS.values()),state='readonly',width=27)
+    scenario_combo.pack(side='left',padx=7)
+    comparison=tk.StringVar(value='Inseguitore con sensori')
+    ttk.Label(preview_bar,text='Controllo di confronto').pack(side='left')
+    ttk.Combobox(preview_bar,textvariable=comparison,values=('Inseguitore con sensori','Inseguitore privilegiato'),
+                 state='readonly',width=24).pack(side='left',padx=7)
+    ttk.Label(replay_bar,text='Episodio registrato').pack(side='left')
+    replay_combo=ttk.Combobox(replay_bar,textvariable=replay_name,state='readonly',width=30)
+    replay_combo.pack(side='left',padx=7)
+    replay_position=tk.IntVar(value=0)
+    ttk.Label(replay_bar,text='Fotogramma').pack(side='left')
+    def seek_replay(position):
+        if mode.get()!='replay' or not replay_frames[0]:return
+        index=max(0,min(len(replay_frames[0])-1,round(float(position))))
+        if playing[0]:toggle_play()
+        replay_index[0]=index
+        replay_position.set(index)
+        draw_arena();draw_brain()
+    timeline=ttk.Scale(replay_bar,from_=0,to=0,variable=replay_position,command=seek_replay,
+                       orient='horizontal',length=220)
+    timeline.pack(side='left',padx=7)
     ttk.Label(selection_bar,text='Slot (-1 tutti; N = EVA)').pack(side='left')
     live_slot=tk.StringVar(value='-1')
     ttk.Spinbox(selection_bar,from_=-1,to=Limits.MAX_POPULATION,textvariable=live_slot,width=5).pack(side='left',padx=5)
     live_scenario=tk.StringVar(value='all')
-    ttk.Combobox(selection_bar,textvariable=live_scenario,values=['all','static','moving','maze','hidden'],state='readonly',width=14).pack(side='left')
+    ttk.Combobox(selection_bar,textvariable=live_scenario,values=['all',*ALL_SCENARIOS],state='readonly',width=14).pack(side='left')
     def select_live():
         exp=active_experiment()
         if not exp:return
@@ -361,7 +430,7 @@ def launch(root_dir=None, *, test_hook=None):
         except (OSError,ValueError) as exc:arena_status.set('Selezione non disponibile: '+str(exc))
     ttk.Button(selection_bar,text='Applica al training',command=select_live).pack(side='left',padx=5)
     ttk.Button(selection_bar,text='Vai all’ultimo dato',command=lambda:(live_buffer[0].latest(),draw_arena(),draw_brain())).pack(side='left',padx=5)
-    ttk.Label(selection_bar,text='EVA apprende; SMITH conserva esperienze e strategie.',style='Muted.TLabel').pack(side='left',padx=5)
+
     canvas = tk.Canvas(panels['arena'], bg='#f8fafc', highlightthickness=1,
                        highlightbackground='#cbd5e1')
     canvas.pack(fill='both', expand=True, padx=15, pady=(6, 2))
@@ -380,23 +449,41 @@ def launch(root_dir=None, *, test_hook=None):
     arena_status = tk.StringVar(value='Choose an experiment; playback starts automatically.')
     ttk.Label(panels['arena'], textvariable=arena_status, style='Muted.TLabel').pack(anchor='w', padx=18, pady=(0, 7))
     visibility = {}
+    legend_signature=[None]
+    legend_page=[0]
+    def legend_step(delta):
+        legend_page[0]+=delta
+        rebuild_legend()
     def rebuild_legend():
         previous={name:var.get() for name,var in visibility.items()}
-        for w in legend.winfo_children():w.destroy()
-        visibility.clear()
         if mode.get()=='live' and live_mosaic.get():
             specs=[(a['name'],a['color']) for a in live_tiles.values()]
         elif mode.get() in ('replay','live'):
             specs = ([(Limits.EVA_LABEL,EVA_COLOR),('Esploratore in training',POPULATION_COLOR)] if mode.get()=='live' else [(Limits.EVA_LABEL,EVA_COLOR)]) + [('Prey','#ef4444')]
         else:
             specs = [(a['name'], a['color']) for a in preview_actors]
-        for index, (name, color) in enumerate(specs):
-            enabled = tk.BooleanVar(value=previous.get(name,True))
-            visibility[name] = enabled
+        page_size=8
+        page_count=max(1,math.ceil(len(specs)/page_size))
+        legend_page[0]=max(0,min(page_count-1,legend_page[0]))
+        key=(tuple(specs),legend_page[0])
+        if key==legend_signature[0]:return
+        legend_signature[0]=key
+        for w in legend.winfo_children():w.destroy()
+        visibility.clear()
+        for name,_ in specs:visibility[name]=tk.BooleanVar(value=previous.get(name,True))
+        begin=legend_page[0]*page_size
+        for index,(name,color) in enumerate(specs[begin:begin+page_size]):
+            enabled=visibility[name]
             item=ttk.Frame(legend)
             item.grid(row=index//4,column=index%4,sticky='w',padx=7)
             tk.Label(item,text='●',fg=color,bg=BG).pack(side='left')
             ttk.Checkbutton(item,text=name,variable=enabled,command=lambda:draw_arena()).pack(side='left')
+        if page_count>1:
+            controls=ttk.Frame(legend)
+            controls.grid(row=2,column=0,columnspan=4,sticky='w')
+            ttk.Button(controls,text='‹',command=lambda:legend_step(-1)).pack(side='left')
+            ttk.Label(controls,text=f'Legenda {legend_page[0]+1}/{page_count}').pack(side='left',padx=8)
+            ttk.Button(controls,text='›',command=lambda:legend_step(1)).pack(side='left')
         if not specs:ttk.Label(legend, text='No agents available yet', style='Muted.TLabel').pack(side='left')
     def load_preview():
         preview_actors.clear()
@@ -412,9 +499,8 @@ def launch(root_dir=None, *, test_hook=None):
             scene[0]=settings['map']
             preview_limit[0]=settings['limit']
             rng_seed=settings['seed']*100000+31000
-            for i,spec in enumerate(available_agent_specs(exp)):
-                w=World(scene[0],seed=rng_seed,visibility=settings['visibility'],
-                        prey_moves=settings['prey_moves'])
+            for i,spec in enumerate(available_agent_specs(exp,'sensor_greedy' if comparison.get()=='Inseguitore con sensori' else 'greedy')):
+                w=make_world(settings,rng_seed)
                 a=dict(spec,world=w,rng=random.Random(rng_seed+5000+i),steps=0)
                 if 'brain' in a:a['brain'].reset()
                 preview_actors.append(a)
@@ -425,12 +511,16 @@ def launch(root_dir=None, *, test_hook=None):
             arena_status.set('Could not load Arena: '+str(exc));rebuild_legend()
     def load_replay():
         exp=active_experiment()
-        replay_frames[0]=[]; replay_index[0]=0;replay_brain[0]=None
+        replay_frames[0]=[]; replay_index[0]=0;replay_brain[0]=None;replay_meta[0]={}
+        timeline.configure(to=0)
+        replay_position.set(0)
         if exp is None or not replay_name.get():return
         try:
             item=read_json(exp/'replays'/replay_name.get())
             scene[0]=read_json(exp/'environment'/f'{item["map"]}.json')
             replay_frames[0]=item['frames']
+            replay_meta[0]={key:item.get(key) for key in ('seed','scenario','genome_id')}
+            timeline.configure(to=max(0,len(replay_frames[0])-1))
             replay_brain[0]=item.get('brain')
             if replay_brain[0] is None and (exp/'brains/eva.json').is_file():
                 candidate=read_json(exp/'brains/eva.json')
@@ -441,12 +531,15 @@ def launch(root_dir=None, *, test_hook=None):
         except (OSError, ValueError, KeyError, TypeError) as exc:
             arena_status.set('Cannot load replay: '+str(exc))
     def update_mode(*_):
+        for name,bar in source_bars.items():
+            if name==mode.get():bar.grid()
+            else:bar.grid_remove()
         if mode.get()=='live':
             scene[0]=None;rebuild_legend()
         elif mode.get()=='replay':load_replay()
         else:load_preview()
         playing[0]=True
-        play_button.configure(text='⏸ Pause')
+        play_button.configure(text='Pausa')
         if tick_id[0] is None:tick_id[0]=app.after(max(35,int(speed.get())),schedule_tick)
         draw_arena();draw_brain()
     def arena_positions():
@@ -454,9 +547,10 @@ def launch(root_dir=None, *, test_hook=None):
             current=live_buffer[0].current
             if not current:return None,[],live_buffer[0].label()
             packet,f=current
-            label=(f'Live Training · {packet.get("experiment","?")} · gen {packet.get("generation","?")} · '
-                   f'slot {packet.get("individual","?")} · {packet.get("scenario","?")} · passo {f["t"]} · '
-                   f'azione {f.get("action","inizio")} · {live_buffer[0].label()}')
+            actor=Limits.EVA_LABEL if packet.get('phase')=='eva' else f'Esploratore {packet.get("individual",0)+1}'
+            label=(f'Live Training · {actor} · gen {packet.get("generation","—")} · {friendly(packet.get("scenario","—"))}'
+                   f' · genoma {str(packet.get("genome_id","—"))[:10]} · seed {packet.get("seed","—")}\n'
+                   f'{frame_summary(f)} · {live_buffer[0].label()}')
             return packet['map'],[{'name':Limits.EVA_LABEL if packet.get('phase')=='eva' else 'Esploratore in training','color':EVA_COLOR if packet.get('phase')=='eva' else POPULATION_COLOR,'pos':tuple(f['predator'])},
                                   {'name':'Prey','color':'#ef4444','pos':tuple(f['prey'])}],label
         if mode.get()=='replay':
@@ -464,11 +558,10 @@ def launch(root_dir=None, *, test_hook=None):
             f=replay_frames[0][replay_index[0]]
             actors=[{'name':Limits.EVA_LABEL,'color':EVA_COLOR,'pos':tuple(f['predator'])}]
             actors.append({'name':'Prey','color':'#ef4444','pos':tuple(f['prey'])})
-            label=f'Recorded Replay · frame {replay_index[0]+1}/{len(replay_frames[0])} · action {f.get("action","start")}'
-            if 'neural_state' in f:
-                label+=f' · firing nodes {sum(f["neural_state"])}/{len(f["neural_state"])}'
-            if 'observation' in f:
-                label+=f' · visible prey {bool(f["observation"][0])}'
+            meta=replay_meta[0]
+            label=(f'Recorded Replay · EVA · {friendly(meta.get("scenario","—"))} · seed {meta.get("seed","—")}'
+                   f' · genoma {str(meta.get("genome_id","—"))[:10]} · frame {replay_index[0]+1}/{len(replay_frames[0])}\n'
+                   +frame_summary(f))
             return scene[0],actors,label
         if not preview_actors:return None,[],''
         actors=[{'name':a['name'],'color':a['color'],'pos':a['world'].predator} for a in preview_actors]
@@ -478,7 +571,9 @@ def launch(root_dir=None, *, test_hook=None):
         return scene[0],actors,label
     def draw_mosaic(source=None):
         actors=[a for a in (preview_actors if source is None else source) if visibility.get(a['name']) is None or visibility[a['name']].get()]
-        if not actors:return
+        if not actors:
+            arena_status.set('Nessun agente visibile. Seleziona un agente nella legenda.')
+            return
         width=max(300,canvas.winfo_width());height=max(300,canvas.winfo_height())
         cols=max(1,math.ceil(math.sqrt(len(actors)*width/height)))
         rows=math.ceil(len(actors)/cols);tw=width/cols;th=height/rows
@@ -497,7 +592,8 @@ def launch(root_dir=None, *, test_hook=None):
         if source is not None:
             arena_status.set('Ultime osservazioni reali per slot (massimo 32), raccolte in momenti diversi; non sono agenti simultanei.')
             return
-        arena_status.set(f'Simulazioni indipendenti · passo {arena_step[0]} · {len(actors)} agenti visibili · ogni pannello ha la propria preda rossa')
+        arena_status.set(f'Simulazioni indipendenti · {scenario_name.get()} · passo {arena_step[0]} · '
+                         f'catture {sum(a["world"].captured for a in actors)}/{len(actors)} agenti visibili · preda rossa per ciascun mondo')
 
     def draw_arena():
         canvas.delete('all')
@@ -551,6 +647,7 @@ def launch(root_dir=None, *, test_hook=None):
             if replay_frames[0]:
                 if replay_index[0] + 1 >= len(replay_frames[0]):return False
                 replay_index[0]+=1
+                replay_position.set(replay_index[0])
         elif preview_actors:
             if episode_finished(preview_actors,preview_limit[0]):
                 load_preview()   # Automatically restart; safe if source was removed.
@@ -568,6 +665,7 @@ def launch(root_dir=None, *, test_hook=None):
                         if hasattr(brain,'feedback'):brain.feedback(reward)
                         a['frame']={'t':a['world'].steps,'action':action,'observation':list(obs),
                                     'previous_state':previous,'neural_state':list(brain.state)}
+                        if hasattr(a['world'],'world_events'):a['frame']['world_events']=a['world'].world_events()
                         if hasattr(brain,'frame_data'):a['frame'].update(brain.frame_data())
                         if hasattr(brain,'tables'):
                             a['frame'].update(plastic_tables=[list(t) for t in brain.tables],
@@ -580,32 +678,36 @@ def launch(root_dir=None, *, test_hook=None):
     def schedule_tick():
         tick_id[0]=None
         if closing[0] or not playing[0]:return
-        next_step()
         if mode.get()=='replay' and replay_frames[0] and replay_index[0]==len(replay_frames[0])-1:
-            replay_index[0]=0  # Play the next loop automatically.
+            restart()
+        elif mode.get()!='live':
+            next_step()
         tick_id[0]=app.after(max(35,int(speed.get())),schedule_tick)
     def toggle_play():
         playing[0]=not playing[0]
-        play_button.configure(text='⏸ Pause' if playing[0] else '▶ Play')
+        play_button.configure(text='Pausa' if playing[0] else 'Riprendi')
         if playing[0] and tick_id[0] is None:schedule_tick()
     def step_observed():
         if playing[0]:toggle_play()
         next_step()
     def restart():
         if mode.get()=='live':live_buffer[0].latest()
-        elif mode.get()=='replay':replay_index[0]=0
+        elif mode.get()=='replay':replay_index[0]=0;replay_position.set(0)
         else:load_preview()
         draw_arena();draw_brain()
-    play_button=ttk.Button(controls, text='⏸ Pause', command=toggle_play)
+    play_button=ttk.Button(controls, text='Pausa', command=toggle_play)
     play_button.pack(side='left',padx=4)
     ttk.Button(controls,text='Un passo',command=lambda:step_observed()).pack(side='left',padx=4)
     ttk.Button(controls,text='↻ Ricomincia / Ultimo dato',command=restart).pack(side='left',padx=4)
     ttk.Button(controls,text='Mostra tutti',command=lambda:([v.set(True) for v in visibility.values()],draw_arena())).pack(side='left',padx=4)
     ttk.Button(controls,text='Nascondi tutti',command=lambda:([v.set(False) for v in visibility.values()],draw_arena())).pack(side='left',padx=4)
-    ttk.Checkbutton(controls,text='Mosaico ultime osservazioni live',variable=live_mosaic,command=lambda:(rebuild_legend(),draw_arena())).pack(side='left',padx=4)
+    ttk.Checkbutton(selection_bar,text='Mosaico live',variable=live_mosaic,command=lambda:(rebuild_legend(),draw_arena())).pack(side='left',padx=4)
     canvas.bind('<Configure>',lambda _:draw_arena())
+    for name,bar in source_bars.items():
+        if name!=mode.get():bar.grid_remove()
     mode.trace_add('write',update_mode)
-    replay_name.trace_add('write',lambda *_: (load_replay(),draw_arena(),draw_brain()))
+    replay_name.trace_add('write',lambda *_: (load_replay(),draw_arena(),draw_brain()) if mode.get()=='replay' else None)
+    comparison.trace_add('write',lambda *_: (load_preview(),draw_arena(),draw_brain()) if mode.get()=='preview' else None)
     scenario_name.trace_add('write',lambda *_: (load_preview(),draw_arena()) if mode.get()=='preview' else None)
 
     ttk.Button(controls,text='Guida ai controlli',command=lambda:messagebox.showinfo('Arena',
@@ -624,13 +726,24 @@ def launch(root_dir=None, *, test_hook=None):
     plot.pack(fill='both',expand=True,padx=15,pady=15)
     graph_caption = ttk.Label(panels['evolution'], text='Blu: EVA - learning agent · Verde: Popolazione — media', wraplength=1100, style='Muted.TLabel')
     graph_caption.pack(anchor='w',padx=17,pady=(0,12))
-    table = ttk.Treeview(panels['benchmark'], columns=('split','capture','steps','stall','neurons','blocked'),show='headings')
-    for col, label, wd in [('split','Dataset',200),('capture','Capture rate',130),('steps','Passi/cattura riuscita',155),
-                           ('stall','Stall rate',130),('neurons','Active nodes',130),('blocked','Blocked moves',140)]:
-        table.heading(col,text=label);table.column(col,anchor='center',width=wd)
-    table.pack(fill='both',expand=True,padx=15,pady=15)
-    ttk.Label(panels['benchmark'],text='Validazione ogni 10 generazioni nelle nuove run GUI; holdout solo finale. — = dato non registrato. Tempi in passi, solo catture riuscite.',
-              style='Muted.TLabel').pack(anchor='w',padx=18,pady=(0,14))
+    benchmark_note=tk.StringVar()
+    ttk.Label(panels['benchmark'],textvariable=benchmark_note,style='Muted.TLabel').pack(anchor='w',padx=15,pady=6)
+    benchmark_area=ttk.Frame(panels['benchmark'])
+    benchmark_area.pack(fill='both',expand=True,padx=15,pady=(0,12))
+    table = ttk.Treeview(benchmark_area, columns=('split','capture','count','wilson','steps','median','stall','neurons','blocked'),show='headings')
+    for col, label, wd in [('split','Agente / split / scenario',330),('capture','Catture',76),('count','Successi/n',78),
+                           ('wilson','IC 95%',112),('steps','Passi medi¹',87),('median','Mediana¹',79),('stall','Stalli',75),
+                           ('neurons','Moduli',65),('blocked','Blocchi medi',94)]:
+        table.heading(col,text=label)
+        table.column(col,anchor='w' if col=='split' else 'center',width=wd,minwidth=65)
+    scrollbar=ttk.Scrollbar(benchmark_area,orient='vertical',command=table.yview)
+    scrollbar.pack(side='right',fill='y')
+    scroll_x=ttk.Scrollbar(benchmark_area,orient='horizontal',command=table.xview)
+    scroll_x.pack(side='bottom',fill='x')
+    table.configure(yscrollcommand=scrollbar.set,xscrollcommand=scroll_x.set)
+    table.pack(fill='both',expand=True)
+    ttk.Label(panels['benchmark'],text='¹ Solo catture riuscite. IC di Wilson per gli episodi del singolo scenario. Trattino = misura assente.',
+              style='Muted.TLabel').pack(anchor='w',padx=18,pady=(0,10))
 
     # Inspector consumes precisely the Arena's selected source/frame.
     brain_controls=ttk.Frame(panels['brain']);brain_controls.pack(fill='x',padx=12,pady=4)
@@ -643,20 +756,26 @@ def launch(root_dir=None, *, test_hook=None):
     brain_combo.pack(side='left',padx=6)
     brain_combo.bind('<<ComboboxSelected>>',lambda _:draw_brain())
     def draw_brain():
+        brain_combo.configure(state='readonly' if mode.get()=='preview' else 'disabled')
         if mode.get()=='live':
             current=live_buffer[0].current
             if current:
                 packet,frame=current
+                brain_choice.set(Limits.EVA_LABEL if packet.get('phase')=='eva' else f'Esploratore {packet.get("individual",0)+1}')
                 inspector.show(packet.get('brain'),frame,
                                f'Live Training / gen {packet.get("generation")} / slot {packet.get("individual")} / {packet.get("scenario")}')
             else:inspector.show(None,source='Live non disponibile')
         elif mode.get()=='replay' and replay_frames[0]:
+            brain_choice.set(Limits.EVA_LABEL)
             inspector.show(replay_brain[0],replay_frames[0][replay_index[0]],'Recorded Replay')
         elif mode.get()=='preview' and preview_actors:
             brains=[a for a in preview_actors if 'brain' in a]
             brain_combo['values']=[a['name'] for a in brains]
             actor=next((a for a in brains if a['name']==brain_choice.get()),brains[0] if brains else None)
-            if actor:inspector.show(actor['brain'].export(),actor.get('frame'),actor['name']+' / Independent Preview')
+            if actor:
+                brain_choice.set(actor['name'])
+                inspector.show(actor['brain'].export(),actor.get('frame'),actor['name']+' / Independent Preview')
+            else:inspector.show(None,source='Independent Preview')
         else:inspector.show(None,source='Nessun dato sincronizzato')
     diagnostics_text=tk.Text(panels['diagnostics'],wrap='word',font=('Consolas',10))
     diagnostics_text.pack(fill='both',expand=True,padx=15,pady=15)
@@ -674,7 +793,7 @@ def launch(root_dir=None, *, test_hook=None):
                 for name,item in report['variants'].items():
                     text+=(f"{name}: catture {item['capture_rate']:.1%}; Δ normale {item['capture_delta_vs_normal']:+.1%}; "
                            f"celle uniche {item['mean_unique_cells']:.1f}; modifiche plastiche {item['plastic_updates']}\n")
-                    for scenario in ('static','moving','maze','hidden'):
+                    for scenario in dict.fromkeys(r['scenario'] for r in item['episodes']):
                         rows=[r for r in item['episodes'] if r['scenario']==scenario]
                         if rows:text+=f"  {scenario}: catture {sum(r['capture'] for r in rows)}/{len(rows)}; conteggi azioni { [sum(r['action_counts'][i] for r in rows) for i in range(8)] }\n"
             except (OSError,ValueError,KeyError,TypeError):text+='Nessun report disponibile per questo esperimento.'
@@ -714,15 +833,31 @@ def launch(root_dir=None, *, test_hook=None):
             text+='Strategia: '+str(meta.get('last_strategy','—'))+' · contesto binario '+format(meta.get('last_context',0),'06b')+'\n'
             text+='Bit: poche catture, molti stalli, trasferimento respinto, conflitto di memoria, moduli sottoutilizzati, regressione dopo apprendimento.\n'
             text+='Statistiche: tentativi / miglioramenti del punteggio bilanciato in validazione.\n\n'
+            history=state.get('history') or []
+            if history and 'learning_channels' in history[-1]:
+                last=history[-1]
+                text+=f'Apprendimento personale EVA: {"ripristino" if last.get("personal_rollback") else "conservato"}'
+                text+=f' · candidato {last.get("personal_candidate_id","—")}\n'
+                for channel,counts in last['learning_channels'].items():
+                    text+=f'{channel}: {counts["accepted"]} accettate, {counts["rejected"]} rifiutate\n'
+                text+='\n'
             text+=json.dumps(meta,indent=2,ensure_ascii=False)
         except (OSError,ValueError,KeyError,TypeError):pass
         supervisor_text.delete('1.0','end');supervisor_text.insert('end',text)
 
     def format_rate(value):return '—' if value is None else f'{value:.1%}'
 
-    def format_steps(row):
-        value=row.get('successful_mean_steps')
-        return '—' if value is None else f'{value:.1f}'
+    def add_measurement(label,row,neurons=None):
+        low_high=row.get('capture_wilson95')
+        interval=f'{low_high[0]:.0%}–{low_high[1]:.0%}' if low_high else '—'
+        count=(f'{row["capture_count"]}/{row["episode_count"]}'
+               if 'capture_count' in row and 'episode_count' in row else '—')
+        def number(key):
+            value=row.get(key)
+            return f'{value:.1f}' if value is not None else '—'
+        table.insert('','end',values=(label,format_rate(row.get('capture_rate')),count,interval,
+            number('successful_mean_steps'),number('successful_median_steps'),format_rate(row.get('stall_rate')),
+            row.get('active_neurons',neurons if neurons is not None else '—'),number('blocked_actions')))
 
     last_refresh = [None]
     selected_source = [None]
@@ -753,6 +888,7 @@ def launch(root_dir=None, *, test_hook=None):
             preview_actors.clear();scene[0]=None;replay_frames[0]=[];replay_brain[0]=None
             replay_index[0]=0;arena_step[0]=0;logs.delete('1.0','end')
             plot.delete('all')
+            benchmark_note.set('')
             for item in table.get_children():table.delete(item)
             train_status.set('In attesa dei dati della run '+(exp.name if exp else '—'))
             inspector.show(None,source='Nuova selezione')
@@ -764,7 +900,7 @@ def launch(root_dir=None, *, test_hook=None):
         replays=sorted(p.name for p in (exp/'replays').glob('*.json'))
         replay_combo['values']=replays
         if replay_name.get() not in replays:replay_name.set(replays[0] if replays else '')
-        available_scenarios=[name for name in ('static','moving','maze','hidden')
+        available_scenarios=[name for name in ALL_SCENARIOS
                             if (exp/'environment'/'suites'/f'holdout_{name}.json').is_file()]
         scenario_combo['values']=[friendly(n) for n in available_scenarios] or ['Preda ferma']
         if available_scenarios and scenario_id(scenario_name.get()) not in available_scenarios:
@@ -810,40 +946,38 @@ def launch(root_dir=None, *, test_hook=None):
                 chart_baselines={split:{name:row.get('by_scenario',{}).get(selected,{}) for name,row in items.items()} for split,items in chart_baselines.items()}
             graph_caption.configure(text=draw_progress(plot,history,graph_metric.get(),validation,chart_baselines))
             for id in table.get_children():table.delete(id)
+            cfg=read_json(exp/'config.json')
+            benchmark_note.set(f'Seed {cfg.get("seed","—")} · mappa {cfg.get("size","—")} × {cfg.get("size","—")} · '
+                               f'budget {cfg.get("steps","—")} passi/episodio · curriculum {cfg.get("scenario_set","classic")}')
             for split in ('train','validation'):
                 if split in monitor:
                     row=monitor[split]
-                    label=f'{Limits.EVA_LABEL} / {friendly(split)} · gen {monitor.get("validation_generation") if split=="validation" else monitor.get("generation")}'
-                    table.insert('','end',values=(label,f'{row["capture_rate"]:.1%}',format_steps(row),'—',row.get('active_neurons','—'),'—'))
+                    generation=monitor.get('validation_generation' if split=='validation' else 'generation','—')
+                    label=f'EVA / {friendly(split)} · gen {generation}'
+                    add_measurement(label,row)
                     for name,detail in row.get('by_scenario',{}).items():
-                        table.insert('','end',values=(f'{label} / {friendly(name)}',f'{detail["capture_rate"]:.1%}',format_steps(detail),'—','—','—'))
+                        add_measurement(f'{label} / {friendly(name)}',detail)
                 for name,row in monitor.get('baselines',{}).get(split,{}).items():
-                    table.insert('','end',values=(f'{friendly(name)} / {friendly(split)}',f'{row["capture_rate"]:.1%}',format_steps(row),'—','—','—'))
+                    add_measurement(f'{friendly(name)} / {friendly(split)}',row)
             if benchmark.exists():
-                for label,row in read_json(benchmark).items():
-                    table.insert('','end',values=(Limits.EVA_LABEL+' / '+friendly(label),f'{row["capture_rate"]:.1%}',
-                        format_steps(row), f'{row["stall_rate"]:.1%}',
-                        row['active_neurons'],f'{row["blocked_actions"]:.1f}'))
-            if benchmark.exists():
-                report=read_json(benchmark)
-                for split,summary in report.items():
+                for split,summary in read_json(benchmark).items():
+                    label=f'EVA / {friendly(split)}'
+                    add_measurement(label,summary)
                     for name,detail in summary.get('by_scenario',{}).items():
-                        table.insert('','end',values=(f'{Limits.EVA_LABEL} / {friendly(split)} / {friendly(name)}',
-                            f'{detail["capture_rate"]:.1%}',format_steps(detail),
-                            f'{detail["stall_rate"]:.1%}',summary['active_neurons'],
-                            f'{detail["blocked_actions"]:.1f}'))
+                        add_measurement(f'{label} / {friendly(name)}',detail,summary.get('active_neurons'))
             baselines=exp/'benchmarks'/'baselines.json'
             if baselines.is_file():
-                for label,row in read_json(baselines).items():
-                    table.insert('','end',values=(friendly(label)+' (test finale)',
-                        f'{row["capture_rate"]:.1%}',format_steps(row),
-                        f'{row["stall_rate"]:.1%}','—',f'{row["blocked_actions"]:.1f}'))
+                for name,row in read_json(baselines).items():
+                    label=f'{friendly(name)} / test finale'
+                    add_measurement(label,row)
+                    for scenario,detail in row.get('by_scenario',{}).items():
+                        add_measurement(f'{label} / {friendly(scenario)}',detail)
             comparison_path=exp/'benchmarks/population_comparison.json'
             if comparison_path.is_file():
                 comparison=read_json(comparison_path)
                 for label,key in [('Popolazione · media','population_mean_capture'),
                                   ('Popolazione · migliore','population_best_capture')]:
-                    table.insert('','end',values=(label+' / test finale',format_rate(comparison[key]),'—','—','—','—'))
+                    add_measurement(label+' / test finale',{'capture_rate':comparison[key]})
             if brain.exists():draw_brain()
             last_refresh[0]=stamp
             refresh_diagnostics()
@@ -883,7 +1017,7 @@ def launch(root_dir=None, *, test_hook=None):
                 refresh_data()
             elif worker[0] is not None:
                 code=worker[0].returncode
-                header_state.set(f'Training finished · exit code {code}')
+                header_state.set(f'Addestramento terminato · codice {code}')
                 worker[0]=None
                 load_selected()
                 refresh_data(force=True)
@@ -892,11 +1026,12 @@ def launch(root_dir=None, *, test_hook=None):
         if not closing[0]:app.after(1500,periodic)
     def on_tab_change(*_):
         if tabs.select()==str(panels['arena']):draw_arena()
-        if tabs.select()==str(panels['evolution']):refresh_data(force=True)
+        if tabs.select()==str(panels['results']):refresh_data(force=True)
         if tabs.select()==str(panels['brain']):draw_brain()
-        if tabs.select()==str(panels['diagnostics']):refresh_diagnostics()
-        if tabs.select()==str(panels['supervisor']):refresh_supervisor()
+        if tabs.select()==str(panels['archive']) and notebooks['archive'].select()==str(panels['diagnostics']):refresh_diagnostics()
+        if tabs.select()==str(panels['archive']) and notebooks['archive'].select()==str(panels['supervisor']):refresh_supervisor()
     tabs.bind('<<NotebookTabChanged>>',on_tab_change)
+    for notebook in notebooks.values():notebook.bind('<<NotebookTabChanged>>',on_tab_change)
     exp_name.trace_add('write',load_selected)
     exp_combo.bind('<<ComboboxSelected>>',load_selected)
     # Load all previous experiment info; begin playback without asking the user to press Play.
@@ -909,7 +1044,7 @@ def launch(root_dir=None, *, test_hook=None):
         if closing[0]:return
         exp=active_experiment()
         if exp and mode.get()=='live':
-            live_buffer[0].poll(exp)
+            changed=live_buffer[0].poll(exp)
             if not live_buffer[0].current and playing[0]:live_buffer[0].advance()
             if playing[0]:
                 live_buffer[0].latest()
@@ -922,7 +1057,10 @@ def launch(root_dir=None, *, test_hook=None):
                         'world':SimpleNamespace(predator=frame['predator'],prey=frame['prey']),
                         'map':packet['map'],'generation':packet.get('generation'),'scenario':packet.get('scenario')}
                     if live_mosaic.get():rebuild_legend()
-                draw_arena();draw_brain()
+                if changed or not current:
+                    draw_arena();draw_brain()
+                elif not live_mosaic.get():
+                    arena_status.set(arena_positions()[2])
         app.after(100,poll_live)
     def close_window():
         closing[0]=True

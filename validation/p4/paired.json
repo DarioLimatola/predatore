@@ -1,0 +1,4190 @@
+[
+  {
+    "lineage": 42,
+    "guard": false,
+    "learning_selection": false,
+    "runs": [
+      {
+        "config": {
+          "population": 4,
+          "generations": 2,
+          "episodes": 8,
+          "steps": 32,
+          "size": 8,
+          "seed": 42,
+          "initial_neurons": 32,
+          "max_neurons": 32,
+          "elite": 2,
+          "validation_episodes": 12,
+          "holdout_episodes": 32,
+          "vector_width": 64,
+          "vector_shape": "",
+          "memory_capacity": 64,
+          "experience_capacity": 96,
+          "internal_ticks": 1,
+          "trace_depth": 8,
+          "circuit_plasticity_enabled": true,
+          "contextual_distillation_enabled": true,
+          "minimum_active_neurons": 32,
+          "retention_tasks": 2,
+          "smith_profile": "SMITH",
+          "max_vector_width": 64,
+          "max_scenario_loss": null,
+          "relation_credit_horizon": 0,
+          "select_for_learning": false,
+          "scenario_set": "classic",
+          "novelty_archive_size": 32
+        },
+        "initial": {
+          "hidden": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 19.0,
+            "stall_count": 3,
+            "mean_reward": -15.444999999999997
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 1,
+            "mean_reward": -21.099999999999998
+          },
+          "moving": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 16.0,
+            "stall_count": 4,
+            "mean_reward": -18.62
+          },
+          "static": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 30.0,
+            "stall_count": 3,
+            "mean_reward": -15.064999999999998
+          }
+        },
+        "final": {
+          "hidden": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 2,
+            "mean_reward": -12.735
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 3,
+            "mean_reward": -18.724999999999998
+          },
+          "moving": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 8.0,
+            "stall_count": 4,
+            "mean_reward": -12.329999999999998
+          },
+          "static": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 4,
+            "mean_reward": -19.47
+          }
+        },
+        "initial_id": "4d419a101c9fa9600da6",
+        "final_id": "96709317fabeb79f65c1",
+        "baselines": {
+          "greedy": {
+            "hidden": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 5,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 7,
+              "episode_count": 8
+            }
+          },
+          "random": {
+            "hidden": {
+              "capture_count": 0,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 0,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 0,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 3,
+              "episode_count": 8
+            }
+          },
+          "sensor_greedy": {
+            "hidden": {
+              "capture_count": 6,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 6,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 7,
+              "episode_count": 8
+            }
+          }
+        },
+        "rollbacks": 0,
+        "regressions_after_personal_training": 0,
+        "proposals_rejected_for_scenario_loss": 0,
+        "seconds": 1.9896632130000853,
+        "cpu_seconds": 1.9887452679999997,
+        "smith_run_memory": 1
+      },
+      {
+        "config": {
+          "population": 4,
+          "generations": 2,
+          "episodes": 8,
+          "steps": 32,
+          "size": 8,
+          "seed": 43,
+          "initial_neurons": 32,
+          "max_neurons": 32,
+          "elite": 2,
+          "validation_episodes": 12,
+          "holdout_episodes": 32,
+          "vector_width": 64,
+          "vector_shape": "",
+          "memory_capacity": 64,
+          "experience_capacity": 96,
+          "internal_ticks": 1,
+          "trace_depth": 8,
+          "circuit_plasticity_enabled": true,
+          "contextual_distillation_enabled": true,
+          "minimum_active_neurons": 32,
+          "retention_tasks": 2,
+          "smith_profile": "SMITH",
+          "max_vector_width": 64,
+          "max_scenario_loss": null,
+          "relation_credit_horizon": 0,
+          "select_for_learning": false,
+          "scenario_set": "classic",
+          "novelty_archive_size": 32
+        },
+        "initial": {
+          "hidden": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 0,
+            "mean_reward": -11.999999999999998
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 1,
+            "mean_reward": -18.819999999999997
+          },
+          "moving": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 10.0,
+            "stall_count": 4,
+            "mean_reward": -14.439999999999996
+          },
+          "static": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 4,
+            "mean_reward": -19.104999999999997
+          }
+        },
+        "final": {
+          "hidden": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 0,
+            "mean_reward": -11.999999999999998
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 1,
+            "mean_reward": -18.819999999999997
+          },
+          "moving": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 10.0,
+            "stall_count": 4,
+            "mean_reward": -16.009999999999998
+          },
+          "static": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 5,
+            "mean_reward": -20.339999999999996
+          }
+        },
+        "initial_id": "96709317fabeb79f65c1",
+        "final_id": "528ced8796b15f598f1a",
+        "baselines": {
+          "greedy": {
+            "hidden": {
+              "capture_count": 4,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 6,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 8,
+              "episode_count": 8
+            }
+          },
+          "random": {
+            "hidden": {
+              "capture_count": 0,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 2,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 2,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 2,
+              "episode_count": 8
+            }
+          },
+          "sensor_greedy": {
+            "hidden": {
+              "capture_count": 6,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 6,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 6,
+              "episode_count": 8
+            }
+          }
+        },
+        "rollbacks": 0,
+        "regressions_after_personal_training": 2,
+        "proposals_rejected_for_scenario_loss": 0,
+        "seconds": 2.3334288380000316,
+        "cpu_seconds": 2.33306836,
+        "smith_run_memory": 2,
+        "previous_run_holdout_after_second_run": {
+          "static": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 3,
+            "mean_reward": -20.36
+          },
+          "moving": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 14.0,
+            "stall_count": 4,
+            "mean_reward": -13.059999999999999
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 3,
+            "mean_reward": -18.724999999999998
+          },
+          "hidden": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 2,
+            "mean_reward": -12.735
+          }
+        }
+      }
+    ]
+  },
+  {
+    "lineage": 42,
+    "guard": true,
+    "learning_selection": false,
+    "runs": [
+      {
+        "config": {
+          "population": 4,
+          "generations": 2,
+          "episodes": 8,
+          "steps": 32,
+          "size": 8,
+          "seed": 42,
+          "initial_neurons": 32,
+          "max_neurons": 32,
+          "elite": 2,
+          "validation_episodes": 12,
+          "holdout_episodes": 32,
+          "vector_width": 64,
+          "vector_shape": "",
+          "memory_capacity": 64,
+          "experience_capacity": 96,
+          "internal_ticks": 1,
+          "trace_depth": 8,
+          "circuit_plasticity_enabled": true,
+          "contextual_distillation_enabled": true,
+          "minimum_active_neurons": 32,
+          "retention_tasks": 2,
+          "smith_profile": "SMITH",
+          "max_vector_width": 64,
+          "max_scenario_loss": 0,
+          "relation_credit_horizon": 0,
+          "select_for_learning": false,
+          "scenario_set": "classic",
+          "novelty_archive_size": 32
+        },
+        "initial": {
+          "hidden": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 19.0,
+            "stall_count": 3,
+            "mean_reward": -15.444999999999997
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 1,
+            "mean_reward": -21.099999999999998
+          },
+          "moving": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 16.0,
+            "stall_count": 4,
+            "mean_reward": -18.62
+          },
+          "static": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 30.0,
+            "stall_count": 3,
+            "mean_reward": -15.064999999999998
+          }
+        },
+        "final": {
+          "hidden": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 19.0,
+            "stall_count": 3,
+            "mean_reward": -15.444999999999997
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 1,
+            "mean_reward": -21.099999999999998
+          },
+          "moving": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 16.0,
+            "stall_count": 4,
+            "mean_reward": -18.62
+          },
+          "static": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 29.0,
+            "stall_count": 1,
+            "mean_reward": -14.514999999999997
+          }
+        },
+        "initial_id": "4d419a101c9fa9600da6",
+        "final_id": "ebe03769766f89fe6af3",
+        "baselines": {
+          "greedy": {
+            "hidden": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 5,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 7,
+              "episode_count": 8
+            }
+          },
+          "random": {
+            "hidden": {
+              "capture_count": 0,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 0,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 0,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 3,
+              "episode_count": 8
+            }
+          },
+          "sensor_greedy": {
+            "hidden": {
+              "capture_count": 6,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 6,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 7,
+              "episode_count": 8
+            }
+          }
+        },
+        "rollbacks": 1,
+        "regressions_after_personal_training": 1,
+        "proposals_rejected_for_scenario_loss": 6,
+        "seconds": 1.7372150459999602,
+        "cpu_seconds": 1.733282139,
+        "smith_run_memory": 1
+      },
+      {
+        "config": {
+          "population": 4,
+          "generations": 2,
+          "episodes": 8,
+          "steps": 32,
+          "size": 8,
+          "seed": 43,
+          "initial_neurons": 32,
+          "max_neurons": 32,
+          "elite": 2,
+          "validation_episodes": 12,
+          "holdout_episodes": 32,
+          "vector_width": 64,
+          "vector_shape": "",
+          "memory_capacity": 64,
+          "experience_capacity": 96,
+          "internal_ticks": 1,
+          "trace_depth": 8,
+          "circuit_plasticity_enabled": true,
+          "contextual_distillation_enabled": true,
+          "minimum_active_neurons": 32,
+          "retention_tasks": 2,
+          "smith_profile": "SMITH",
+          "max_vector_width": 64,
+          "max_scenario_loss": 0,
+          "relation_credit_horizon": 0,
+          "select_for_learning": false,
+          "scenario_set": "classic",
+          "novelty_archive_size": 32
+        },
+        "initial": {
+          "hidden": {
+            "capture_count": 3,
+            "episode_count": 8,
+            "successful_mean_steps": 24.0,
+            "stall_count": 2,
+            "mean_reward": -9.889999999999999
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 5,
+            "mean_reward": -19.645
+          },
+          "moving": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 17.0,
+            "stall_count": 6,
+            "mean_reward": -11.1
+          },
+          "static": {
+            "capture_count": 3,
+            "episode_count": 8,
+            "successful_mean_steps": 20.333333333333332,
+            "stall_count": 4,
+            "mean_reward": -9.694999999999999
+          }
+        },
+        "final": {
+          "hidden": {
+            "capture_count": 3,
+            "episode_count": 8,
+            "successful_mean_steps": 24.0,
+            "stall_count": 2,
+            "mean_reward": -9.889999999999999
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 5,
+            "mean_reward": -19.645
+          },
+          "moving": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 17.0,
+            "stall_count": 6,
+            "mean_reward": -11.1
+          },
+          "static": {
+            "capture_count": 3,
+            "episode_count": 8,
+            "successful_mean_steps": 20.333333333333332,
+            "stall_count": 4,
+            "mean_reward": -9.694999999999999
+          }
+        },
+        "initial_id": "ebe03769766f89fe6af3",
+        "final_id": "ebe03769766f89fe6af3",
+        "baselines": {
+          "greedy": {
+            "hidden": {
+              "capture_count": 4,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 6,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 8,
+              "episode_count": 8
+            }
+          },
+          "random": {
+            "hidden": {
+              "capture_count": 0,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 2,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 2,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 2,
+              "episode_count": 8
+            }
+          },
+          "sensor_greedy": {
+            "hidden": {
+              "capture_count": 6,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 6,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 6,
+              "episode_count": 8
+            }
+          }
+        },
+        "rollbacks": 2,
+        "regressions_after_personal_training": 2,
+        "proposals_rejected_for_scenario_loss": 10,
+        "seconds": 2.2197544399999742,
+        "cpu_seconds": 2.204537383,
+        "smith_run_memory": 2,
+        "previous_run_holdout_after_second_run": {
+          "static": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 29.0,
+            "stall_count": 1,
+            "mean_reward": -14.514999999999997
+          },
+          "moving": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 16.0,
+            "stall_count": 4,
+            "mean_reward": -18.62
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 1,
+            "mean_reward": -21.099999999999998
+          },
+          "hidden": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 19.0,
+            "stall_count": 3,
+            "mean_reward": -15.444999999999997
+          }
+        }
+      }
+    ]
+  },
+  {
+    "lineage": 42,
+    "guard": false,
+    "learning_selection": true,
+    "runs": [
+      {
+        "config": {
+          "population": 4,
+          "generations": 2,
+          "episodes": 8,
+          "steps": 32,
+          "size": 8,
+          "seed": 42,
+          "initial_neurons": 32,
+          "max_neurons": 32,
+          "elite": 2,
+          "validation_episodes": 12,
+          "holdout_episodes": 32,
+          "vector_width": 64,
+          "vector_shape": "",
+          "memory_capacity": 64,
+          "experience_capacity": 96,
+          "internal_ticks": 1,
+          "trace_depth": 8,
+          "circuit_plasticity_enabled": true,
+          "contextual_distillation_enabled": true,
+          "minimum_active_neurons": 32,
+          "retention_tasks": 2,
+          "smith_profile": "SMITH",
+          "max_vector_width": 64,
+          "max_scenario_loss": null,
+          "relation_credit_horizon": 0,
+          "select_for_learning": true,
+          "scenario_set": "classic",
+          "novelty_archive_size": 32
+        },
+        "initial": {
+          "hidden": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 19.0,
+            "stall_count": 3,
+            "mean_reward": -15.444999999999997
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 1,
+            "mean_reward": -21.099999999999998
+          },
+          "moving": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 16.0,
+            "stall_count": 4,
+            "mean_reward": -18.62
+          },
+          "static": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 30.0,
+            "stall_count": 3,
+            "mean_reward": -15.064999999999998
+          }
+        },
+        "final": {
+          "hidden": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 19.0,
+            "stall_count": 3,
+            "mean_reward": -15.444999999999997
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 1,
+            "mean_reward": -21.099999999999998
+          },
+          "moving": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 16.0,
+            "stall_count": 4,
+            "mean_reward": -18.62
+          },
+          "static": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 29.0,
+            "stall_count": 1,
+            "mean_reward": -13.674999999999997
+          }
+        },
+        "initial_id": "4d419a101c9fa9600da6",
+        "final_id": "577d73a6198b533e3b30",
+        "baselines": {
+          "greedy": {
+            "hidden": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 5,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 7,
+              "episode_count": 8
+            }
+          },
+          "random": {
+            "hidden": {
+              "capture_count": 0,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 0,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 0,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 3,
+              "episode_count": 8
+            }
+          },
+          "sensor_greedy": {
+            "hidden": {
+              "capture_count": 6,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 6,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 7,
+              "episode_count": 8
+            }
+          }
+        },
+        "rollbacks": 0,
+        "regressions_after_personal_training": 1,
+        "proposals_rejected_for_scenario_loss": 0,
+        "seconds": 1.9019407519999731,
+        "cpu_seconds": 1.8878687109999994,
+        "smith_run_memory": 1
+      },
+      {
+        "config": {
+          "population": 4,
+          "generations": 2,
+          "episodes": 8,
+          "steps": 32,
+          "size": 8,
+          "seed": 43,
+          "initial_neurons": 32,
+          "max_neurons": 32,
+          "elite": 2,
+          "validation_episodes": 12,
+          "holdout_episodes": 32,
+          "vector_width": 64,
+          "vector_shape": "",
+          "memory_capacity": 64,
+          "experience_capacity": 96,
+          "internal_ticks": 1,
+          "trace_depth": 8,
+          "circuit_plasticity_enabled": true,
+          "contextual_distillation_enabled": true,
+          "minimum_active_neurons": 32,
+          "retention_tasks": 2,
+          "smith_profile": "SMITH",
+          "max_vector_width": 64,
+          "max_scenario_loss": null,
+          "relation_credit_horizon": 0,
+          "select_for_learning": true,
+          "scenario_set": "classic",
+          "novelty_archive_size": 32
+        },
+        "initial": {
+          "hidden": {
+            "capture_count": 3,
+            "episode_count": 8,
+            "successful_mean_steps": 24.0,
+            "stall_count": 2,
+            "mean_reward": -9.889999999999999
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 5,
+            "mean_reward": -19.955
+          },
+          "moving": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 17.0,
+            "stall_count": 5,
+            "mean_reward": -12.15
+          },
+          "static": {
+            "capture_count": 3,
+            "episode_count": 8,
+            "successful_mean_steps": 21.0,
+            "stall_count": 1,
+            "mean_reward": -9.659999999999998
+          }
+        },
+        "final": {
+          "hidden": {
+            "capture_count": 3,
+            "episode_count": 8,
+            "successful_mean_steps": 24.0,
+            "stall_count": 2,
+            "mean_reward": -9.889999999999999
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 4,
+            "mean_reward": -19.955
+          },
+          "moving": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 17.0,
+            "stall_count": 5,
+            "mean_reward": -12.735
+          },
+          "static": {
+            "capture_count": 3,
+            "episode_count": 8,
+            "successful_mean_steps": 20.333333333333332,
+            "stall_count": 3,
+            "mean_reward": -9.684999999999999
+          }
+        },
+        "initial_id": "577d73a6198b533e3b30",
+        "final_id": "fa167b0ebf747e3d92fb",
+        "baselines": {
+          "greedy": {
+            "hidden": {
+              "capture_count": 4,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 6,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 8,
+              "episode_count": 8
+            }
+          },
+          "random": {
+            "hidden": {
+              "capture_count": 0,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 2,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 2,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 2,
+              "episode_count": 8
+            }
+          },
+          "sensor_greedy": {
+            "hidden": {
+              "capture_count": 6,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 6,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 6,
+              "episode_count": 8
+            }
+          }
+        },
+        "rollbacks": 0,
+        "regressions_after_personal_training": 2,
+        "proposals_rejected_for_scenario_loss": 0,
+        "seconds": 2.479923367999959,
+        "cpu_seconds": 2.468914076999999,
+        "smith_run_memory": 2,
+        "previous_run_holdout_after_second_run": {
+          "static": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 30.0,
+            "stall_count": 1,
+            "mean_reward": -14.524999999999997
+          },
+          "moving": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 16.0,
+            "stall_count": 4,
+            "mean_reward": -18.62
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 1,
+            "mean_reward": -21.099999999999998
+          },
+          "hidden": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 19.0,
+            "stall_count": 3,
+            "mean_reward": -15.444999999999997
+          }
+        }
+      }
+    ]
+  },
+  {
+    "lineage": 42,
+    "guard": true,
+    "learning_selection": true,
+    "runs": [
+      {
+        "config": {
+          "population": 4,
+          "generations": 2,
+          "episodes": 8,
+          "steps": 32,
+          "size": 8,
+          "seed": 42,
+          "initial_neurons": 32,
+          "max_neurons": 32,
+          "elite": 2,
+          "validation_episodes": 12,
+          "holdout_episodes": 32,
+          "vector_width": 64,
+          "vector_shape": "",
+          "memory_capacity": 64,
+          "experience_capacity": 96,
+          "internal_ticks": 1,
+          "trace_depth": 8,
+          "circuit_plasticity_enabled": true,
+          "contextual_distillation_enabled": true,
+          "minimum_active_neurons": 32,
+          "retention_tasks": 2,
+          "smith_profile": "SMITH",
+          "max_vector_width": 64,
+          "max_scenario_loss": 0,
+          "relation_credit_horizon": 0,
+          "select_for_learning": true,
+          "scenario_set": "classic",
+          "novelty_archive_size": 32
+        },
+        "initial": {
+          "hidden": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 19.0,
+            "stall_count": 3,
+            "mean_reward": -15.444999999999997
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 1,
+            "mean_reward": -21.099999999999998
+          },
+          "moving": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 16.0,
+            "stall_count": 4,
+            "mean_reward": -18.62
+          },
+          "static": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 30.0,
+            "stall_count": 3,
+            "mean_reward": -15.064999999999998
+          }
+        },
+        "final": {
+          "hidden": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 19.0,
+            "stall_count": 3,
+            "mean_reward": -15.444999999999997
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 1,
+            "mean_reward": -21.099999999999998
+          },
+          "moving": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 16.0,
+            "stall_count": 4,
+            "mean_reward": -18.62
+          },
+          "static": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 29.0,
+            "stall_count": 1,
+            "mean_reward": -14.514999999999997
+          }
+        },
+        "initial_id": "4d419a101c9fa9600da6",
+        "final_id": "1f75bc81b88a6ec66e57",
+        "baselines": {
+          "greedy": {
+            "hidden": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 5,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 7,
+              "episode_count": 8
+            }
+          },
+          "random": {
+            "hidden": {
+              "capture_count": 0,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 0,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 0,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 3,
+              "episode_count": 8
+            }
+          },
+          "sensor_greedy": {
+            "hidden": {
+              "capture_count": 6,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 6,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 7,
+              "episode_count": 8
+            }
+          }
+        },
+        "rollbacks": 1,
+        "regressions_after_personal_training": 1,
+        "proposals_rejected_for_scenario_loss": 6,
+        "seconds": 2.034349734000102,
+        "cpu_seconds": 2.0253495850000007,
+        "smith_run_memory": 1
+      },
+      {
+        "config": {
+          "population": 4,
+          "generations": 2,
+          "episodes": 8,
+          "steps": 32,
+          "size": 8,
+          "seed": 43,
+          "initial_neurons": 32,
+          "max_neurons": 32,
+          "elite": 2,
+          "validation_episodes": 12,
+          "holdout_episodes": 32,
+          "vector_width": 64,
+          "vector_shape": "",
+          "memory_capacity": 64,
+          "experience_capacity": 96,
+          "internal_ticks": 1,
+          "trace_depth": 8,
+          "circuit_plasticity_enabled": true,
+          "contextual_distillation_enabled": true,
+          "minimum_active_neurons": 32,
+          "retention_tasks": 2,
+          "smith_profile": "SMITH",
+          "max_vector_width": 64,
+          "max_scenario_loss": 0,
+          "relation_credit_horizon": 0,
+          "select_for_learning": true,
+          "scenario_set": "classic",
+          "novelty_archive_size": 32
+        },
+        "initial": {
+          "hidden": {
+            "capture_count": 3,
+            "episode_count": 8,
+            "successful_mean_steps": 24.0,
+            "stall_count": 2,
+            "mean_reward": -9.889999999999999
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 5,
+            "mean_reward": -19.645
+          },
+          "moving": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 17.0,
+            "stall_count": 6,
+            "mean_reward": -11.1
+          },
+          "static": {
+            "capture_count": 3,
+            "episode_count": 8,
+            "successful_mean_steps": 20.333333333333332,
+            "stall_count": 4,
+            "mean_reward": -9.694999999999999
+          }
+        },
+        "final": {
+          "hidden": {
+            "capture_count": 3,
+            "episode_count": 8,
+            "successful_mean_steps": 24.0,
+            "stall_count": 2,
+            "mean_reward": -9.889999999999999
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 5,
+            "mean_reward": -19.645
+          },
+          "moving": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 17.0,
+            "stall_count": 6,
+            "mean_reward": -11.1
+          },
+          "static": {
+            "capture_count": 3,
+            "episode_count": 8,
+            "successful_mean_steps": 20.333333333333332,
+            "stall_count": 4,
+            "mean_reward": -9.694999999999999
+          }
+        },
+        "initial_id": "1f75bc81b88a6ec66e57",
+        "final_id": "455a7345b7897112b11f",
+        "baselines": {
+          "greedy": {
+            "hidden": {
+              "capture_count": 4,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 6,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 8,
+              "episode_count": 8
+            }
+          },
+          "random": {
+            "hidden": {
+              "capture_count": 0,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 2,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 2,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 2,
+              "episode_count": 8
+            }
+          },
+          "sensor_greedy": {
+            "hidden": {
+              "capture_count": 6,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 6,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 6,
+              "episode_count": 8
+            }
+          }
+        },
+        "rollbacks": 2,
+        "regressions_after_personal_training": 2,
+        "proposals_rejected_for_scenario_loss": 10,
+        "seconds": 2.235519423000028,
+        "cpu_seconds": 2.2298588579999983,
+        "smith_run_memory": 2,
+        "previous_run_holdout_after_second_run": {
+          "static": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 29.0,
+            "stall_count": 1,
+            "mean_reward": -14.514999999999997
+          },
+          "moving": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 16.0,
+            "stall_count": 4,
+            "mean_reward": -18.62
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 1,
+            "mean_reward": -21.099999999999998
+          },
+          "hidden": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 19.0,
+            "stall_count": 3,
+            "mean_reward": -15.444999999999997
+          }
+        }
+      }
+    ]
+  },
+  {
+    "lineage": 117,
+    "guard": false,
+    "learning_selection": false,
+    "runs": [
+      {
+        "config": {
+          "population": 4,
+          "generations": 2,
+          "episodes": 8,
+          "steps": 32,
+          "size": 8,
+          "seed": 117,
+          "initial_neurons": 32,
+          "max_neurons": 32,
+          "elite": 2,
+          "validation_episodes": 12,
+          "holdout_episodes": 32,
+          "vector_width": 64,
+          "vector_shape": "",
+          "memory_capacity": 64,
+          "experience_capacity": 96,
+          "internal_ticks": 1,
+          "trace_depth": 8,
+          "circuit_plasticity_enabled": true,
+          "contextual_distillation_enabled": true,
+          "minimum_active_neurons": 32,
+          "retention_tasks": 2,
+          "smith_profile": "SMITH",
+          "max_vector_width": 64,
+          "max_scenario_loss": null,
+          "relation_credit_horizon": 0,
+          "select_for_learning": false,
+          "scenario_set": "classic",
+          "novelty_archive_size": 32
+        },
+        "initial": {
+          "hidden": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 21.5,
+            "stall_count": 2,
+            "mean_reward": -7.814999999999998
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 3,
+            "mean_reward": -17.109999999999996
+          },
+          "moving": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 21.0,
+            "stall_count": 3,
+            "mean_reward": -13.139999999999999
+          },
+          "static": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 2,
+            "mean_reward": -14.534999999999997
+          }
+        },
+        "final": {
+          "hidden": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 13.0,
+            "stall_count": 2,
+            "mean_reward": -10.704999999999998
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 3,
+            "mean_reward": -16.174999999999997
+          },
+          "moving": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 19.5,
+            "stall_count": 4,
+            "mean_reward": -12.309999999999999
+          },
+          "static": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 1,
+            "mean_reward": -14.024999999999997
+          }
+        },
+        "initial_id": "30af0ae7e46d89fca773",
+        "final_id": "5535da064d875c96722b",
+        "baselines": {
+          "greedy": {
+            "hidden": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 6,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 7,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 7,
+              "episode_count": 8
+            }
+          },
+          "random": {
+            "hidden": {
+              "capture_count": 3,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 2,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 1,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 2,
+              "episode_count": 8
+            }
+          },
+          "sensor_greedy": {
+            "hidden": {
+              "capture_count": 5,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 7,
+              "episode_count": 8
+            }
+          }
+        },
+        "rollbacks": 0,
+        "regressions_after_personal_training": 1,
+        "proposals_rejected_for_scenario_loss": 0,
+        "seconds": 1.8901090709999835,
+        "cpu_seconds": 1.8804725799999993,
+        "smith_run_memory": 1
+      },
+      {
+        "config": {
+          "population": 4,
+          "generations": 2,
+          "episodes": 8,
+          "steps": 32,
+          "size": 8,
+          "seed": 118,
+          "initial_neurons": 32,
+          "max_neurons": 32,
+          "elite": 2,
+          "validation_episodes": 12,
+          "holdout_episodes": 32,
+          "vector_width": 64,
+          "vector_shape": "",
+          "memory_capacity": 64,
+          "experience_capacity": 96,
+          "internal_ticks": 1,
+          "trace_depth": 8,
+          "circuit_plasticity_enabled": true,
+          "contextual_distillation_enabled": true,
+          "minimum_active_neurons": 32,
+          "retention_tasks": 2,
+          "smith_profile": "SMITH",
+          "max_vector_width": 64,
+          "max_scenario_loss": null,
+          "relation_credit_horizon": 0,
+          "select_for_learning": false,
+          "scenario_set": "classic",
+          "novelty_archive_size": 32
+        },
+        "initial": {
+          "hidden": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 10.0,
+            "stall_count": 2,
+            "mean_reward": -9.434999999999997
+          },
+          "maze": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 7.0,
+            "stall_count": 1,
+            "mean_reward": -13.19
+          },
+          "moving": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 9.0,
+            "stall_count": 2,
+            "mean_reward": -12.989999999999998
+          },
+          "static": {
+            "capture_count": 3,
+            "episode_count": 8,
+            "successful_mean_steps": 13.333333333333334,
+            "stall_count": 0,
+            "mean_reward": -5.85
+          }
+        },
+        "final": {
+          "hidden": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 10.0,
+            "stall_count": 2,
+            "mean_reward": -9.434999999999997
+          },
+          "maze": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 7.0,
+            "stall_count": 1,
+            "mean_reward": -13.19
+          },
+          "moving": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 9.0,
+            "stall_count": 2,
+            "mean_reward": -12.989999999999998
+          },
+          "static": {
+            "capture_count": 4,
+            "episode_count": 8,
+            "successful_mean_steps": 16.0,
+            "stall_count": 0,
+            "mean_reward": -2.224999999999999
+          }
+        },
+        "initial_id": "5535da064d875c96722b",
+        "final_id": "6bc8ecc1bc93dd03a9b6",
+        "baselines": {
+          "greedy": {
+            "hidden": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 5,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 8,
+              "episode_count": 8
+            }
+          },
+          "random": {
+            "hidden": {
+              "capture_count": 1,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 1,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 4,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 2,
+              "episode_count": 8
+            }
+          },
+          "sensor_greedy": {
+            "hidden": {
+              "capture_count": 7,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 8,
+              "episode_count": 8
+            }
+          }
+        },
+        "rollbacks": 0,
+        "regressions_after_personal_training": 1,
+        "proposals_rejected_for_scenario_loss": 0,
+        "seconds": 2.507836247,
+        "cpu_seconds": 2.497165559999999,
+        "smith_run_memory": 2,
+        "previous_run_holdout_after_second_run": {
+          "static": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 1,
+            "mean_reward": -13.224999999999998
+          },
+          "moving": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 19.5,
+            "stall_count": 4,
+            "mean_reward": -12.189999999999998
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 3,
+            "mean_reward": -16.174999999999997
+          },
+          "hidden": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 13.0,
+            "stall_count": 2,
+            "mean_reward": -10.704999999999998
+          }
+        }
+      }
+    ]
+  },
+  {
+    "lineage": 117,
+    "guard": true,
+    "learning_selection": false,
+    "runs": [
+      {
+        "config": {
+          "population": 4,
+          "generations": 2,
+          "episodes": 8,
+          "steps": 32,
+          "size": 8,
+          "seed": 117,
+          "initial_neurons": 32,
+          "max_neurons": 32,
+          "elite": 2,
+          "validation_episodes": 12,
+          "holdout_episodes": 32,
+          "vector_width": 64,
+          "vector_shape": "",
+          "memory_capacity": 64,
+          "experience_capacity": 96,
+          "internal_ticks": 1,
+          "trace_depth": 8,
+          "circuit_plasticity_enabled": true,
+          "contextual_distillation_enabled": true,
+          "minimum_active_neurons": 32,
+          "retention_tasks": 2,
+          "smith_profile": "SMITH",
+          "max_vector_width": 64,
+          "max_scenario_loss": 0,
+          "relation_credit_horizon": 0,
+          "select_for_learning": false,
+          "scenario_set": "classic",
+          "novelty_archive_size": 32
+        },
+        "initial": {
+          "hidden": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 21.5,
+            "stall_count": 2,
+            "mean_reward": -7.814999999999998
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 3,
+            "mean_reward": -17.109999999999996
+          },
+          "moving": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 21.0,
+            "stall_count": 3,
+            "mean_reward": -13.139999999999999
+          },
+          "static": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 2,
+            "mean_reward": -14.534999999999997
+          }
+        },
+        "final": {
+          "hidden": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 13.0,
+            "stall_count": 2,
+            "mean_reward": -10.704999999999998
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 3,
+            "mean_reward": -16.174999999999997
+          },
+          "moving": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 19.5,
+            "stall_count": 4,
+            "mean_reward": -12.309999999999999
+          },
+          "static": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 1,
+            "mean_reward": -13.784999999999998
+          }
+        },
+        "initial_id": "30af0ae7e46d89fca773",
+        "final_id": "3f09f4337aba509b1a12",
+        "baselines": {
+          "greedy": {
+            "hidden": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 6,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 7,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 7,
+              "episode_count": 8
+            }
+          },
+          "random": {
+            "hidden": {
+              "capture_count": 3,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 2,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 1,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 2,
+              "episode_count": 8
+            }
+          },
+          "sensor_greedy": {
+            "hidden": {
+              "capture_count": 5,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 7,
+              "episode_count": 8
+            }
+          }
+        },
+        "rollbacks": 1,
+        "regressions_after_personal_training": 1,
+        "proposals_rejected_for_scenario_loss": 5,
+        "seconds": 1.7342458510000824,
+        "cpu_seconds": 1.7280568360000004,
+        "smith_run_memory": 1
+      },
+      {
+        "config": {
+          "population": 4,
+          "generations": 2,
+          "episodes": 8,
+          "steps": 32,
+          "size": 8,
+          "seed": 118,
+          "initial_neurons": 32,
+          "max_neurons": 32,
+          "elite": 2,
+          "validation_episodes": 12,
+          "holdout_episodes": 32,
+          "vector_width": 64,
+          "vector_shape": "",
+          "memory_capacity": 64,
+          "experience_capacity": 96,
+          "internal_ticks": 1,
+          "trace_depth": 8,
+          "circuit_plasticity_enabled": true,
+          "contextual_distillation_enabled": true,
+          "minimum_active_neurons": 32,
+          "retention_tasks": 2,
+          "smith_profile": "SMITH",
+          "max_vector_width": 64,
+          "max_scenario_loss": 0,
+          "relation_credit_horizon": 0,
+          "select_for_learning": false,
+          "scenario_set": "classic",
+          "novelty_archive_size": 32
+        },
+        "initial": {
+          "hidden": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 10.0,
+            "stall_count": 2,
+            "mean_reward": -9.434999999999997
+          },
+          "maze": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 7.0,
+            "stall_count": 1,
+            "mean_reward": -13.19
+          },
+          "moving": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 9.0,
+            "stall_count": 2,
+            "mean_reward": -12.989999999999998
+          },
+          "static": {
+            "capture_count": 3,
+            "episode_count": 8,
+            "successful_mean_steps": 13.333333333333334,
+            "stall_count": 0,
+            "mean_reward": -5.85
+          }
+        },
+        "final": {
+          "hidden": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 10.0,
+            "stall_count": 2,
+            "mean_reward": -9.434999999999997
+          },
+          "maze": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 7.0,
+            "stall_count": 1,
+            "mean_reward": -13.19
+          },
+          "moving": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 9.0,
+            "stall_count": 2,
+            "mean_reward": -12.989999999999998
+          },
+          "static": {
+            "capture_count": 4,
+            "episode_count": 8,
+            "successful_mean_steps": 16.0,
+            "stall_count": 0,
+            "mean_reward": -2.224999999999999
+          }
+        },
+        "initial_id": "3f09f4337aba509b1a12",
+        "final_id": "d70a923b2e31ac4eb18e",
+        "baselines": {
+          "greedy": {
+            "hidden": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 5,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 8,
+              "episode_count": 8
+            }
+          },
+          "random": {
+            "hidden": {
+              "capture_count": 1,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 1,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 4,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 2,
+              "episode_count": 8
+            }
+          },
+          "sensor_greedy": {
+            "hidden": {
+              "capture_count": 7,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 8,
+              "episode_count": 8
+            }
+          }
+        },
+        "rollbacks": 0,
+        "regressions_after_personal_training": 0,
+        "proposals_rejected_for_scenario_loss": 5,
+        "seconds": 2.2382467149999457,
+        "cpu_seconds": 2.2311360980000003,
+        "smith_run_memory": 2,
+        "previous_run_holdout_after_second_run": {
+          "static": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 1,
+            "mean_reward": -13.224999999999998
+          },
+          "moving": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 19.5,
+            "stall_count": 4,
+            "mean_reward": -12.189999999999998
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 3,
+            "mean_reward": -16.174999999999997
+          },
+          "hidden": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 13.0,
+            "stall_count": 2,
+            "mean_reward": -10.704999999999998
+          }
+        }
+      }
+    ]
+  },
+  {
+    "lineage": 117,
+    "guard": false,
+    "learning_selection": true,
+    "runs": [
+      {
+        "config": {
+          "population": 4,
+          "generations": 2,
+          "episodes": 8,
+          "steps": 32,
+          "size": 8,
+          "seed": 117,
+          "initial_neurons": 32,
+          "max_neurons": 32,
+          "elite": 2,
+          "validation_episodes": 12,
+          "holdout_episodes": 32,
+          "vector_width": 64,
+          "vector_shape": "",
+          "memory_capacity": 64,
+          "experience_capacity": 96,
+          "internal_ticks": 1,
+          "trace_depth": 8,
+          "circuit_plasticity_enabled": true,
+          "contextual_distillation_enabled": true,
+          "minimum_active_neurons": 32,
+          "retention_tasks": 2,
+          "smith_profile": "SMITH",
+          "max_vector_width": 64,
+          "max_scenario_loss": null,
+          "relation_credit_horizon": 0,
+          "select_for_learning": true,
+          "scenario_set": "classic",
+          "novelty_archive_size": 32
+        },
+        "initial": {
+          "hidden": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 21.5,
+            "stall_count": 2,
+            "mean_reward": -7.814999999999998
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 3,
+            "mean_reward": -17.109999999999996
+          },
+          "moving": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 21.0,
+            "stall_count": 3,
+            "mean_reward": -13.139999999999999
+          },
+          "static": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 2,
+            "mean_reward": -14.534999999999997
+          }
+        },
+        "final": {
+          "hidden": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 13.0,
+            "stall_count": 2,
+            "mean_reward": -10.704999999999998
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 3,
+            "mean_reward": -16.174999999999997
+          },
+          "moving": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 19.5,
+            "stall_count": 4,
+            "mean_reward": -12.309999999999999
+          },
+          "static": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 1,
+            "mean_reward": -14.024999999999997
+          }
+        },
+        "initial_id": "30af0ae7e46d89fca773",
+        "final_id": "5535da064d875c96722b",
+        "baselines": {
+          "greedy": {
+            "hidden": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 6,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 7,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 7,
+              "episode_count": 8
+            }
+          },
+          "random": {
+            "hidden": {
+              "capture_count": 3,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 2,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 1,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 2,
+              "episode_count": 8
+            }
+          },
+          "sensor_greedy": {
+            "hidden": {
+              "capture_count": 5,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 7,
+              "episode_count": 8
+            }
+          }
+        },
+        "rollbacks": 0,
+        "regressions_after_personal_training": 1,
+        "proposals_rejected_for_scenario_loss": 0,
+        "seconds": 1.8450077019999753,
+        "cpu_seconds": 1.833775425999999,
+        "smith_run_memory": 1
+      },
+      {
+        "config": {
+          "population": 4,
+          "generations": 2,
+          "episodes": 8,
+          "steps": 32,
+          "size": 8,
+          "seed": 118,
+          "initial_neurons": 32,
+          "max_neurons": 32,
+          "elite": 2,
+          "validation_episodes": 12,
+          "holdout_episodes": 32,
+          "vector_width": 64,
+          "vector_shape": "",
+          "memory_capacity": 64,
+          "experience_capacity": 96,
+          "internal_ticks": 1,
+          "trace_depth": 8,
+          "circuit_plasticity_enabled": true,
+          "contextual_distillation_enabled": true,
+          "minimum_active_neurons": 32,
+          "retention_tasks": 2,
+          "smith_profile": "SMITH",
+          "max_vector_width": 64,
+          "max_scenario_loss": null,
+          "relation_credit_horizon": 0,
+          "select_for_learning": true,
+          "scenario_set": "classic",
+          "novelty_archive_size": 32
+        },
+        "initial": {
+          "hidden": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 10.0,
+            "stall_count": 2,
+            "mean_reward": -9.434999999999997
+          },
+          "maze": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 7.0,
+            "stall_count": 1,
+            "mean_reward": -13.19
+          },
+          "moving": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 9.0,
+            "stall_count": 2,
+            "mean_reward": -12.989999999999998
+          },
+          "static": {
+            "capture_count": 3,
+            "episode_count": 8,
+            "successful_mean_steps": 13.333333333333334,
+            "stall_count": 0,
+            "mean_reward": -5.85
+          }
+        },
+        "final": {
+          "hidden": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 10.0,
+            "stall_count": 2,
+            "mean_reward": -9.434999999999997
+          },
+          "maze": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 7.0,
+            "stall_count": 1,
+            "mean_reward": -13.19
+          },
+          "moving": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 9.0,
+            "stall_count": 2,
+            "mean_reward": -12.989999999999998
+          },
+          "static": {
+            "capture_count": 4,
+            "episode_count": 8,
+            "successful_mean_steps": 16.0,
+            "stall_count": 0,
+            "mean_reward": -2.224999999999999
+          }
+        },
+        "initial_id": "5535da064d875c96722b",
+        "final_id": "6bc8ecc1bc93dd03a9b6",
+        "baselines": {
+          "greedy": {
+            "hidden": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 5,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 8,
+              "episode_count": 8
+            }
+          },
+          "random": {
+            "hidden": {
+              "capture_count": 1,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 1,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 4,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 2,
+              "episode_count": 8
+            }
+          },
+          "sensor_greedy": {
+            "hidden": {
+              "capture_count": 7,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 8,
+              "episode_count": 8
+            }
+          }
+        },
+        "rollbacks": 0,
+        "regressions_after_personal_training": 1,
+        "proposals_rejected_for_scenario_loss": 0,
+        "seconds": 2.3961642040000015,
+        "cpu_seconds": 2.3922267480000023,
+        "smith_run_memory": 2,
+        "previous_run_holdout_after_second_run": {
+          "static": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 1,
+            "mean_reward": -13.224999999999998
+          },
+          "moving": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 19.5,
+            "stall_count": 4,
+            "mean_reward": -12.189999999999998
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 3,
+            "mean_reward": -16.174999999999997
+          },
+          "hidden": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 13.0,
+            "stall_count": 2,
+            "mean_reward": -10.704999999999998
+          }
+        }
+      }
+    ]
+  },
+  {
+    "lineage": 117,
+    "guard": true,
+    "learning_selection": true,
+    "runs": [
+      {
+        "config": {
+          "population": 4,
+          "generations": 2,
+          "episodes": 8,
+          "steps": 32,
+          "size": 8,
+          "seed": 117,
+          "initial_neurons": 32,
+          "max_neurons": 32,
+          "elite": 2,
+          "validation_episodes": 12,
+          "holdout_episodes": 32,
+          "vector_width": 64,
+          "vector_shape": "",
+          "memory_capacity": 64,
+          "experience_capacity": 96,
+          "internal_ticks": 1,
+          "trace_depth": 8,
+          "circuit_plasticity_enabled": true,
+          "contextual_distillation_enabled": true,
+          "minimum_active_neurons": 32,
+          "retention_tasks": 2,
+          "smith_profile": "SMITH",
+          "max_vector_width": 64,
+          "max_scenario_loss": 0,
+          "relation_credit_horizon": 0,
+          "select_for_learning": true,
+          "scenario_set": "classic",
+          "novelty_archive_size": 32
+        },
+        "initial": {
+          "hidden": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 21.5,
+            "stall_count": 2,
+            "mean_reward": -7.814999999999998
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 3,
+            "mean_reward": -17.109999999999996
+          },
+          "moving": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 21.0,
+            "stall_count": 3,
+            "mean_reward": -13.139999999999999
+          },
+          "static": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 2,
+            "mean_reward": -14.534999999999997
+          }
+        },
+        "final": {
+          "hidden": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 13.0,
+            "stall_count": 2,
+            "mean_reward": -10.704999999999998
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 3,
+            "mean_reward": -16.174999999999997
+          },
+          "moving": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 19.5,
+            "stall_count": 4,
+            "mean_reward": -12.309999999999999
+          },
+          "static": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 1,
+            "mean_reward": -13.784999999999998
+          }
+        },
+        "initial_id": "30af0ae7e46d89fca773",
+        "final_id": "3f09f4337aba509b1a12",
+        "baselines": {
+          "greedy": {
+            "hidden": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 6,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 7,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 7,
+              "episode_count": 8
+            }
+          },
+          "random": {
+            "hidden": {
+              "capture_count": 3,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 2,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 1,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 2,
+              "episode_count": 8
+            }
+          },
+          "sensor_greedy": {
+            "hidden": {
+              "capture_count": 5,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 7,
+              "episode_count": 8
+            }
+          }
+        },
+        "rollbacks": 1,
+        "regressions_after_personal_training": 1,
+        "proposals_rejected_for_scenario_loss": 5,
+        "seconds": 2.1782287730000007,
+        "cpu_seconds": 2.1742671770000044,
+        "smith_run_memory": 1
+      },
+      {
+        "config": {
+          "population": 4,
+          "generations": 2,
+          "episodes": 8,
+          "steps": 32,
+          "size": 8,
+          "seed": 118,
+          "initial_neurons": 32,
+          "max_neurons": 32,
+          "elite": 2,
+          "validation_episodes": 12,
+          "holdout_episodes": 32,
+          "vector_width": 64,
+          "vector_shape": "",
+          "memory_capacity": 64,
+          "experience_capacity": 96,
+          "internal_ticks": 1,
+          "trace_depth": 8,
+          "circuit_plasticity_enabled": true,
+          "contextual_distillation_enabled": true,
+          "minimum_active_neurons": 32,
+          "retention_tasks": 2,
+          "smith_profile": "SMITH",
+          "max_vector_width": 64,
+          "max_scenario_loss": 0,
+          "relation_credit_horizon": 0,
+          "select_for_learning": true,
+          "scenario_set": "classic",
+          "novelty_archive_size": 32
+        },
+        "initial": {
+          "hidden": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 10.0,
+            "stall_count": 2,
+            "mean_reward": -9.434999999999997
+          },
+          "maze": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 7.0,
+            "stall_count": 1,
+            "mean_reward": -13.19
+          },
+          "moving": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 9.0,
+            "stall_count": 2,
+            "mean_reward": -12.989999999999998
+          },
+          "static": {
+            "capture_count": 3,
+            "episode_count": 8,
+            "successful_mean_steps": 13.333333333333334,
+            "stall_count": 0,
+            "mean_reward": -5.85
+          }
+        },
+        "final": {
+          "hidden": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 10.0,
+            "stall_count": 2,
+            "mean_reward": -9.434999999999997
+          },
+          "maze": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 7.0,
+            "stall_count": 1,
+            "mean_reward": -13.19
+          },
+          "moving": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 9.0,
+            "stall_count": 2,
+            "mean_reward": -12.989999999999998
+          },
+          "static": {
+            "capture_count": 4,
+            "episode_count": 8,
+            "successful_mean_steps": 16.0,
+            "stall_count": 0,
+            "mean_reward": -2.224999999999999
+          }
+        },
+        "initial_id": "3f09f4337aba509b1a12",
+        "final_id": "d70a923b2e31ac4eb18e",
+        "baselines": {
+          "greedy": {
+            "hidden": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 5,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 8,
+              "episode_count": 8
+            }
+          },
+          "random": {
+            "hidden": {
+              "capture_count": 1,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 1,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 4,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 2,
+              "episode_count": 8
+            }
+          },
+          "sensor_greedy": {
+            "hidden": {
+              "capture_count": 7,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 8,
+              "episode_count": 8
+            }
+          }
+        },
+        "rollbacks": 0,
+        "regressions_after_personal_training": 0,
+        "proposals_rejected_for_scenario_loss": 5,
+        "seconds": 2.607115113999953,
+        "cpu_seconds": 2.6003254889999994,
+        "smith_run_memory": 2,
+        "previous_run_holdout_after_second_run": {
+          "static": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 1,
+            "mean_reward": -13.224999999999998
+          },
+          "moving": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 19.5,
+            "stall_count": 4,
+            "mean_reward": -12.189999999999998
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 3,
+            "mean_reward": -16.174999999999997
+          },
+          "hidden": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 13.0,
+            "stall_count": 2,
+            "mean_reward": -10.704999999999998
+          }
+        }
+      }
+    ]
+  },
+  {
+    "lineage": 809,
+    "guard": false,
+    "learning_selection": false,
+    "runs": [
+      {
+        "config": {
+          "population": 4,
+          "generations": 2,
+          "episodes": 8,
+          "steps": 32,
+          "size": 8,
+          "seed": 809,
+          "initial_neurons": 32,
+          "max_neurons": 32,
+          "elite": 2,
+          "validation_episodes": 12,
+          "holdout_episodes": 32,
+          "vector_width": 64,
+          "vector_shape": "",
+          "memory_capacity": 64,
+          "experience_capacity": 96,
+          "internal_ticks": 1,
+          "trace_depth": 8,
+          "circuit_plasticity_enabled": true,
+          "contextual_distillation_enabled": true,
+          "minimum_active_neurons": 32,
+          "retention_tasks": 2,
+          "smith_profile": "SMITH",
+          "max_vector_width": 64,
+          "max_scenario_loss": null,
+          "relation_credit_horizon": 0,
+          "select_for_learning": false,
+          "scenario_set": "classic",
+          "novelty_archive_size": 32
+        },
+        "initial": {
+          "hidden": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 5,
+            "mean_reward": -21.58
+          },
+          "maze": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 27.0,
+            "stall_count": 2,
+            "mean_reward": -16.835
+          },
+          "moving": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 12.0,
+            "stall_count": 5,
+            "mean_reward": -13.645
+          },
+          "static": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 3,
+            "mean_reward": -21.14
+          }
+        },
+        "final": {
+          "hidden": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 5,
+            "mean_reward": -18.819999999999997
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 3,
+            "mean_reward": -15.304999999999996
+          },
+          "moving": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 6.5,
+            "stall_count": 6,
+            "mean_reward": -10.454999999999998
+          },
+          "static": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 3,
+            "mean_reward": -18.44
+          }
+        },
+        "initial_id": "1522d64fb4ffb8727185",
+        "final_id": "56911d464bdf10534b16",
+        "baselines": {
+          "greedy": {
+            "hidden": {
+              "capture_count": 5,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 6,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 7,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 7,
+              "episode_count": 8
+            }
+          },
+          "random": {
+            "hidden": {
+              "capture_count": 1,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 1,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 3,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 2,
+              "episode_count": 8
+            }
+          },
+          "sensor_greedy": {
+            "hidden": {
+              "capture_count": 4,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 7,
+              "episode_count": 8
+            }
+          }
+        },
+        "rollbacks": 0,
+        "regressions_after_personal_training": 0,
+        "proposals_rejected_for_scenario_loss": 0,
+        "seconds": 1.8941889410000385,
+        "cpu_seconds": 1.8907227850000012,
+        "smith_run_memory": 1
+      },
+      {
+        "config": {
+          "population": 4,
+          "generations": 2,
+          "episodes": 8,
+          "steps": 32,
+          "size": 8,
+          "seed": 810,
+          "initial_neurons": 32,
+          "max_neurons": 32,
+          "elite": 2,
+          "validation_episodes": 12,
+          "holdout_episodes": 32,
+          "vector_width": 64,
+          "vector_shape": "",
+          "memory_capacity": 64,
+          "experience_capacity": 96,
+          "internal_ticks": 1,
+          "trace_depth": 8,
+          "circuit_plasticity_enabled": true,
+          "contextual_distillation_enabled": true,
+          "minimum_active_neurons": 32,
+          "retention_tasks": 2,
+          "smith_profile": "SMITH",
+          "max_vector_width": 64,
+          "max_scenario_loss": null,
+          "relation_credit_horizon": 0,
+          "select_for_learning": false,
+          "scenario_set": "classic",
+          "novelty_archive_size": 32
+        },
+        "initial": {
+          "hidden": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 18.5,
+            "stall_count": 0,
+            "mean_reward": -12.159999999999998
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 3,
+            "mean_reward": -17.644999999999996
+          },
+          "moving": {
+            "capture_count": 3,
+            "episode_count": 8,
+            "successful_mean_steps": 11.0,
+            "stall_count": 4,
+            "mean_reward": -4.789999999999999
+          },
+          "static": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 4,
+            "mean_reward": -17.095
+          }
+        },
+        "final": {
+          "hidden": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 18.5,
+            "stall_count": 0,
+            "mean_reward": -12.159999999999998
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 3,
+            "mean_reward": -17.644999999999996
+          },
+          "moving": {
+            "capture_count": 3,
+            "episode_count": 8,
+            "successful_mean_steps": 11.0,
+            "stall_count": 4,
+            "mean_reward": -4.789999999999999
+          },
+          "static": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 4,
+            "mean_reward": -17.095
+          }
+        },
+        "initial_id": "56911d464bdf10534b16",
+        "final_id": "9afd5e7b3554a73501be",
+        "baselines": {
+          "greedy": {
+            "hidden": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 7,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 7,
+              "episode_count": 8
+            }
+          },
+          "random": {
+            "hidden": {
+              "capture_count": 2,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 3,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 3,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 1,
+              "episode_count": 8
+            }
+          },
+          "sensor_greedy": {
+            "hidden": {
+              "capture_count": 6,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 7,
+              "episode_count": 8
+            }
+          }
+        },
+        "rollbacks": 0,
+        "regressions_after_personal_training": 1,
+        "proposals_rejected_for_scenario_loss": 0,
+        "seconds": 2.324462718999939,
+        "cpu_seconds": 2.3167808789999995,
+        "smith_run_memory": 2,
+        "previous_run_holdout_after_second_run": {
+          "static": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 2,
+            "mean_reward": -19.7
+          },
+          "moving": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 6.5,
+            "stall_count": 5,
+            "mean_reward": -9.995
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 3,
+            "mean_reward": -15.304999999999996
+          },
+          "hidden": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 5,
+            "mean_reward": -18.819999999999997
+          }
+        }
+      }
+    ]
+  },
+  {
+    "lineage": 809,
+    "guard": true,
+    "learning_selection": false,
+    "runs": [
+      {
+        "config": {
+          "population": 4,
+          "generations": 2,
+          "episodes": 8,
+          "steps": 32,
+          "size": 8,
+          "seed": 809,
+          "initial_neurons": 32,
+          "max_neurons": 32,
+          "elite": 2,
+          "validation_episodes": 12,
+          "holdout_episodes": 32,
+          "vector_width": 64,
+          "vector_shape": "",
+          "memory_capacity": 64,
+          "experience_capacity": 96,
+          "internal_ticks": 1,
+          "trace_depth": 8,
+          "circuit_plasticity_enabled": true,
+          "contextual_distillation_enabled": true,
+          "minimum_active_neurons": 32,
+          "retention_tasks": 2,
+          "smith_profile": "SMITH",
+          "max_vector_width": 64,
+          "max_scenario_loss": 0,
+          "relation_credit_horizon": 0,
+          "select_for_learning": false,
+          "scenario_set": "classic",
+          "novelty_archive_size": 32
+        },
+        "initial": {
+          "hidden": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 5,
+            "mean_reward": -21.58
+          },
+          "maze": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 27.0,
+            "stall_count": 2,
+            "mean_reward": -16.835
+          },
+          "moving": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 12.0,
+            "stall_count": 5,
+            "mean_reward": -13.645
+          },
+          "static": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 3,
+            "mean_reward": -21.14
+          }
+        },
+        "final": {
+          "hidden": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 5,
+            "mean_reward": -18.819999999999997
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 3,
+            "mean_reward": -15.304999999999996
+          },
+          "moving": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 6.5,
+            "stall_count": 6,
+            "mean_reward": -10.454999999999998
+          },
+          "static": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 3,
+            "mean_reward": -18.44
+          }
+        },
+        "initial_id": "1522d64fb4ffb8727185",
+        "final_id": "38eaa21b0e067b101362",
+        "baselines": {
+          "greedy": {
+            "hidden": {
+              "capture_count": 5,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 6,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 7,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 7,
+              "episode_count": 8
+            }
+          },
+          "random": {
+            "hidden": {
+              "capture_count": 1,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 1,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 3,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 2,
+              "episode_count": 8
+            }
+          },
+          "sensor_greedy": {
+            "hidden": {
+              "capture_count": 4,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 7,
+              "episode_count": 8
+            }
+          }
+        },
+        "rollbacks": 0,
+        "regressions_after_personal_training": 0,
+        "proposals_rejected_for_scenario_loss": 0,
+        "seconds": 1.8317898049999712,
+        "cpu_seconds": 1.8240060830000004,
+        "smith_run_memory": 1
+      },
+      {
+        "config": {
+          "population": 4,
+          "generations": 2,
+          "episodes": 8,
+          "steps": 32,
+          "size": 8,
+          "seed": 810,
+          "initial_neurons": 32,
+          "max_neurons": 32,
+          "elite": 2,
+          "validation_episodes": 12,
+          "holdout_episodes": 32,
+          "vector_width": 64,
+          "vector_shape": "",
+          "memory_capacity": 64,
+          "experience_capacity": 96,
+          "internal_ticks": 1,
+          "trace_depth": 8,
+          "circuit_plasticity_enabled": true,
+          "contextual_distillation_enabled": true,
+          "minimum_active_neurons": 32,
+          "retention_tasks": 2,
+          "smith_profile": "SMITH",
+          "max_vector_width": 64,
+          "max_scenario_loss": 0,
+          "relation_credit_horizon": 0,
+          "select_for_learning": false,
+          "scenario_set": "classic",
+          "novelty_archive_size": 32
+        },
+        "initial": {
+          "hidden": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 18.5,
+            "stall_count": 0,
+            "mean_reward": -12.159999999999998
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 3,
+            "mean_reward": -17.644999999999996
+          },
+          "moving": {
+            "capture_count": 3,
+            "episode_count": 8,
+            "successful_mean_steps": 11.0,
+            "stall_count": 4,
+            "mean_reward": -4.789999999999999
+          },
+          "static": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 4,
+            "mean_reward": -17.095
+          }
+        },
+        "final": {
+          "hidden": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 18.5,
+            "stall_count": 0,
+            "mean_reward": -12.159999999999998
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 3,
+            "mean_reward": -17.644999999999996
+          },
+          "moving": {
+            "capture_count": 3,
+            "episode_count": 8,
+            "successful_mean_steps": 11.0,
+            "stall_count": 4,
+            "mean_reward": -4.789999999999999
+          },
+          "static": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 4,
+            "mean_reward": -17.575
+          }
+        },
+        "initial_id": "38eaa21b0e067b101362",
+        "final_id": "c24ed4c7480acd9bf2da",
+        "baselines": {
+          "greedy": {
+            "hidden": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 7,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 7,
+              "episode_count": 8
+            }
+          },
+          "random": {
+            "hidden": {
+              "capture_count": 2,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 3,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 3,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 1,
+              "episode_count": 8
+            }
+          },
+          "sensor_greedy": {
+            "hidden": {
+              "capture_count": 6,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 7,
+              "episode_count": 8
+            }
+          }
+        },
+        "rollbacks": 1,
+        "regressions_after_personal_training": 1,
+        "proposals_rejected_for_scenario_loss": 5,
+        "seconds": 2.5054479100000435,
+        "cpu_seconds": 2.5024487949999994,
+        "smith_run_memory": 2,
+        "previous_run_holdout_after_second_run": {
+          "static": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 3,
+            "mean_reward": -18.44
+          },
+          "moving": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 6.5,
+            "stall_count": 5,
+            "mean_reward": -9.995
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 3,
+            "mean_reward": -15.304999999999996
+          },
+          "hidden": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 5,
+            "mean_reward": -18.819999999999997
+          }
+        }
+      }
+    ]
+  },
+  {
+    "lineage": 809,
+    "guard": false,
+    "learning_selection": true,
+    "runs": [
+      {
+        "config": {
+          "population": 4,
+          "generations": 2,
+          "episodes": 8,
+          "steps": 32,
+          "size": 8,
+          "seed": 809,
+          "initial_neurons": 32,
+          "max_neurons": 32,
+          "elite": 2,
+          "validation_episodes": 12,
+          "holdout_episodes": 32,
+          "vector_width": 64,
+          "vector_shape": "",
+          "memory_capacity": 64,
+          "experience_capacity": 96,
+          "internal_ticks": 1,
+          "trace_depth": 8,
+          "circuit_plasticity_enabled": true,
+          "contextual_distillation_enabled": true,
+          "minimum_active_neurons": 32,
+          "retention_tasks": 2,
+          "smith_profile": "SMITH",
+          "max_vector_width": 64,
+          "max_scenario_loss": null,
+          "relation_credit_horizon": 0,
+          "select_for_learning": true,
+          "scenario_set": "classic",
+          "novelty_archive_size": 32
+        },
+        "initial": {
+          "hidden": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 5,
+            "mean_reward": -21.58
+          },
+          "maze": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 27.0,
+            "stall_count": 2,
+            "mean_reward": -16.835
+          },
+          "moving": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 12.0,
+            "stall_count": 5,
+            "mean_reward": -13.645
+          },
+          "static": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 3,
+            "mean_reward": -21.14
+          }
+        },
+        "final": {
+          "hidden": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 5,
+            "mean_reward": -18.819999999999997
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 3,
+            "mean_reward": -15.304999999999996
+          },
+          "moving": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 6.5,
+            "stall_count": 6,
+            "mean_reward": -10.454999999999998
+          },
+          "static": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 3,
+            "mean_reward": -18.44
+          }
+        },
+        "initial_id": "1522d64fb4ffb8727185",
+        "final_id": "56911d464bdf10534b16",
+        "baselines": {
+          "greedy": {
+            "hidden": {
+              "capture_count": 5,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 6,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 7,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 7,
+              "episode_count": 8
+            }
+          },
+          "random": {
+            "hidden": {
+              "capture_count": 1,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 1,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 3,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 2,
+              "episode_count": 8
+            }
+          },
+          "sensor_greedy": {
+            "hidden": {
+              "capture_count": 4,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 7,
+              "episode_count": 8
+            }
+          }
+        },
+        "rollbacks": 0,
+        "regressions_after_personal_training": 0,
+        "proposals_rejected_for_scenario_loss": 0,
+        "seconds": 2.0074792609999577,
+        "cpu_seconds": 2.0053610499999976,
+        "smith_run_memory": 1
+      },
+      {
+        "config": {
+          "population": 4,
+          "generations": 2,
+          "episodes": 8,
+          "steps": 32,
+          "size": 8,
+          "seed": 810,
+          "initial_neurons": 32,
+          "max_neurons": 32,
+          "elite": 2,
+          "validation_episodes": 12,
+          "holdout_episodes": 32,
+          "vector_width": 64,
+          "vector_shape": "",
+          "memory_capacity": 64,
+          "experience_capacity": 96,
+          "internal_ticks": 1,
+          "trace_depth": 8,
+          "circuit_plasticity_enabled": true,
+          "contextual_distillation_enabled": true,
+          "minimum_active_neurons": 32,
+          "retention_tasks": 2,
+          "smith_profile": "SMITH",
+          "max_vector_width": 64,
+          "max_scenario_loss": null,
+          "relation_credit_horizon": 0,
+          "select_for_learning": true,
+          "scenario_set": "classic",
+          "novelty_archive_size": 32
+        },
+        "initial": {
+          "hidden": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 18.5,
+            "stall_count": 0,
+            "mean_reward": -12.159999999999998
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 3,
+            "mean_reward": -17.644999999999996
+          },
+          "moving": {
+            "capture_count": 3,
+            "episode_count": 8,
+            "successful_mean_steps": 11.0,
+            "stall_count": 4,
+            "mean_reward": -4.789999999999999
+          },
+          "static": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 4,
+            "mean_reward": -17.095
+          }
+        },
+        "final": {
+          "hidden": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 18.5,
+            "stall_count": 0,
+            "mean_reward": -12.159999999999998
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 3,
+            "mean_reward": -17.644999999999996
+          },
+          "moving": {
+            "capture_count": 3,
+            "episode_count": 8,
+            "successful_mean_steps": 11.0,
+            "stall_count": 4,
+            "mean_reward": -4.789999999999999
+          },
+          "static": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 4,
+            "mean_reward": -17.095
+          }
+        },
+        "initial_id": "56911d464bdf10534b16",
+        "final_id": "9afd5e7b3554a73501be",
+        "baselines": {
+          "greedy": {
+            "hidden": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 7,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 7,
+              "episode_count": 8
+            }
+          },
+          "random": {
+            "hidden": {
+              "capture_count": 2,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 3,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 3,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 1,
+              "episode_count": 8
+            }
+          },
+          "sensor_greedy": {
+            "hidden": {
+              "capture_count": 6,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 7,
+              "episode_count": 8
+            }
+          }
+        },
+        "rollbacks": 0,
+        "regressions_after_personal_training": 1,
+        "proposals_rejected_for_scenario_loss": 0,
+        "seconds": 2.8098671269999613,
+        "cpu_seconds": 2.801628370000003,
+        "smith_run_memory": 2,
+        "previous_run_holdout_after_second_run": {
+          "static": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 2,
+            "mean_reward": -19.7
+          },
+          "moving": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 6.5,
+            "stall_count": 5,
+            "mean_reward": -9.995
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 3,
+            "mean_reward": -15.304999999999996
+          },
+          "hidden": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 5,
+            "mean_reward": -18.819999999999997
+          }
+        }
+      }
+    ]
+  },
+  {
+    "lineage": 809,
+    "guard": true,
+    "learning_selection": true,
+    "runs": [
+      {
+        "config": {
+          "population": 4,
+          "generations": 2,
+          "episodes": 8,
+          "steps": 32,
+          "size": 8,
+          "seed": 809,
+          "initial_neurons": 32,
+          "max_neurons": 32,
+          "elite": 2,
+          "validation_episodes": 12,
+          "holdout_episodes": 32,
+          "vector_width": 64,
+          "vector_shape": "",
+          "memory_capacity": 64,
+          "experience_capacity": 96,
+          "internal_ticks": 1,
+          "trace_depth": 8,
+          "circuit_plasticity_enabled": true,
+          "contextual_distillation_enabled": true,
+          "minimum_active_neurons": 32,
+          "retention_tasks": 2,
+          "smith_profile": "SMITH",
+          "max_vector_width": 64,
+          "max_scenario_loss": 0,
+          "relation_credit_horizon": 0,
+          "select_for_learning": true,
+          "scenario_set": "classic",
+          "novelty_archive_size": 32
+        },
+        "initial": {
+          "hidden": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 5,
+            "mean_reward": -21.58
+          },
+          "maze": {
+            "capture_count": 1,
+            "episode_count": 8,
+            "successful_mean_steps": 27.0,
+            "stall_count": 2,
+            "mean_reward": -16.835
+          },
+          "moving": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 12.0,
+            "stall_count": 5,
+            "mean_reward": -13.645
+          },
+          "static": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 3,
+            "mean_reward": -21.14
+          }
+        },
+        "final": {
+          "hidden": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 5,
+            "mean_reward": -18.819999999999997
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 3,
+            "mean_reward": -15.304999999999996
+          },
+          "moving": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 6.5,
+            "stall_count": 6,
+            "mean_reward": -10.454999999999998
+          },
+          "static": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 3,
+            "mean_reward": -18.44
+          }
+        },
+        "initial_id": "1522d64fb4ffb8727185",
+        "final_id": "38eaa21b0e067b101362",
+        "baselines": {
+          "greedy": {
+            "hidden": {
+              "capture_count": 5,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 6,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 7,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 7,
+              "episode_count": 8
+            }
+          },
+          "random": {
+            "hidden": {
+              "capture_count": 1,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 1,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 3,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 2,
+              "episode_count": 8
+            }
+          },
+          "sensor_greedy": {
+            "hidden": {
+              "capture_count": 4,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 7,
+              "episode_count": 8
+            }
+          }
+        },
+        "rollbacks": 0,
+        "regressions_after_personal_training": 0,
+        "proposals_rejected_for_scenario_loss": 0,
+        "seconds": 2.129263911999942,
+        "cpu_seconds": 2.117350727999998,
+        "smith_run_memory": 1
+      },
+      {
+        "config": {
+          "population": 4,
+          "generations": 2,
+          "episodes": 8,
+          "steps": 32,
+          "size": 8,
+          "seed": 810,
+          "initial_neurons": 32,
+          "max_neurons": 32,
+          "elite": 2,
+          "validation_episodes": 12,
+          "holdout_episodes": 32,
+          "vector_width": 64,
+          "vector_shape": "",
+          "memory_capacity": 64,
+          "experience_capacity": 96,
+          "internal_ticks": 1,
+          "trace_depth": 8,
+          "circuit_plasticity_enabled": true,
+          "contextual_distillation_enabled": true,
+          "minimum_active_neurons": 32,
+          "retention_tasks": 2,
+          "smith_profile": "SMITH",
+          "max_vector_width": 64,
+          "max_scenario_loss": 0,
+          "relation_credit_horizon": 0,
+          "select_for_learning": true,
+          "scenario_set": "classic",
+          "novelty_archive_size": 32
+        },
+        "initial": {
+          "hidden": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 18.5,
+            "stall_count": 0,
+            "mean_reward": -12.159999999999998
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 3,
+            "mean_reward": -17.644999999999996
+          },
+          "moving": {
+            "capture_count": 3,
+            "episode_count": 8,
+            "successful_mean_steps": 11.0,
+            "stall_count": 4,
+            "mean_reward": -4.789999999999999
+          },
+          "static": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 4,
+            "mean_reward": -17.095
+          }
+        },
+        "final": {
+          "hidden": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 18.5,
+            "stall_count": 0,
+            "mean_reward": -12.159999999999998
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 3,
+            "mean_reward": -17.644999999999996
+          },
+          "moving": {
+            "capture_count": 3,
+            "episode_count": 8,
+            "successful_mean_steps": 11.0,
+            "stall_count": 4,
+            "mean_reward": -4.789999999999999
+          },
+          "static": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 4,
+            "mean_reward": -17.575
+          }
+        },
+        "initial_id": "38eaa21b0e067b101362",
+        "final_id": "c24ed4c7480acd9bf2da",
+        "baselines": {
+          "greedy": {
+            "hidden": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 7,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 7,
+              "episode_count": 8
+            }
+          },
+          "random": {
+            "hidden": {
+              "capture_count": 2,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 3,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 3,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 1,
+              "episode_count": 8
+            }
+          },
+          "sensor_greedy": {
+            "hidden": {
+              "capture_count": 6,
+              "episode_count": 8
+            },
+            "maze": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "moving": {
+              "capture_count": 8,
+              "episode_count": 8
+            },
+            "static": {
+              "capture_count": 7,
+              "episode_count": 8
+            }
+          }
+        },
+        "rollbacks": 1,
+        "regressions_after_personal_training": 1,
+        "proposals_rejected_for_scenario_loss": 3,
+        "seconds": 2.8043336929999896,
+        "cpu_seconds": 2.7959937199999985,
+        "smith_run_memory": 2,
+        "previous_run_holdout_after_second_run": {
+          "static": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 3,
+            "mean_reward": -18.44
+          },
+          "moving": {
+            "capture_count": 2,
+            "episode_count": 8,
+            "successful_mean_steps": 6.5,
+            "stall_count": 5,
+            "mean_reward": -9.995
+          },
+          "maze": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 3,
+            "mean_reward": -15.304999999999996
+          },
+          "hidden": {
+            "capture_count": 0,
+            "episode_count": 8,
+            "successful_mean_steps": null,
+            "stall_count": 5,
+            "mean_reward": -18.819999999999997
+          }
+        }
+      }
+    ]
+  }
+]

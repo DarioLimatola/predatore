@@ -4,6 +4,7 @@ Additional evaluations use fresh clones. Their results never enter ranking,
 mutation, archive or compression. Monitoring adds measured work, not knowledge.
 """
 from pathlib import Path
+from math import ceil
 import time
 from .boolean_net import BooleanNet
 from .vault import read_json, atomic_json, append_jsonl
@@ -36,10 +37,10 @@ class ProgressMonitor:
         c=self.config
         from .evaluation import baseline_suite
         self.suites={split:load_suites(self.folder,split) for split in ('train','validation')}
-        self.counts={'train':max(1,(c.episodes+3)//4),
-                     'validation':max(1,(c.validation_episodes+3)//4)}
+        self.counts={'train':max(1,ceil(c.episodes/len(self.suites['train']))),
+                     'validation':max(1,ceil(c.validation_episodes/len(self.suites['validation'])))}
         self.baselines={split:{name:baseline_suite(name,suites,c.seed,split,self.counts[split],c.steps)
-                              for name in ('random','greedy')} for split,suites in self.suites.items()}
+                              for name in ('random','sensor_greedy','greedy')} for split,suites in self.suites.items()}
         path=self.folder/'monitor/history.json'
         try:self.history=[r for r in read_json(path) if r['generation']<generation]
         except (OSError,ValueError,KeyError,TypeError):self.history=[]
@@ -56,7 +57,7 @@ class ProgressMonitor:
                 from .evaluation import baseline_suite
                 c=self.config
                 self.baselines['train']={k:baseline_suite(k,self.training_suites,c.seed,'train',self.counts['train'],c.steps)
-                                         for k in ('random','greedy')}
+                                         for k in ('random','sensor_greedy','greedy')}
             snapshot={'generation':generation,'train':summary,'baselines':self.baselines,
                       'monitor_every':self.every,'monitor_seconds':self.seconds,
                       'note':'Addestramento/validazione; holdout riservato alla fine. Copie adattive isolate; nessun feedback delle prove al training.'}

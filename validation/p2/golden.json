@@ -1,0 +1,974 @@
+{
+  "source_revision": "8f724235accc041c9e11c700786ac55cec9e3123",
+  "cases": [
+    {
+      "name": "static-42",
+      "scenario": "static",
+      "network_seed": 42,
+      "neurons": 32,
+      "ticks": 1,
+      "memory": true,
+      "visibility": 6,
+      "moving": false,
+      "encoding": "mixed",
+      "seed": 27042,
+      "steps": 60,
+      "map": {
+        "version": 1,
+        "name": "training",
+        "size": 8,
+        "density": 0.078125,
+        "requested_density": 0.06,
+        "seed": 42,
+        "obstacles": [
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            1,
+            5
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            4,
+            1
+          ]
+        ]
+      },
+      "mutated_masks": false,
+      "observations": [
+        7136,
+        23520,
+        23520,
+        23520,
+        23520,
+        23520,
+        23520,
+        23520,
+        23520,
+        23520,
+        23520,
+        23520,
+        23520,
+        23520,
+        23520,
+        23520,
+        23520,
+        23520,
+        23520,
+        23520
+      ],
+      "states_sha256": "4dbcc49e4465270bea65e5c4194b0b0a8b8b81a99890ecde9eddc8d888959100",
+      "trajectory_sha256": "68d9aee083f0b419f826f34a53976e8260c4c53f40a6ff5fc2fd3005f913f542",
+      "metrics": [
+        -22.0,
+        20,
+        20,
+        false
+      ]
+    },
+    {
+      "name": "static-117",
+      "scenario": "static",
+      "network_seed": 117,
+      "neurons": 64,
+      "ticks": 2,
+      "memory": false,
+      "visibility": 6,
+      "moving": false,
+      "encoding": "broadcast",
+      "seed": 27117,
+      "steps": 60,
+      "map": {
+        "version": 1,
+        "name": "training",
+        "size": 8,
+        "density": 0.0625,
+        "requested_density": 0.06,
+        "seed": 117,
+        "obstacles": [
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            5
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            6,
+            3
+          ]
+        ]
+      },
+      "mutated_masks": true,
+      "observations": [
+        4947,
+        5107,
+        7155,
+        7139,
+        7147,
+        7147,
+        3051,
+        2784,
+        19168,
+        19168,
+        19168,
+        19168,
+        19168,
+        19168,
+        19168,
+        19168,
+        19168,
+        19168,
+        19168,
+        19168,
+        19168,
+        19168,
+        19168,
+        19168,
+        19168
+      ],
+      "states_sha256": "d5bb0c16f85791b1b1e554659f4a3d935434948fd3a29a34e98a8ed9273691a0",
+      "trajectory_sha256": "ffbccce7ec4a47c19e30189894023de4f9151a08dcb7a90d08c8d44d83ec29c0",
+      "metrics": [
+        -19.16,
+        25,
+        18,
+        false
+      ]
+    },
+    {
+      "name": "static-809",
+      "scenario": "static",
+      "network_seed": 809,
+      "neurons": 96,
+      "ticks": 3,
+      "memory": true,
+      "visibility": 6,
+      "moving": false,
+      "encoding": "mixed",
+      "seed": 27809,
+      "steps": 60,
+      "map": {
+        "version": 1,
+        "name": "training",
+        "size": 8,
+        "density": 0.078125,
+        "requested_density": 0.06,
+        "seed": 809,
+        "obstacles": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            3,
+            1
+          ],
+          [
+            7,
+            7
+          ]
+        ]
+      },
+      "mutated_masks": true,
+      "observations": [
+        16357,
+        32741,
+        32741,
+        32741,
+        32741,
+        32741,
+        32741,
+        32741,
+        32741,
+        32741,
+        32741,
+        32741,
+        32741,
+        32741,
+        32741,
+        32741,
+        32741,
+        32741,
+        32741,
+        32741
+      ],
+      "states_sha256": "9d37cff3867329884367a157b26780445b8c8af504c4bee6bbea32341aa5446d",
+      "trajectory_sha256": "054e505d0b7968a8a2acfc0903e5cbfdfc13d7ec2745e76e096ea227e2b368c7",
+      "metrics": [
+        -22.0,
+        20,
+        20,
+        false
+      ]
+    },
+    {
+      "name": "moving-42",
+      "scenario": "moving",
+      "network_seed": 42,
+      "neurons": 32,
+      "ticks": 1,
+      "memory": true,
+      "visibility": 6,
+      "moving": true,
+      "encoding": "mixed",
+      "seed": 28042,
+      "steps": 60,
+      "map": {
+        "version": 1,
+        "name": "training",
+        "size": 8,
+        "density": 0.078125,
+        "requested_density": 0.06,
+        "seed": 43,
+        "obstacles": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            6
+          ],
+          [
+            3,
+            3
+          ],
+          [
+            5,
+            7
+          ]
+        ]
+      },
+      "mutated_masks": false,
+      "observations": [
+        7147,
+        23531,
+        23520,
+        23520,
+        23531,
+        23531,
+        23531,
+        23531,
+        23531,
+        23531,
+        23520,
+        23520,
+        23533,
+        23520,
+        23520,
+        23533,
+        23520,
+        23531,
+        23531,
+        23531
+      ],
+      "states_sha256": "35406a876d15b0883ed024f222aff44f1f6d54f4e787fdcabd53f7a1b2fd373e",
+      "trajectory_sha256": "5c336eb3ca2638bb50bd74f2011d1edab17cfd108fc4938773f979044f2bd824",
+      "metrics": [
+        -22.0,
+        20,
+        20,
+        false
+      ]
+    },
+    {
+      "name": "moving-117",
+      "scenario": "moving",
+      "network_seed": 117,
+      "neurons": 64,
+      "ticks": 2,
+      "memory": false,
+      "visibility": 6,
+      "moving": true,
+      "encoding": "broadcast",
+      "seed": 28117,
+      "steps": 60,
+      "map": {
+        "version": 1,
+        "name": "training",
+        "size": 8,
+        "density": 0.046875,
+        "requested_density": 0.06,
+        "seed": 118,
+        "obstacles": [
+          [
+            2,
+            4
+          ],
+          [
+            5,
+            4
+          ],
+          [
+            7,
+            1
+          ]
+        ]
+      },
+      "mutated_masks": true,
+      "observations": [
+        7136,
+        4069,
+        3789,
+        20173,
+        20165,
+        20165,
+        20165,
+        20165,
+        20165,
+        20165,
+        20165,
+        20165,
+        20173,
+        20173,
+        20173,
+        20173,
+        20165,
+        20173,
+        20173,
+        20173
+      ],
+      "states_sha256": "c98a3d4605733d67d4671294fdfad7d43f80b36f31a03e666b5bb5aa5d5a0c6b",
+      "trajectory_sha256": "8f3abded8838bfcc12f0a5e906a2d023fd1a2c272225d37d457651bc4cd050eb",
+      "metrics": [
+        -19.759999999999998,
+        20,
+        18,
+        false
+      ]
+    },
+    {
+      "name": "moving-809",
+      "scenario": "moving",
+      "network_seed": 809,
+      "neurons": 96,
+      "ticks": 3,
+      "memory": true,
+      "visibility": 6,
+      "moving": true,
+      "encoding": "mixed",
+      "seed": 28809,
+      "steps": 60,
+      "map": {
+        "version": 1,
+        "name": "training",
+        "size": 8,
+        "density": 0.046875,
+        "requested_density": 0.06,
+        "seed": 810,
+        "obstacles": [
+          [
+            5,
+            6
+          ],
+          [
+            6,
+            2
+          ],
+          [
+            6,
+            3
+          ]
+        ]
+      },
+      "mutated_masks": true,
+      "observations": [
+        5472,
+        5984,
+        5984,
+        5984,
+        5984,
+        4960,
+        4896,
+        21297,
+        21280,
+        21280,
+        21280,
+        21280,
+        21280,
+        21280,
+        21280,
+        21280,
+        21280,
+        21280,
+        21299,
+        21299,
+        21280,
+        21299,
+        21280,
+        21280
+      ],
+      "states_sha256": "dd0282473c0b334470688469d421b1f443297c2b4ab7e8619f5cd9213d7ba366",
+      "trajectory_sha256": "453b61fe209760390e81a0020d029bf775a511e8fec2c3ecda562ab07941782d",
+      "metrics": [
+        -19.28,
+        24,
+        18,
+        false
+      ]
+    },
+    {
+      "name": "maze-42",
+      "scenario": "maze",
+      "network_seed": 42,
+      "neurons": 32,
+      "ticks": 1,
+      "memory": true,
+      "visibility": 6,
+      "moving": false,
+      "encoding": "mixed",
+      "seed": 29042,
+      "steps": 60,
+      "map": {
+        "version": 1,
+        "name": "training",
+        "size": 8,
+        "density": 0.21875,
+        "requested_density": 0.13,
+        "seed": 44,
+        "obstacles": [
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            7
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            4,
+            2
+          ],
+          [
+            5,
+            0
+          ],
+          [
+            5,
+            2
+          ],
+          [
+            5,
+            4
+          ],
+          [
+            5,
+            6
+          ],
+          [
+            6,
+            0
+          ],
+          [
+            7,
+            0
+          ],
+          [
+            7,
+            2
+          ],
+          [
+            7,
+            7
+          ]
+        ]
+      },
+      "mutated_masks": false,
+      "observations": [
+        7584,
+        23968,
+        23968,
+        23968,
+        23968,
+        23968,
+        23968,
+        23968,
+        23968,
+        23968,
+        23968,
+        23968,
+        23968,
+        23968,
+        23968,
+        23968,
+        23968,
+        23968,
+        23968,
+        23968
+      ],
+      "states_sha256": "615e4594458b0ec9b2d9221f8747d8d8d4c24194cb5255660fab58ce8f46f371",
+      "trajectory_sha256": "16a13f5f2b93cf21055da548e7d53f645df6ab743e4559d28f5874a07f3d0037",
+      "metrics": [
+        -22.0,
+        20,
+        20,
+        false
+      ]
+    },
+    {
+      "name": "maze-117",
+      "scenario": "maze",
+      "network_seed": 117,
+      "neurons": 64,
+      "ticks": 2,
+      "memory": false,
+      "visibility": 6,
+      "moving": false,
+      "encoding": "broadcast",
+      "seed": 29117,
+      "steps": 60,
+      "map": {
+        "version": 1,
+        "name": "training",
+        "size": 8,
+        "density": 0.125,
+        "requested_density": 0.13,
+        "seed": 119,
+        "obstacles": [
+          [
+            3,
+            3
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            3,
+            6
+          ],
+          [
+            4,
+            7
+          ],
+          [
+            5,
+            4
+          ],
+          [
+            6,
+            2
+          ],
+          [
+            6,
+            6
+          ],
+          [
+            7,
+            0
+          ]
+        ]
+      },
+      "mutated_masks": true,
+      "observations": [
+        7659,
+        3488,
+        3264,
+        19648,
+        19648,
+        19648,
+        19648,
+        19648,
+        19648,
+        19648,
+        19648,
+        19648,
+        19648,
+        19648,
+        19648,
+        19648,
+        19648,
+        19648,
+        19648,
+        19648
+      ],
+      "states_sha256": "a956ed0a20cb862082a10fe5751c454e7fdc6da29ede23c3de19682dae964dd2",
+      "trajectory_sha256": "e9ed2032f78966fbea9802e38f80126a00711c635dc98e793d0f150715f3744a",
+      "metrics": [
+        -19.759999999999998,
+        20,
+        18,
+        false
+      ]
+    },
+    {
+      "name": "maze-809",
+      "scenario": "maze",
+      "network_seed": 809,
+      "neurons": 96,
+      "ticks": 3,
+      "memory": true,
+      "visibility": 6,
+      "moving": false,
+      "encoding": "mixed",
+      "seed": 29809,
+      "steps": 60,
+      "map": {
+        "version": 1,
+        "name": "training",
+        "size": 8,
+        "density": 0.140625,
+        "requested_density": 0.13,
+        "seed": 811,
+        "obstacles": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            4,
+            2
+          ],
+          [
+            5,
+            1
+          ],
+          [
+            5,
+            2
+          ],
+          [
+            5,
+            7
+          ],
+          [
+            6,
+            0
+          ],
+          [
+            7,
+            4
+          ]
+        ]
+      },
+      "mutated_masks": true,
+      "observations": [
+        8181,
+        24565,
+        24565,
+        24565,
+        24565,
+        24565,
+        24565,
+        24565,
+        24565,
+        24565,
+        24565,
+        24565,
+        24565,
+        24565,
+        24565,
+        24565,
+        24565,
+        24565,
+        24565,
+        24565
+      ],
+      "states_sha256": "82cffce4e7ad42022830fdf73ec96b7555847281e3658c2c761769cd00e9a94b",
+      "trajectory_sha256": "5521a92aae1e92948205be761455f12ed48d06e7b30abc0e135c06a64290dad6",
+      "metrics": [
+        -22.0,
+        20,
+        20,
+        false
+      ]
+    },
+    {
+      "name": "hidden-42",
+      "scenario": "hidden",
+      "network_seed": 42,
+      "neurons": 32,
+      "ticks": 1,
+      "memory": true,
+      "visibility": 3,
+      "moving": false,
+      "encoding": "mixed",
+      "seed": 30042,
+      "steps": 60,
+      "map": {
+        "version": 1,
+        "name": "training",
+        "size": 8,
+        "density": 0.109375,
+        "requested_density": 0.08,
+        "seed": 45,
+        "obstacles": [
+          [
+            0,
+            7
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            4,
+            0
+          ],
+          [
+            4,
+            5
+          ],
+          [
+            5,
+            0
+          ],
+          [
+            7,
+            4
+          ]
+        ]
+      },
+      "mutated_masks": false,
+      "observations": [
+        4064,
+        8096,
+        8169,
+        15849,
+        8169,
+        8096,
+        4064,
+        8096,
+        8169,
+        15849,
+        8169,
+        8096,
+        4064,
+        8096,
+        8169,
+        15849,
+        8169,
+        8096,
+        4064,
+        8096,
+        8169,
+        15849,
+        8169,
+        8096,
+        4064,
+        8096,
+        8169,
+        15849,
+        8169,
+        8096,
+        4064,
+        8096,
+        8169,
+        15849,
+        8169,
+        8096,
+        4064,
+        8096,
+        8169,
+        15849,
+        8169,
+        8096,
+        4064,
+        8096,
+        8169,
+        15849,
+        8169,
+        8096,
+        4064,
+        8096,
+        8169,
+        15849,
+        8169,
+        8096,
+        4064,
+        8096,
+        8169,
+        15849,
+        8169,
+        8096
+      ],
+      "states_sha256": "89d5bc48b251f22545c260fbb313fec506cc034cb83b22474c687ac4644eee6e",
+      "trajectory_sha256": "10eb4d29547f6b612382b8d21636cd5f8a92bc5d792ef58a7923147450d7a9c1",
+      "metrics": [
+        -1.920000000000001,
+        60,
+        0,
+        false
+      ]
+    },
+    {
+      "name": "hidden-117",
+      "scenario": "hidden",
+      "network_seed": 117,
+      "neurons": 64,
+      "ticks": 2,
+      "memory": false,
+      "visibility": 3,
+      "moving": false,
+      "encoding": "broadcast",
+      "seed": 30117,
+      "steps": 60,
+      "map": {
+        "version": 1,
+        "name": "training",
+        "size": 8,
+        "density": 0.015625,
+        "requested_density": 0.08,
+        "seed": 120,
+        "obstacles": [
+          [
+            4,
+            4
+          ]
+        ]
+      },
+      "mutated_masks": true,
+      "observations": [
+        7616,
+        3520,
+        3264,
+        19648,
+        19648,
+        19648,
+        19648,
+        19648,
+        19648,
+        19648,
+        19648,
+        19648,
+        19648,
+        19648,
+        19648,
+        19648,
+        19648,
+        19648,
+        19648,
+        19648
+      ],
+      "states_sha256": "468590eae44eeb2f7b0cc9f679c163423f277d87966e561bd59496630b0d3ab9",
+      "trajectory_sha256": "fd793289c2d6b141143aca99776c83e84e43478d0fd14f699f4f2c016b7dfef5",
+      "metrics": [
+        -19.759999999999998,
+        20,
+        18,
+        false
+      ]
+    },
+    {
+      "name": "hidden-809",
+      "scenario": "hidden",
+      "network_seed": 809,
+      "neurons": 96,
+      "ticks": 3,
+      "memory": true,
+      "visibility": 3,
+      "moving": false,
+      "encoding": "mixed",
+      "seed": 30809,
+      "steps": 60,
+      "map": {
+        "version": 1,
+        "name": "training",
+        "size": 8,
+        "density": 0.0625,
+        "requested_density": 0.08,
+        "seed": 812,
+        "obstacles": [
+          [
+            0,
+            0
+          ],
+          [
+            3,
+            1
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            3,
+            5
+          ]
+        ]
+      },
+      "mutated_masks": true,
+      "observations": [
+        4896,
+        21280,
+        21280,
+        21280,
+        21280,
+        21280,
+        21280,
+        21280,
+        21280,
+        21280,
+        21280,
+        21280,
+        21280,
+        21280,
+        21280,
+        21280,
+        21280,
+        21280,
+        21280,
+        21280
+      ],
+      "states_sha256": "7b7af2152dac29c618fd05ca4447d0df444ef8f999f3d6e8b1ee83b1233f0a0f",
+      "trajectory_sha256": "3d1a84d15c5c05950045920254522119a6aa522de86b148a851a69451bf542cf",
+      "metrics": [
+        -22.0,
+        20,
+        20,
+        false
+      ]
+    }
+  ]
+}

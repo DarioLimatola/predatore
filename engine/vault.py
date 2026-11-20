@@ -7,9 +7,12 @@ import time
 import uuid
 import warnings
 import re
+import shutil
 from pathlib import Path
 
-SCHEMA = 'predatore.evolution-vault/3.0'
+LEGACY_SCHEMA = 'predatore.evolution-vault/3.0'
+SCHEMA = 'predatore.evolution-vault/3.1'
+CHECKPOINT_HASH = '_checkpoint_sha256'
 
 # UI-generated logs and stop signals are volatile: do not include them in an immutable experiment seal.
 VOLATILE_FILES = {'gui_worker.log', 'stop_requested'}
@@ -55,65 +58,80 @@ def checkpoint_paths(directory):
     primary = directory / 'latest.json'
     if primary.is_file(): paths.append(primary)
     paths.extend(directory.glob('latest.g*.fallback-*.json'))
+    previous = directory / 'previous.json'
+    if previous.is_file():
+        paths.append(previous)
     return paths
 
 
+def _checkpoint_generation(path):
+    try:
+        state = read_json(path)
+        if (isinstance(state, dict) and type(state.get('generation')) is int
+                and state['generation'] >= 0 and isinstance(state.get('history'), list)
+                and isinstance(state.get('config'), dict)
+                and (isinstance(state.get('population'), list) or
+                     state.get('schema') == 'smith.supervisor/2' and isinstance(state.get('eva'), dict))):
+            return state['generation']
+    except (OSError, ValueError, TypeError):
+        pass
+    return -1
+
+
 def latest_checkpoint_path(directory):
-    """Newest valid checkpoint; efficient with many immutable backup snapshots."""
+    """Prefer the newest verified commit, including a retained ordinary predecessor."""
     directory = Path(directory)
     primary = directory / 'latest.json'
-    best_generation = -1
-    best_path = None
-    if primary.is_file():
-        try:
-            state = read_json(primary)
-            if (type(state.get('generation')) is int and state['generation'] >= 0
-                    and (isinstance(state.get('population'), list) or
-                         state.get('schema') == 'smith.supervisor/2' and isinstance(state.get('eva'), dict))
-                    and isinstance(state.get('history'), list)
-                    and isinstance(state.get('config'), dict)):
-                best_generation, best_path = state['generation'], primary
-        except (OSError, ValueError, TypeError):
-            pass
-
-    # Read at most a few candidate JSON files rather than parsing the entire
-    # checkpoint history for every 1.5-second GUI refresh.
+    generation = _checkpoint_generation(primary)
+    best = primary if generation >= 0 else None
+    if best is None:
+        previous = directory / 'previous.json'
+        generation = _checkpoint_generation(previous)
+        if generation >= 0:
+            best = previous
     fallbacks = []
     for path in directory.glob('latest.g*.fallback-*.json'):
         match = re.fullmatch(r'latest\.g(\d+)\.fallback-[a-f0-9]+\.json', path.name)
-        if match and int(match.group(1)) > best_generation:
-            fallbacks.append((int(match.group(1)), path))
-    for generation, path in sorted(fallbacks, reverse=True):
-        if generation <= best_generation:
-            break
+        if match and int(match[1]) > generation:
+            fallbacks.append((int(match[1]), path))
+    for expected, path in sorted(fallbacks, reverse=True):
+        if _checkpoint_generation(path) == expected:
+            return path
+    return best
+
+
+def _retain_previous(path, generation):
+    if not path.is_file():
+        return
+    current = _checkpoint_generation(path)
+    if current < 0 or current >= generation:
+        return
+    temp = path.parent / ('.previous-' + uuid.uuid4().hex + '.tmp')
+    try:
         try:
-            state = read_json(path)
-            if (type(state.get('generation')) is int and state['generation'] == generation
-                    and (isinstance(state.get('population'), list) or
-                         state.get('schema') == 'smith.supervisor/2' and isinstance(state.get('eva'), dict))
-                    and isinstance(state.get('history'), list)
-                    and isinstance(state.get('config'), dict)):
-                return path
-        except (OSError, ValueError, TypeError):
-            pass
-    return best_path
+            os.link(path, temp)
+        except OSError:
+            shutil.copyfile(path, temp)
+        _replace_with_retry(temp, path.parent / 'previous.json')
+    finally:
+        temp.unlink(missing_ok=True)
+
 
 def save_checkpoint(path, obj):
-    """Commit a recoverable checkpoint even when Windows locks latest.json.
-
-    The normal on-disk representation is unchanged. If the standard rename is
-    denied repeatedly, commit the same JSON to a unique, immutable sibling and
-    teach both the GUI and resume logic to select its higher generation.
-    """
+    """Commit JSON and its digest together; rotate the previous successful generation."""
     path = Path(path)
+    payload = json.dumps(obj, separators=(',', ':'), sort_keys=True, allow_nan=False)
+    digest = hashlib.sha256(payload.encode('utf-8')).hexdigest()
+    signed = '{"' + CHECKPOINT_HASH + '":"' + digest + '",' + payload[1:]
     try:
-        atomic_json(path, obj)
+        _retain_previous(path, obj['generation'])
+        _atomic_text(path, signed)
         return path
     except PermissionError as original_error:
         generation = int(obj['generation'])
         fallback = path.with_name(f'latest.g{generation:09d}.fallback-{uuid.uuid4().hex[:12]}.json')
         try:
-            atomic_json(fallback, obj)
+            _atomic_text(fallback, signed)
         except OSError as secondary_error:
             raise OSError(
                 f'Checkpoint {generation} was NOT saved. Windows denied both '
@@ -184,7 +202,25 @@ def reconcile_evolution_logs(experiment_dir, committed_generation):
                           RuntimeWarning, stacklevel=2)
 
 def read_json(path):
-    return json.loads(Path(path).read_text(encoding='utf-8'))
+
+    path = Path(path)
+    if path.name not in {'latest.json', 'previous.json'} and not path.name.startswith('latest.g'):
+        return json.loads(path.read_bytes())
+    raw = path.read_bytes()
+    prefix = b'{"_checkpoint_sha256":"'
+    if raw.startswith(prefix):
+        start = len(prefix)
+        if raw[start + 64:start + 66] != b'",':
+            raise ValueError(f'Invalid checkpoint header in {path.name}')
+        payload = b'{' + raw[start + 66:]
+        if hashlib.sha256(payload).hexdigest().encode('ascii') != raw[start:start + 64]:
+            raise ValueError(f'Checkpoint checksum mismatch in {path.name}')
+        return json.loads(payload)
+    state = json.loads(raw)
+    if isinstance(state, dict) and (CHECKPOINT_HASH in state or state.get('schema') == SCHEMA
+                                   or ('transaction' in state and 'engine_version' in state)):
+        raise ValueError(f'Missing or displaced checkpoint checksum in {path.name}')
+    return state
 
 def append_jsonl(path, item):
     path = Path(path); path.parent.mkdir(parents=True, exist_ok=True)
@@ -196,6 +232,47 @@ def fingerprint(path):
     with Path(path).open('rb') as f:
         for chunk in iter(lambda:f.read(1024*1024),b''):h.update(chunk)
     return h.hexdigest()
+
+def experiment_input_hashes(folder):
+    """Fingerprint the fixed inputs used to compare generations of this run."""
+    folder = Path(folder)
+    paths = [folder / name for name in ('config.json', 'manifest.json', 'brains/initial_eva.json',
+             'brains/initial_explorers.json', 'environment/seed_protocol.json')]
+    paths.extend(sorted((folder / 'environment/suites').glob('*.json')))
+    hashes = {}
+    for path in paths:
+        if not path.is_file():
+            continue
+        name = path.relative_to(folder).as_posix()
+        if name in ('manifest.json', 'config.json'):
+            # Run creation time and the initial requested stop generation do not define its science.
+            fields = read_json(path)
+            fields.pop('created_unix' if name == 'manifest.json' else 'generations', None)
+            encoded = json.dumps(fields, sort_keys=True, separators=(',', ':')).encode()
+            hashes[name] = hashlib.sha256(encoded).hexdigest()
+        else:
+            hashes[name] = fingerprint(path)
+    return hashes
+
+
+def verify_experiment_inputs(folder, snapshot):
+    expected = snapshot.get('input_sha256')
+    actual = experiment_input_hashes(folder)
+    changed = set()
+    if expected is not None:
+        changed.update(k for k in actual.keys() | expected.keys() if actual.get(k) != expected.get(k))
+    seal_path = folder / 'integrity/checksums.json'
+    if seal_path.exists():
+        historical = read_json(seal_path)['files']
+        for name, digest in historical.items():
+            if name in {'config.json', 'manifest.json', 'brains/initial_eva.json',
+                        'brains/initial_explorers.json', 'environment/seed_protocol.json'} or name.startswith('environment/suites/'):
+                if name not in actual or fingerprint(folder/name) != digest:
+                    changed.add(name)
+    if changed:
+        raise ValueError('Input sperimentali modificati: ' + ', '.join(sorted(changed)))
+    return actual
+
 
 def seal(folder):
     folder=Path(folder); result={}

@@ -1,0 +1,38 @@
+         32483111 function calls (26465848 primitive calls) in 10.663 seconds
+
+   Ordered by: cumulative time
+   List reduced from 643 to 30 due to restriction <30>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.002    0.002   10.665   10.665 benchmark_release.py:24(case)
+        1    0.000    0.000   10.602   10.602 evolution.py:34(run)
+        1    0.009    0.009   10.602   10.602 continual.py:302(run_vector)
+        1    0.015    0.015   10.593   10.593 continual.py:308(_run)
+      636    0.145    0.000    4.809    0.008 evaluation.py:21(rollout)
+        1    0.009    0.009    4.364    4.364 continual.py:566(_finish)
+       38    0.005    0.000    4.038    0.106 evaluation.py:73(evaluate_suite)
+       24    0.010    0.000    3.138    0.131 continual.py:87(assessment)
+       38    0.001    0.000    2.890    0.076 vault.py:34(atomic_json)
+       38    0.369    0.010    2.879    0.076 __init__.py:120(dump)
+    25912    0.828    0.000    2.389    0.000 network.py:128(decide)
+  1410863    0.225    0.000    2.324    0.000 encoder.py:414(_iterencode)
+4994645/1410857    0.984    0.000    2.096    0.000 encoder.py:334(_iterencode_dict)
+        4    0.000    0.000    2.019    0.505 vault.py:101(save_checkpoint)
+    25912    0.252    0.000    1.755    0.000 network.py:302(feedback)
+3635328/1401563    0.841    0.000    1.716    0.000 encoder.py:278(_iterencode_list)
+      246    0.060    0.000    1.606    0.007 network.py:508(export)
+      492    0.086    0.000    1.478    0.003 memory.py:152(export)
+   102619    0.051    0.000    1.392    0.000 memory.py:154(pack)
+   102619    0.360    0.000    1.323    0.000 {method 'join' of 'bytes' objects}
+       14    0.000    0.000    1.267    0.091 continual.py:273(train_actor)
+       20    0.000    0.000    1.186    0.059 continual.py:115(probe_scores)
+       20    0.001    0.000    1.186    0.059 continual.py:97(assess)
+        2    0.002    0.001    1.093    0.547 continual.py:141(select_transfer)
+        1    0.014    0.014    0.998    0.998 diagnostics.py:48(assess_champion)
+       60    0.005    0.000    0.967    0.016 continual.py:77(evaluation_copy)
+  3386427    0.641    0.000    0.963    0.000 memory.py:155(<genexpr>)
+      112    0.002    0.000    0.835    0.007 network.py:587(snapshot_id)
+    51274    0.106    0.000    0.715    0.000 memory.py:95(update)
+       78    0.018    0.000    0.647    0.008 network.py:530(restore)
+
+

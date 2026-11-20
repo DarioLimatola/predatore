@@ -1,0 +1,8 @@
+C:\Users\thefo\OneDrive\Desktop\Progetti Claude\Predatore_V6_06\predatore\native\target\debug\build\constant_time_eq/7a4f380591fbafe5\out\constant_time_eq-7a4f380591fbafe5.d: C:\Users\thefo\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\constant_time_eq-0.4.2\src\lib.rs C:\Users\thefo\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\constant_time_eq-0.4.2\src\classic.rs C:\Users\thefo\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\constant_time_eq-0.4.2\src\generic.rs C:\Users\thefo\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\constant_time_eq-0.4.2\src\sse2.rs
+
+C:\Users\thefo\OneDrive\Desktop\Progetti Claude\Predatore_V6_06\predatore\native\target\debug\build\constant_time_eq/7a4f380591fbafe5\out\libconstant_time_eq-7a4f380591fbafe5.rmeta: C:\Users\thefo\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\constant_time_eq-0.4.2\src\lib.rs C:\Users\thefo\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\constant_time_eq-0.4.2\src\classic.rs C:\Users\thefo\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\constant_time_eq-0.4.2\src\generic.rs C:\Users\thefo\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\constant_time_eq-0.4.2\src\sse2.rs
+
+C:\Users\thefo\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\constant_time_eq-0.4.2\src\lib.rs:
+C:\Users\thefo\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\constant_time_eq-0.4.2\src\classic.rs:
+C:\Users\thefo\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\constant_time_eq-0.4.2\src\generic.rs:
+C:\Users\thefo\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\constant_time_eq-0.4.2\src\sse2.rs:

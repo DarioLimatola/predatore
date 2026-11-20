@@ -75,7 +75,7 @@ def micro():
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--output',type=Path,default=ROOT/'validation/v605')
+    p.add_argument('--output',type=Path,default=ROOT/'Analysis'/'classic_benchmark')
     p.add_argument('--generations',type=int,default=10)
     p.add_argument('--worker',type=int);p.add_argument('--modules',type=int,default=64)
     p.add_argument('--profile',action='store_true')

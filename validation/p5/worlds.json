@@ -1,0 +1,6254 @@
+{
+  "protocol": {
+    "seed": 83,
+    "training_size": 8,
+    "generations": 3,
+    "training_episodes_per_candidate": 5,
+    "training_scenario": "intelligent_prey",
+    "selection_split": "train",
+    "evaluation_split": "holdout",
+    "holdout_maps_per_size": 3,
+    "episodes_per_map": 4,
+    "steps": 36,
+    "sizes": [
+      8,
+      12
+    ],
+    "agent_policy": "frozen at start of every test episode",
+    "evader_policy": "learns online within its own isolated episode",
+    "capture_interval": "descriptive Wilson 95% pooled across starts; starts share maps"
+  },
+  "training": [
+    {
+      "generation": 1,
+      "train_map_episode_seeds": [
+        [
+          7782622321784919848,
+          4242013247728051039
+        ],
+        [
+          1181626751406877223,
+          317278839327704150
+        ],
+        [
+          8782107724140107291,
+          1957322985917961299
+        ],
+        [
+          1603370180705942339,
+          762938969378240954
+        ],
+        [
+          9012141816426988052,
+          3787362123885798559
+        ]
+      ],
+      "incumbent_score": [
+        1,
+        -6
+      ],
+      "hunter_candidate_score": [
+        1,
+        -6
+      ],
+      "hunter_candidate_adopted": false,
+      "evader_candidate_score_against_hunter": [
+        1,
+        -6
+      ],
+      "evader_candidate_adopted": false
+    },
+    {
+      "generation": 2,
+      "train_map_episode_seeds": [
+        [
+          1864729908392226118,
+          7250228960346671655
+        ],
+        [
+          6522684818429020001,
+          8561183689652981619
+        ],
+        [
+          7575235529786408260,
+          8904202938715649794
+        ],
+        [
+          409227675839810674,
+          281049146945033134
+        ],
+        [
+          8923323293769226202,
+          4303350907908937611
+        ]
+      ],
+      "incumbent_score": [
+        1,
+        -11
+      ],
+      "hunter_candidate_score": [
+        1,
+        -11
+      ],
+      "hunter_candidate_adopted": false,
+      "evader_candidate_score_against_hunter": [
+        0,
+        0
+      ],
+      "evader_candidate_adopted": true
+    },
+    {
+      "generation": 3,
+      "train_map_episode_seeds": [
+        [
+          5076058119494775492,
+          8054998742862381798
+        ],
+        [
+          4401835511139980302,
+          7346428037185229732
+        ],
+        [
+          8032292758330567015,
+          7816236613174244294
+        ],
+        [
+          4064611768751239879,
+          1254304504970018096
+        ],
+        [
+          6935878935727195064,
+          3757670987751114827
+        ]
+      ],
+      "incumbent_score": [
+        2,
+        -36
+      ],
+      "hunter_candidate_score": [
+        2,
+        -36
+      ],
+      "hunter_candidate_adopted": false,
+      "evader_candidate_score_against_hunter": [
+        2,
+        -36
+      ],
+      "evader_candidate_adopted": false
+    }
+  ],
+  "results": [
+    {
+      "size": 8,
+      "scenario": "maze_novel",
+      "actor": "initial",
+      "capture_count": 2,
+      "episode_count": 12,
+      "capture_steps_sum": 10,
+      "successful_mean_steps": 5.0,
+      "best_capture_steps": 4,
+      "capture_wilson95": [
+        0.04696514218385378,
+        0.4480308622529734
+      ],
+      "successful_median_steps": 5.0,
+      "capture_rate": 0.16666666666666666,
+      "mean_collisions": 17.083333333333332,
+      "mean_decision_microseconds": 30.51364285714286,
+      "episodes": [
+        {
+          "map_seed": -8308001,
+          "seed": -8507393024,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.03225806451612903,
+          "final_distance": 2,
+          "obstacles": 33,
+          "decision_ns": 566879,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308001,
+          "seed": -8507393025,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.03225806451612903,
+          "final_distance": 5,
+          "obstacles": 33,
+          "decision_ns": 537045,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308001,
+          "seed": -8507393026,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.03225806451612903,
+          "final_distance": 9,
+          "obstacles": 33,
+          "decision_ns": 557831,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308001,
+          "seed": -8507393027,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.03225806451612903,
+          "final_distance": 1,
+          "obstacles": 33,
+          "decision_ns": 911108,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308002,
+          "seed": -8507394048,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.03225806451612903,
+          "final_distance": 3,
+          "obstacles": 33,
+          "decision_ns": 539842,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308002,
+          "seed": -8507394049,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.03225806451612903,
+          "final_distance": 7,
+          "obstacles": 33,
+          "decision_ns": 600356,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308002,
+          "seed": -8507394050,
+          "capture": 1,
+          "steps": 6,
+          "reward": 17.240000000000002,
+          "stall": 0,
+          "blocked": 3,
+          "exploration": 0.12903225806451613,
+          "final_distance": 0,
+          "obstacles": 33,
+          "decision_ns": 179813,
+          "decoder_counts": {
+            "circuit": 6,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308002,
+          "seed": -8507394051,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.03225806451612903,
+          "final_distance": 3,
+          "obstacles": 33,
+          "decision_ns": 510964,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308003,
+          "seed": -8507395072,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.03225806451612903,
+          "final_distance": 9,
+          "obstacles": 33,
+          "decision_ns": 733831,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308003,
+          "seed": -8507395073,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.03225806451612903,
+          "final_distance": 3,
+          "obstacles": 33,
+          "decision_ns": 568072,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308003,
+          "seed": -8507395074,
+          "capture": 1,
+          "steps": 4,
+          "reward": 18.12,
+          "stall": 0,
+          "blocked": 2,
+          "exploration": 0.0967741935483871,
+          "final_distance": 0,
+          "obstacles": 33,
+          "decision_ns": 125139,
+          "decoder_counts": {
+            "circuit": 4,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308003,
+          "seed": -8507395075,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.03225806451612903,
+          "final_distance": 4,
+          "obstacles": 33,
+          "decision_ns": 576985,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        }
+      ]
+    },
+    {
+      "size": 8,
+      "scenario": "maze_novel",
+      "actor": "trained8",
+      "capture_count": 2,
+      "episode_count": 12,
+      "capture_steps_sum": 10,
+      "successful_mean_steps": 5.0,
+      "best_capture_steps": 4,
+      "capture_wilson95": [
+        0.04696514218385378,
+        0.4480308622529734
+      ],
+      "successful_median_steps": 5.0,
+      "capture_rate": 0.16666666666666666,
+      "mean_collisions": 17.083333333333332,
+      "mean_decision_microseconds": 29.11616666666667,
+      "episodes": [
+        {
+          "map_seed": -8308001,
+          "seed": -8507393024,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.03225806451612903,
+          "final_distance": 2,
+          "obstacles": 33,
+          "decision_ns": 544414,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308001,
+          "seed": -8507393025,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.03225806451612903,
+          "final_distance": 5,
+          "obstacles": 33,
+          "decision_ns": 542342,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308001,
+          "seed": -8507393026,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.03225806451612903,
+          "final_distance": 9,
+          "obstacles": 33,
+          "decision_ns": 549088,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308001,
+          "seed": -8507393027,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.03225806451612903,
+          "final_distance": 1,
+          "obstacles": 33,
+          "decision_ns": 586228,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308002,
+          "seed": -8507394048,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.03225806451612903,
+          "final_distance": 3,
+          "obstacles": 33,
+          "decision_ns": 550963,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308002,
+          "seed": -8507394049,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.03225806451612903,
+          "final_distance": 7,
+          "obstacles": 33,
+          "decision_ns": 634241,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308002,
+          "seed": -8507394050,
+          "capture": 1,
+          "steps": 6,
+          "reward": 17.240000000000002,
+          "stall": 0,
+          "blocked": 3,
+          "exploration": 0.12903225806451613,
+          "final_distance": 0,
+          "obstacles": 33,
+          "decision_ns": 176598,
+          "decoder_counts": {
+            "circuit": 6,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308002,
+          "seed": -8507394051,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.03225806451612903,
+          "final_distance": 3,
+          "obstacles": 33,
+          "decision_ns": 603974,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308003,
+          "seed": -8507395072,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.03225806451612903,
+          "final_distance": 9,
+          "obstacles": 33,
+          "decision_ns": 627867,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308003,
+          "seed": -8507395073,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.03225806451612903,
+          "final_distance": 3,
+          "obstacles": 33,
+          "decision_ns": 567627,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308003,
+          "seed": -8507395074,
+          "capture": 1,
+          "steps": 4,
+          "reward": 18.12,
+          "stall": 0,
+          "blocked": 2,
+          "exploration": 0.0967741935483871,
+          "final_distance": 0,
+          "obstacles": 33,
+          "decision_ns": 148985,
+          "decoder_counts": {
+            "circuit": 4,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308003,
+          "seed": -8507395075,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.03225806451612903,
+          "final_distance": 4,
+          "obstacles": 33,
+          "decision_ns": 582068,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        }
+      ]
+    },
+    {
+      "size": 8,
+      "scenario": "maze_novel",
+      "actor": "random8",
+      "capture_count": 4,
+      "episode_count": 12,
+      "capture_steps_sum": 46,
+      "successful_mean_steps": 11.5,
+      "best_capture_steps": 1,
+      "capture_wilson95": [
+        0.13812009109121315,
+        0.6093779111272004
+      ],
+      "successful_median_steps": 13.5,
+      "capture_rate": 0.3333333333333333,
+      "mean_collisions": 18.166666666666668,
+      "episodes": [
+        {
+          "map_seed": -8308001,
+          "seed": -8507393024,
+          "capture": 1,
+          "steps": 11,
+          "blocked": 9
+        },
+        {
+          "map_seed": -8308001,
+          "seed": -8507393025,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 24
+        },
+        {
+          "map_seed": -8308001,
+          "seed": -8507393026,
+          "capture": 0,
+          "steps": 35,
+          "blocked": 27
+        },
+        {
+          "map_seed": -8308001,
+          "seed": -8507393027,
+          "capture": 1,
+          "steps": 1,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8308002,
+          "seed": -8507394048,
+          "capture": 0,
+          "steps": 20,
+          "blocked": 16
+        },
+        {
+          "map_seed": -8308002,
+          "seed": -8507394049,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 25
+        },
+        {
+          "map_seed": -8308002,
+          "seed": -8507394050,
+          "capture": 1,
+          "steps": 18,
+          "blocked": 11
+        },
+        {
+          "map_seed": -8308002,
+          "seed": -8507394051,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 26
+        },
+        {
+          "map_seed": -8308003,
+          "seed": -8507395072,
+          "capture": 0,
+          "steps": 20,
+          "blocked": 17
+        },
+        {
+          "map_seed": -8308003,
+          "seed": -8507395073,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 23
+        },
+        {
+          "map_seed": -8308003,
+          "seed": -8507395074,
+          "capture": 1,
+          "steps": 16,
+          "blocked": 14
+        },
+        {
+          "map_seed": -8308003,
+          "seed": -8507395075,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 26
+        }
+      ]
+    },
+    {
+      "size": 8,
+      "scenario": "maze_novel",
+      "actor": "sensor_greedy",
+      "capture_count": 7,
+      "episode_count": 12,
+      "capture_steps_sum": 74,
+      "successful_mean_steps": 10.571428571428571,
+      "best_capture_steps": 1,
+      "capture_wilson95": [
+        0.31951131254954973,
+        0.8067396863412435
+      ],
+      "successful_median_steps": 3,
+      "capture_rate": 0.5833333333333334,
+      "mean_collisions": 7.166666666666667,
+      "episodes": [
+        {
+          "map_seed": -8308001,
+          "seed": -8507393024,
+          "capture": 1,
+          "steps": 2,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8308001,
+          "seed": -8507393025,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 13
+        },
+        {
+          "map_seed": -8308001,
+          "seed": -8507393026,
+          "capture": 0,
+          "steps": 25,
+          "blocked": 17
+        },
+        {
+          "map_seed": -8308001,
+          "seed": -8507393027,
+          "capture": 1,
+          "steps": 1,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8308002,
+          "seed": -8507394048,
+          "capture": 1,
+          "steps": 17,
+          "blocked": 10
+        },
+        {
+          "map_seed": -8308002,
+          "seed": -8507394049,
+          "capture": 1,
+          "steps": 36,
+          "blocked": 9
+        },
+        {
+          "map_seed": -8308002,
+          "seed": -8507394050,
+          "capture": 1,
+          "steps": 3,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8308002,
+          "seed": -8507394051,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 10
+        },
+        {
+          "map_seed": -8308003,
+          "seed": -8507395072,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 14
+        },
+        {
+          "map_seed": -8308003,
+          "seed": -8507395073,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 10
+        },
+        {
+          "map_seed": -8308003,
+          "seed": -8507395074,
+          "capture": 1,
+          "steps": 2,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8308003,
+          "seed": -8507395075,
+          "capture": 1,
+          "steps": 13,
+          "blocked": 3
+        }
+      ]
+    },
+    {
+      "size": 8,
+      "scenario": "hidden",
+      "actor": "initial",
+      "capture_count": 0,
+      "episode_count": 12,
+      "capture_steps_sum": 0,
+      "successful_mean_steps": null,
+      "best_capture_steps": null,
+      "capture_wilson95": [
+        2.7755575615628914e-17,
+        0.24249400665524085
+      ],
+      "successful_median_steps": null,
+      "capture_rate": 0.0,
+      "mean_collisions": 20,
+      "mean_decision_microseconds": 27.543950570342204,
+      "episodes": [
+        {
+          "map_seed": -8308101,
+          "seed": -8507495424,
+          "capture": 0,
+          "steps": 24,
+          "reward": -22.64,
+          "stall": 1,
+          "blocked": 21,
+          "exploration": 0.06557377049180328,
+          "final_distance": 8,
+          "obstacles": 3,
+          "decision_ns": 678509,
+          "decoder_counts": {
+            "circuit": 24,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308101,
+          "seed": -8507495425,
+          "capture": 0,
+          "steps": 28,
+          "reward": -24.4,
+          "stall": 1,
+          "blocked": 23,
+          "exploration": 0.09836065573770492,
+          "final_distance": 2,
+          "obstacles": 3,
+          "decision_ns": 770648,
+          "decoder_counts": {
+            "circuit": 28,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308101,
+          "seed": -8507495426,
+          "capture": 0,
+          "steps": 23,
+          "reward": -22.759999999999998,
+          "stall": 1,
+          "blocked": 21,
+          "exploration": 0.04918032786885246,
+          "final_distance": 7,
+          "obstacles": 3,
+          "decision_ns": 624292,
+          "decoder_counts": {
+            "circuit": 23,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308101,
+          "seed": -8507495427,
+          "capture": 0,
+          "steps": 20,
+          "reward": -20.88,
+          "stall": 1,
+          "blocked": 19,
+          "exploration": 0.03278688524590164,
+          "final_distance": 9,
+          "obstacles": 3,
+          "decision_ns": 522228,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308102,
+          "seed": -8507496448,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.017543859649122806,
+          "final_distance": 4,
+          "obstacles": 7,
+          "decision_ns": 520826,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308102,
+          "seed": -8507496449,
+          "capture": 0,
+          "steps": 20,
+          "reward": -20.88,
+          "stall": 1,
+          "blocked": 19,
+          "exploration": 0.03508771929824561,
+          "final_distance": 8,
+          "obstacles": 7,
+          "decision_ns": 535734,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308102,
+          "seed": -8507496450,
+          "capture": 0,
+          "steps": 28,
+          "reward": -23.4,
+          "stall": 1,
+          "blocked": 22,
+          "exploration": 0.12280701754385964,
+          "final_distance": 5,
+          "obstacles": 7,
+          "decision_ns": 769286,
+          "decoder_counts": {
+            "circuit": 28,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308102,
+          "seed": -8507496451,
+          "capture": 0,
+          "steps": 20,
+          "reward": -20.88,
+          "stall": 1,
+          "blocked": 19,
+          "exploration": 0.03508771929824561,
+          "final_distance": 2,
+          "obstacles": 7,
+          "decision_ns": 531240,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308103,
+          "seed": -8507497472,
+          "capture": 0,
+          "steps": 20,
+          "reward": -20.88,
+          "stall": 1,
+          "blocked": 19,
+          "exploration": 0.03389830508474576,
+          "final_distance": 9,
+          "obstacles": 5,
+          "decision_ns": 564901,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308103,
+          "seed": -8507497473,
+          "capture": 0,
+          "steps": 20,
+          "reward": -20.88,
+          "stall": 1,
+          "blocked": 19,
+          "exploration": 0.03389830508474576,
+          "final_distance": 2,
+          "obstacles": 5,
+          "decision_ns": 577963,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308103,
+          "seed": -8507497474,
+          "capture": 0,
+          "steps": 20,
+          "reward": -20.88,
+          "stall": 1,
+          "blocked": 19,
+          "exploration": 0.03389830508474576,
+          "final_distance": 8,
+          "obstacles": 5,
+          "decision_ns": 570533,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308103,
+          "seed": -8507497475,
+          "capture": 0,
+          "steps": 20,
+          "reward": -20.88,
+          "stall": 1,
+          "blocked": 19,
+          "exploration": 0.03389830508474576,
+          "final_distance": 7,
+          "obstacles": 5,
+          "decision_ns": 577899,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        }
+      ]
+    },
+    {
+      "size": 8,
+      "scenario": "hidden",
+      "actor": "trained8",
+      "capture_count": 0,
+      "episode_count": 12,
+      "capture_steps_sum": 0,
+      "successful_mean_steps": null,
+      "best_capture_steps": null,
+      "capture_wilson95": [
+        2.7755575615628914e-17,
+        0.24249400665524085
+      ],
+      "successful_median_steps": null,
+      "capture_rate": 0.0,
+      "mean_collisions": 16.166666666666668,
+      "mean_decision_microseconds": 37.11739857651245,
+      "episodes": [
+        {
+          "map_seed": -8308101,
+          "seed": -8507495424,
+          "capture": 0,
+          "steps": 32,
+          "reward": -12.399999999999995,
+          "stall": 1,
+          "blocked": 11,
+          "exploration": 0.16393442622950818,
+          "final_distance": 2,
+          "obstacles": 3,
+          "decision_ns": 1287124,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 12,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308101,
+          "seed": -8507495425,
+          "capture": 0,
+          "steps": 28,
+          "reward": -24.4,
+          "stall": 1,
+          "blocked": 23,
+          "exploration": 0.09836065573770492,
+          "final_distance": 2,
+          "obstacles": 3,
+          "decision_ns": 826697,
+          "decoder_counts": {
+            "circuit": 28,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308101,
+          "seed": -8507495426,
+          "capture": 0,
+          "steps": 23,
+          "reward": -6.44,
+          "stall": 1,
+          "blocked": 4,
+          "exploration": 0.04918032786885246,
+          "final_distance": 6,
+          "obstacles": 3,
+          "decision_ns": 783645,
+          "decoder_counts": {
+            "circuit": 13,
+            "short": 10,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308101,
+          "seed": -8507495427,
+          "capture": 0,
+          "steps": 20,
+          "reward": -20.88,
+          "stall": 1,
+          "blocked": 19,
+          "exploration": 0.03278688524590164,
+          "final_distance": 9,
+          "obstacles": 3,
+          "decision_ns": 556995,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308102,
+          "seed": -8507496448,
+          "capture": 0,
+          "steps": 23,
+          "reward": -12.199999999999996,
+          "stall": 1,
+          "blocked": 10,
+          "exploration": 0.05263157894736842,
+          "final_distance": 3,
+          "obstacles": 7,
+          "decision_ns": 1012147,
+          "decoder_counts": {
+            "circuit": 16,
+            "short": 7,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308102,
+          "seed": -8507496449,
+          "capture": 0,
+          "steps": 20,
+          "reward": -20.88,
+          "stall": 1,
+          "blocked": 19,
+          "exploration": 0.03508771929824561,
+          "final_distance": 8,
+          "obstacles": 7,
+          "decision_ns": 560539,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308102,
+          "seed": -8507496450,
+          "capture": 0,
+          "steps": 32,
+          "reward": -12.519999999999996,
+          "stall": 1,
+          "blocked": 11,
+          "exploration": 0.17543859649122806,
+          "final_distance": 2,
+          "obstacles": 7,
+          "decision_ns": 979409,
+          "decoder_counts": {
+            "circuit": 23,
+            "short": 9,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308102,
+          "seed": -8507496451,
+          "capture": 0,
+          "steps": 20,
+          "reward": -20.88,
+          "stall": 1,
+          "blocked": 19,
+          "exploration": 0.03508771929824561,
+          "final_distance": 2,
+          "obstacles": 7,
+          "decision_ns": 596810,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308103,
+          "seed": -8507497472,
+          "capture": 0,
+          "steps": 20,
+          "reward": -20.88,
+          "stall": 1,
+          "blocked": 19,
+          "exploration": 0.03389830508474576,
+          "final_distance": 9,
+          "obstacles": 5,
+          "decision_ns": 558895,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308103,
+          "seed": -8507497473,
+          "capture": 0,
+          "steps": 20,
+          "reward": -20.88,
+          "stall": 1,
+          "blocked": 19,
+          "exploration": 0.03389830508474576,
+          "final_distance": 2,
+          "obstacles": 5,
+          "decision_ns": 621814,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308103,
+          "seed": -8507497474,
+          "capture": 0,
+          "steps": 20,
+          "reward": -20.88,
+          "stall": 1,
+          "blocked": 19,
+          "exploration": 0.03389830508474576,
+          "final_distance": 8,
+          "obstacles": 5,
+          "decision_ns": 884047,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308103,
+          "seed": -8507497475,
+          "capture": 0,
+          "steps": 23,
+          "reward": -22.759999999999998,
+          "stall": 1,
+          "blocked": 21,
+          "exploration": 0.05084745762711865,
+          "final_distance": 8,
+          "obstacles": 5,
+          "decision_ns": 1761867,
+          "decoder_counts": {
+            "circuit": 6,
+            "short": 17,
+            "context": 0,
+            "hdc": 0
+          }
+        }
+      ]
+    },
+    {
+      "size": 8,
+      "scenario": "hidden",
+      "actor": "random8",
+      "capture_count": 1,
+      "episode_count": 12,
+      "capture_steps_sum": 1,
+      "successful_mean_steps": 1.0,
+      "best_capture_steps": 1,
+      "capture_wilson95": [
+        0.014865094404917095,
+        0.35387991114111694
+      ],
+      "successful_median_steps": 1,
+      "capture_rate": 0.08333333333333333,
+      "mean_collisions": 17.75,
+      "episodes": [
+        {
+          "map_seed": -8308101,
+          "seed": -8507495424,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 16
+        },
+        {
+          "map_seed": -8308101,
+          "seed": -8507495425,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 16
+        },
+        {
+          "map_seed": -8308101,
+          "seed": -8507495426,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 18
+        },
+        {
+          "map_seed": -8308101,
+          "seed": -8507495427,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 23
+        },
+        {
+          "map_seed": -8308102,
+          "seed": -8507496448,
+          "capture": 0,
+          "steps": 20,
+          "blocked": 17
+        },
+        {
+          "map_seed": -8308102,
+          "seed": -8507496449,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 25
+        },
+        {
+          "map_seed": -8308102,
+          "seed": -8507496450,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 20
+        },
+        {
+          "map_seed": -8308102,
+          "seed": -8507496451,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 18
+        },
+        {
+          "map_seed": -8308103,
+          "seed": -8507497472,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 20
+        },
+        {
+          "map_seed": -8308103,
+          "seed": -8507497473,
+          "capture": 1,
+          "steps": 1,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8308103,
+          "seed": -8507497474,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 21
+        },
+        {
+          "map_seed": -8308103,
+          "seed": -8507497475,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 19
+        }
+      ]
+    },
+    {
+      "size": 8,
+      "scenario": "hidden",
+      "actor": "sensor_greedy",
+      "capture_count": 6,
+      "episode_count": 12,
+      "capture_steps_sum": 77,
+      "successful_mean_steps": 12.833333333333334,
+      "best_capture_steps": 1,
+      "capture_wilson95": [
+        0.2537815976337061,
+        0.7462184023662939
+      ],
+      "successful_median_steps": 4.5,
+      "capture_rate": 0.5,
+      "mean_collisions": 0,
+      "episodes": [
+        {
+          "map_seed": -8308101,
+          "seed": -8507495424,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8308101,
+          "seed": -8507495425,
+          "capture": 1,
+          "steps": 5,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8308101,
+          "seed": -8507495426,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8308101,
+          "seed": -8507495427,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8308102,
+          "seed": -8507496448,
+          "capture": 1,
+          "steps": 4,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8308102,
+          "seed": -8507496449,
+          "capture": 1,
+          "steps": 34,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8308102,
+          "seed": -8507496450,
+          "capture": 1,
+          "steps": 30,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8308102,
+          "seed": -8507496451,
+          "capture": 1,
+          "steps": 3,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8308103,
+          "seed": -8507497472,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8308103,
+          "seed": -8507497473,
+          "capture": 1,
+          "steps": 1,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8308103,
+          "seed": -8507497474,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8308103,
+          "seed": -8507497475,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 0
+        }
+      ]
+    },
+    {
+      "size": 8,
+      "scenario": "delayed_reward",
+      "actor": "initial",
+      "capture_count": 0,
+      "episode_count": 12,
+      "capture_steps_sum": 0,
+      "successful_mean_steps": null,
+      "best_capture_steps": null,
+      "capture_wilson95": [
+        2.7755575615628914e-17,
+        0.24249400665524085
+      ],
+      "successful_median_steps": null,
+      "capture_rate": 0.0,
+      "mean_collisions": 19.75,
+      "mean_decision_microseconds": 29.654149019607846,
+      "episodes": [
+        {
+          "map_seed": -8308201,
+          "seed": -8507597824,
+          "capture": 0,
+          "steps": 27,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 21,
+          "exploration": 0.12280701754385964,
+          "final_distance": 5,
+          "obstacles": 7,
+          "decision_ns": 726535,
+          "decoder_counts": {
+            "circuit": 27,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308201,
+          "seed": -8507597825,
+          "capture": 0,
+          "steps": 20,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.017543859649122806,
+          "final_distance": 2,
+          "obstacles": 7,
+          "decision_ns": 675353,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308201,
+          "seed": -8507597826,
+          "capture": 0,
+          "steps": 20,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.017543859649122806,
+          "final_distance": 10,
+          "obstacles": 7,
+          "decision_ns": 524852,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308201,
+          "seed": -8507597827,
+          "capture": 0,
+          "steps": 20,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 19,
+          "exploration": 0.03508771929824561,
+          "final_distance": 7,
+          "obstacles": 7,
+          "decision_ns": 637385,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308202,
+          "seed": -8507598848,
+          "capture": 0,
+          "steps": 20,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.01694915254237288,
+          "final_distance": 3,
+          "obstacles": 5,
+          "decision_ns": 650224,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308202,
+          "seed": -8507598849,
+          "capture": 0,
+          "steps": 20,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 19,
+          "exploration": 0.03389830508474576,
+          "final_distance": 5,
+          "obstacles": 5,
+          "decision_ns": 670696,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308202,
+          "seed": -8507598850,
+          "capture": 0,
+          "steps": 28,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 21,
+          "exploration": 0.13559322033898305,
+          "final_distance": 11,
+          "obstacles": 5,
+          "decision_ns": 748053,
+          "decoder_counts": {
+            "circuit": 28,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308202,
+          "seed": -8507598851,
+          "capture": 0,
+          "steps": 20,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 18,
+          "exploration": 0.03389830508474576,
+          "final_distance": 4,
+          "obstacles": 5,
+          "decision_ns": 543371,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308203,
+          "seed": -8507599872,
+          "capture": 0,
+          "steps": 20,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.01694915254237288,
+          "final_distance": 4,
+          "obstacles": 5,
+          "decision_ns": 572528,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308203,
+          "seed": -8507599873,
+          "capture": 0,
+          "steps": 20,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.01694915254237288,
+          "final_distance": 4,
+          "obstacles": 5,
+          "decision_ns": 528380,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308203,
+          "seed": -8507599874,
+          "capture": 0,
+          "steps": 20,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 19,
+          "exploration": 0.03389830508474576,
+          "final_distance": 7,
+          "obstacles": 5,
+          "decision_ns": 687770,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308203,
+          "seed": -8507599875,
+          "capture": 0,
+          "steps": 20,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.01694915254237288,
+          "final_distance": 5,
+          "obstacles": 5,
+          "decision_ns": 596661,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        }
+      ]
+    },
+    {
+      "size": 8,
+      "scenario": "delayed_reward",
+      "actor": "trained8",
+      "capture_count": 0,
+      "episode_count": 12,
+      "capture_steps_sum": 0,
+      "successful_mean_steps": null,
+      "best_capture_steps": null,
+      "capture_wilson95": [
+        2.7755575615628914e-17,
+        0.24249400665524085
+      ],
+      "successful_median_steps": null,
+      "capture_rate": 0.0,
+      "mean_collisions": 16.166666666666668,
+      "mean_decision_microseconds": 37.84477205882353,
+      "episodes": [
+        {
+          "map_seed": -8308201,
+          "seed": -8507597824,
+          "capture": 0,
+          "steps": 27,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 10,
+          "exploration": 0.12280701754385964,
+          "final_distance": 4,
+          "obstacles": 7,
+          "decision_ns": 859369,
+          "decoder_counts": {
+            "circuit": 21,
+            "short": 6,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308201,
+          "seed": -8507597825,
+          "capture": 0,
+          "steps": 20,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.017543859649122806,
+          "final_distance": 2,
+          "obstacles": 7,
+          "decision_ns": 553035,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308201,
+          "seed": -8507597826,
+          "capture": 0,
+          "steps": 24,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.08771929824561403,
+          "final_distance": 8,
+          "obstacles": 7,
+          "decision_ns": 1746589,
+          "decoder_counts": {
+            "circuit": 4,
+            "short": 20,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308201,
+          "seed": -8507597827,
+          "capture": 0,
+          "steps": 20,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 2,
+          "exploration": 0.03508771929824561,
+          "final_distance": 6,
+          "obstacles": 7,
+          "decision_ns": 622632,
+          "decoder_counts": {
+            "circuit": 10,
+            "short": 10,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308202,
+          "seed": -8507598848,
+          "capture": 0,
+          "steps": 20,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.01694915254237288,
+          "final_distance": 3,
+          "obstacles": 5,
+          "decision_ns": 818705,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308202,
+          "seed": -8507598849,
+          "capture": 0,
+          "steps": 20,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 19,
+          "exploration": 0.03389830508474576,
+          "final_distance": 5,
+          "obstacles": 5,
+          "decision_ns": 741532,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308202,
+          "seed": -8507598850,
+          "capture": 0,
+          "steps": 36,
+          "reward": 0.0,
+          "stall": 0,
+          "blocked": 3,
+          "exploration": 0.13559322033898305,
+          "final_distance": 9,
+          "obstacles": 5,
+          "decision_ns": 1703613,
+          "decoder_counts": {
+            "circuit": 22,
+            "short": 14,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308202,
+          "seed": -8507598851,
+          "capture": 0,
+          "steps": 20,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 18,
+          "exploration": 0.03389830508474576,
+          "final_distance": 4,
+          "obstacles": 5,
+          "decision_ns": 611140,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308203,
+          "seed": -8507599872,
+          "capture": 0,
+          "steps": 20,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.01694915254237288,
+          "final_distance": 4,
+          "obstacles": 5,
+          "decision_ns": 561831,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308203,
+          "seed": -8507599873,
+          "capture": 0,
+          "steps": 20,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.01694915254237288,
+          "final_distance": 4,
+          "obstacles": 5,
+          "decision_ns": 587842,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308203,
+          "seed": -8507599874,
+          "capture": 0,
+          "steps": 25,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 22,
+          "exploration": 0.06779661016949153,
+          "final_distance": 9,
+          "obstacles": 5,
+          "decision_ns": 914824,
+          "decoder_counts": {
+            "circuit": 24,
+            "short": 1,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308203,
+          "seed": -8507599875,
+          "capture": 0,
+          "steps": 20,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.01694915254237288,
+          "final_distance": 5,
+          "obstacles": 5,
+          "decision_ns": 572666,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        }
+      ]
+    },
+    {
+      "size": 8,
+      "scenario": "delayed_reward",
+      "actor": "random8",
+      "capture_count": 2,
+      "episode_count": 12,
+      "capture_steps_sum": 50,
+      "successful_mean_steps": 25.0,
+      "best_capture_steps": 21,
+      "capture_wilson95": [
+        0.04696514218385378,
+        0.4480308622529734
+      ],
+      "successful_median_steps": 25.0,
+      "capture_rate": 0.16666666666666666,
+      "mean_collisions": 18.833333333333332,
+      "episodes": [
+        {
+          "map_seed": -8308201,
+          "seed": -8507597824,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 20
+        },
+        {
+          "map_seed": -8308201,
+          "seed": -8507597825,
+          "capture": 1,
+          "steps": 29,
+          "blocked": 14
+        },
+        {
+          "map_seed": -8308201,
+          "seed": -8507597826,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 19
+        },
+        {
+          "map_seed": -8308201,
+          "seed": -8507597827,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 20
+        },
+        {
+          "map_seed": -8308202,
+          "seed": -8507598848,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 23
+        },
+        {
+          "map_seed": -8308202,
+          "seed": -8507598849,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 16
+        },
+        {
+          "map_seed": -8308202,
+          "seed": -8507598850,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 24
+        },
+        {
+          "map_seed": -8308202,
+          "seed": -8507598851,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 21
+        },
+        {
+          "map_seed": -8308203,
+          "seed": -8507599872,
+          "capture": 1,
+          "steps": 21,
+          "blocked": 9
+        },
+        {
+          "map_seed": -8308203,
+          "seed": -8507599873,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 22
+        },
+        {
+          "map_seed": -8308203,
+          "seed": -8507599874,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 22
+        },
+        {
+          "map_seed": -8308203,
+          "seed": -8507599875,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 16
+        }
+      ]
+    },
+    {
+      "size": 8,
+      "scenario": "delayed_reward",
+      "actor": "sensor_greedy",
+      "capture_count": 12,
+      "episode_count": 12,
+      "capture_steps_sum": 158,
+      "successful_mean_steps": 13.166666666666666,
+      "best_capture_steps": 6,
+      "capture_wilson95": [
+        0.7575059933447592,
+        1.0
+      ],
+      "successful_median_steps": 10.0,
+      "capture_rate": 1.0,
+      "mean_collisions": 0,
+      "episodes": [
+        {
+          "map_seed": -8308201,
+          "seed": -8507597824,
+          "capture": 1,
+          "steps": 9,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8308201,
+          "seed": -8507597825,
+          "capture": 1,
+          "steps": 6,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8308201,
+          "seed": -8507597826,
+          "capture": 1,
+          "steps": 23,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8308201,
+          "seed": -8507597827,
+          "capture": 1,
+          "steps": 24,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8308202,
+          "seed": -8507598848,
+          "capture": 1,
+          "steps": 7,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8308202,
+          "seed": -8507598849,
+          "capture": 1,
+          "steps": 8,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8308202,
+          "seed": -8507598850,
+          "capture": 1,
+          "steps": 14,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8308202,
+          "seed": -8507598851,
+          "capture": 1,
+          "steps": 22,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8308203,
+          "seed": -8507599872,
+          "capture": 1,
+          "steps": 8,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8308203,
+          "seed": -8507599873,
+          "capture": 1,
+          "steps": 8,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8308203,
+          "seed": -8507599874,
+          "capture": 1,
+          "steps": 18,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8308203,
+          "seed": -8507599875,
+          "capture": 1,
+          "steps": 11,
+          "blocked": 0
+        }
+      ]
+    },
+    {
+      "size": 8,
+      "scenario": "intelligent_prey",
+      "actor": "initial",
+      "capture_count": 3,
+      "episode_count": 12,
+      "capture_steps_sum": 19,
+      "successful_mean_steps": 6.333333333333333,
+      "best_capture_steps": 1,
+      "capture_wilson95": [
+        0.08894166839405471,
+        0.5323053349335657
+      ],
+      "successful_median_steps": 6,
+      "capture_rate": 0.25,
+      "mean_collisions": 16.5,
+      "mean_decision_microseconds": 28.424418604651166,
+      "episodes": [
+        {
+          "map_seed": -8308301,
+          "seed": -8507700224,
+          "capture": 1,
+          "steps": 6,
+          "reward": 17.240000000000002,
+          "stall": 0,
+          "blocked": 3,
+          "exploration": 0.07407407407407407,
+          "final_distance": 0,
+          "obstacles": 10,
+          "decision_ns": 198990,
+          "decoder_counts": {
+            "circuit": 6,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308301,
+          "seed": -8507700225,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.018518518518518517,
+          "final_distance": 2,
+          "obstacles": 10,
+          "decision_ns": 551304,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308301,
+          "seed": -8507700226,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.018518518518518517,
+          "final_distance": 9,
+          "obstacles": 10,
+          "decision_ns": 531606,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308301,
+          "seed": -8507700227,
+          "capture": 0,
+          "steps": 20,
+          "reward": -21.0,
+          "stall": 1,
+          "blocked": 19,
+          "exploration": 0.037037037037037035,
+          "final_distance": 8,
+          "obstacles": 10,
+          "decision_ns": 529556,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308302,
+          "seed": -8507701248,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.018518518518518517,
+          "final_distance": 8,
+          "obstacles": 10,
+          "decision_ns": 587578,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308302,
+          "seed": -8507701249,
+          "capture": 1,
+          "steps": 1,
+          "reward": 20.0,
+          "stall": 0,
+          "blocked": 1,
+          "exploration": 0.018518518518518517,
+          "final_distance": 0,
+          "obstacles": 10,
+          "decision_ns": 37206,
+          "decoder_counts": {
+            "circuit": 1,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308302,
+          "seed": -8507701250,
+          "capture": 0,
+          "steps": 26,
+          "reward": -22.4,
+          "stall": 1,
+          "blocked": 21,
+          "exploration": 0.1111111111111111,
+          "final_distance": 7,
+          "obstacles": 10,
+          "decision_ns": 761151,
+          "decoder_counts": {
+            "circuit": 26,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308302,
+          "seed": -8507701251,
+          "capture": 0,
+          "steps": 25,
+          "reward": -22.52,
+          "stall": 1,
+          "blocked": 21,
+          "exploration": 0.09259259259259259,
+          "final_distance": 8,
+          "obstacles": 10,
+          "decision_ns": 746441,
+          "decoder_counts": {
+            "circuit": 25,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308303,
+          "seed": -8507702272,
+          "capture": 0,
+          "steps": 25,
+          "reward": -23.759999999999998,
+          "stall": 1,
+          "blocked": 22,
+          "exploration": 0.07017543859649122,
+          "final_distance": 3,
+          "obstacles": 7,
+          "decision_ns": 641327,
+          "decoder_counts": {
+            "circuit": 25,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308303,
+          "seed": -8507702273,
+          "capture": 0,
+          "steps": 20,
+          "reward": -20.88,
+          "stall": 1,
+          "blocked": 19,
+          "exploration": 0.03508771929824561,
+          "final_distance": 3,
+          "obstacles": 7,
+          "decision_ns": 628567,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308303,
+          "seed": -8507702274,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.017543859649122806,
+          "final_distance": 4,
+          "obstacles": 7,
+          "decision_ns": 565794,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308303,
+          "seed": -8507702275,
+          "capture": 1,
+          "steps": 12,
+          "reward": 9.0,
+          "stall": 0,
+          "blocked": 12,
+          "exploration": 0.017543859649122806,
+          "final_distance": 0,
+          "obstacles": 7,
+          "decision_ns": 331730,
+          "decoder_counts": {
+            "circuit": 12,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        }
+      ]
+    },
+    {
+      "size": 8,
+      "scenario": "intelligent_prey",
+      "actor": "trained8",
+      "capture_count": 3,
+      "episode_count": 12,
+      "capture_steps_sum": 19,
+      "successful_mean_steps": 6.333333333333333,
+      "best_capture_steps": 1,
+      "capture_wilson95": [
+        0.08894166839405471,
+        0.5323053349335657
+      ],
+      "successful_median_steps": 6,
+      "capture_rate": 0.25,
+      "mean_collisions": 16.666666666666668,
+      "mean_decision_microseconds": 33.13913839285714,
+      "episodes": [
+        {
+          "map_seed": -8308301,
+          "seed": -8507700224,
+          "capture": 1,
+          "steps": 6,
+          "reward": 17.240000000000002,
+          "stall": 0,
+          "blocked": 3,
+          "exploration": 0.07407407407407407,
+          "final_distance": 0,
+          "obstacles": 10,
+          "decision_ns": 191710,
+          "decoder_counts": {
+            "circuit": 6,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308301,
+          "seed": -8507700225,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.018518518518518517,
+          "final_distance": 2,
+          "obstacles": 10,
+          "decision_ns": 976587,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308301,
+          "seed": -8507700226,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.018518518518518517,
+          "final_distance": 9,
+          "obstacles": 10,
+          "decision_ns": 587779,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308301,
+          "seed": -8507700227,
+          "capture": 0,
+          "steps": 20,
+          "reward": -21.0,
+          "stall": 1,
+          "blocked": 19,
+          "exploration": 0.037037037037037035,
+          "final_distance": 8,
+          "obstacles": 10,
+          "decision_ns": 570302,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308302,
+          "seed": -8507701248,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.018518518518518517,
+          "final_distance": 8,
+          "obstacles": 10,
+          "decision_ns": 616315,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308302,
+          "seed": -8507701249,
+          "capture": 1,
+          "steps": 1,
+          "reward": 20.0,
+          "stall": 0,
+          "blocked": 1,
+          "exploration": 0.018518518518518517,
+          "final_distance": 0,
+          "obstacles": 10,
+          "decision_ns": 47402,
+          "decoder_counts": {
+            "circuit": 1,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308302,
+          "seed": -8507701250,
+          "capture": 0,
+          "steps": 26,
+          "reward": -22.4,
+          "stall": 1,
+          "blocked": 21,
+          "exploration": 0.1111111111111111,
+          "final_distance": 7,
+          "obstacles": 10,
+          "decision_ns": 756534,
+          "decoder_counts": {
+            "circuit": 26,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308302,
+          "seed": -8507701251,
+          "capture": 0,
+          "steps": 25,
+          "reward": -22.52,
+          "stall": 1,
+          "blocked": 21,
+          "exploration": 0.09259259259259259,
+          "final_distance": 8,
+          "obstacles": 10,
+          "decision_ns": 708484,
+          "decoder_counts": {
+            "circuit": 25,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308303,
+          "seed": -8507702272,
+          "capture": 0,
+          "steps": 34,
+          "reward": -25.24,
+          "stall": 1,
+          "blocked": 24,
+          "exploration": 0.15789473684210525,
+          "final_distance": 1,
+          "obstacles": 7,
+          "decision_ns": 1444356,
+          "decoder_counts": {
+            "circuit": 33,
+            "short": 1,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308303,
+          "seed": -8507702273,
+          "capture": 0,
+          "steps": 20,
+          "reward": -20.88,
+          "stall": 1,
+          "blocked": 19,
+          "exploration": 0.03508771929824561,
+          "final_distance": 3,
+          "obstacles": 7,
+          "decision_ns": 581020,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308303,
+          "seed": -8507702274,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.017543859649122806,
+          "final_distance": 4,
+          "obstacles": 7,
+          "decision_ns": 567750,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308303,
+          "seed": -8507702275,
+          "capture": 1,
+          "steps": 12,
+          "reward": 9.0,
+          "stall": 0,
+          "blocked": 12,
+          "exploration": 0.017543859649122806,
+          "final_distance": 0,
+          "obstacles": 7,
+          "decision_ns": 374928,
+          "decoder_counts": {
+            "circuit": 12,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        }
+      ]
+    },
+    {
+      "size": 8,
+      "scenario": "intelligent_prey",
+      "actor": "trained8_initial_evader",
+      "capture_count": 3,
+      "episode_count": 12,
+      "capture_steps_sum": 47,
+      "successful_mean_steps": 15.666666666666666,
+      "best_capture_steps": 1,
+      "capture_wilson95": [
+        0.08894166839405471,
+        0.5323053349335657
+      ],
+      "successful_median_steps": 18,
+      "capture_rate": 0.25,
+      "mean_collisions": 19.083333333333332,
+      "mean_decision_microseconds": 32.50130196078431,
+      "episodes": [
+        {
+          "map_seed": -8308301,
+          "seed": -8507700224,
+          "capture": 1,
+          "steps": 18,
+          "reward": 4.120000000000001,
+          "stall": 0,
+          "blocked": 17,
+          "exploration": 0.037037037037037035,
+          "final_distance": 0,
+          "obstacles": 10,
+          "decision_ns": 518194,
+          "decoder_counts": {
+            "circuit": 18,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308301,
+          "seed": -8507700225,
+          "capture": 1,
+          "steps": 28,
+          "reward": -4.760000000000002,
+          "stall": 0,
+          "blocked": 26,
+          "exploration": 0.05555555555555555,
+          "final_distance": 0,
+          "obstacles": 10,
+          "decision_ns": 748586,
+          "decoder_counts": {
+            "circuit": 28,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308301,
+          "seed": -8507700226,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.018518518518518517,
+          "final_distance": 10,
+          "obstacles": 10,
+          "decision_ns": 529810,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308301,
+          "seed": -8507700227,
+          "capture": 0,
+          "steps": 20,
+          "reward": -21.0,
+          "stall": 1,
+          "blocked": 19,
+          "exploration": 0.037037037037037035,
+          "final_distance": 9,
+          "obstacles": 10,
+          "decision_ns": 628519,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308302,
+          "seed": -8507701248,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.018518518518518517,
+          "final_distance": 8,
+          "obstacles": 10,
+          "decision_ns": 590442,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308302,
+          "seed": -8507701249,
+          "capture": 1,
+          "steps": 1,
+          "reward": 20.0,
+          "stall": 0,
+          "blocked": 1,
+          "exploration": 0.018518518518518517,
+          "final_distance": 0,
+          "obstacles": 10,
+          "decision_ns": 42955,
+          "decoder_counts": {
+            "circuit": 1,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308302,
+          "seed": -8507701250,
+          "capture": 0,
+          "steps": 23,
+          "reward": -22.759999999999998,
+          "stall": 1,
+          "blocked": 21,
+          "exploration": 0.05555555555555555,
+          "final_distance": 1,
+          "obstacles": 10,
+          "decision_ns": 1053275,
+          "decoder_counts": {
+            "circuit": 23,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308302,
+          "seed": -8507701251,
+          "capture": 0,
+          "steps": 31,
+          "reward": -22.919999999999998,
+          "stall": 1,
+          "blocked": 22,
+          "exploration": 0.18518518518518517,
+          "final_distance": 7,
+          "obstacles": 10,
+          "decision_ns": 1167157,
+          "decoder_counts": {
+            "circuit": 31,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308303,
+          "seed": -8507702272,
+          "capture": 0,
+          "steps": 34,
+          "reward": -25.24,
+          "stall": 1,
+          "blocked": 24,
+          "exploration": 0.15789473684210525,
+          "final_distance": 1,
+          "obstacles": 7,
+          "decision_ns": 1028616,
+          "decoder_counts": {
+            "circuit": 33,
+            "short": 1,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308303,
+          "seed": -8507702273,
+          "capture": 0,
+          "steps": 20,
+          "reward": -20.88,
+          "stall": 1,
+          "blocked": 19,
+          "exploration": 0.03508771929824561,
+          "final_distance": 3,
+          "obstacles": 7,
+          "decision_ns": 619978,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308303,
+          "seed": -8507702274,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.017543859649122806,
+          "final_distance": 4,
+          "obstacles": 7,
+          "decision_ns": 588671,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8308303,
+          "seed": -8507702275,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.017543859649122806,
+          "final_distance": 5,
+          "obstacles": 7,
+          "decision_ns": 771629,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        }
+      ]
+    },
+    {
+      "size": 8,
+      "scenario": "intelligent_prey",
+      "actor": "random8",
+      "capture_count": 4,
+      "episode_count": 12,
+      "capture_steps_sum": 66,
+      "successful_mean_steps": 16.5,
+      "best_capture_steps": 1,
+      "capture_wilson95": [
+        0.13812009109121315,
+        0.6093779111272004
+      ],
+      "successful_median_steps": 18.0,
+      "capture_rate": 0.3333333333333333,
+      "mean_collisions": 17.083333333333332,
+      "episodes": [
+        {
+          "map_seed": -8308301,
+          "seed": -8507700224,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 17
+        },
+        {
+          "map_seed": -8308301,
+          "seed": -8507700225,
+          "capture": 1,
+          "steps": 29,
+          "blocked": 19
+        },
+        {
+          "map_seed": -8308301,
+          "seed": -8507700226,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 18
+        },
+        {
+          "map_seed": -8308301,
+          "seed": -8507700227,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 19
+        },
+        {
+          "map_seed": -8308302,
+          "seed": -8507701248,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 22
+        },
+        {
+          "map_seed": -8308302,
+          "seed": -8507701249,
+          "capture": 1,
+          "steps": 1,
+          "blocked": 1
+        },
+        {
+          "map_seed": -8308302,
+          "seed": -8507701250,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 21
+        },
+        {
+          "map_seed": -8308302,
+          "seed": -8507701251,
+          "capture": 1,
+          "steps": 15,
+          "blocked": 10
+        },
+        {
+          "map_seed": -8308303,
+          "seed": -8507702272,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 16
+        },
+        {
+          "map_seed": -8308303,
+          "seed": -8507702273,
+          "capture": 1,
+          "steps": 21,
+          "blocked": 14
+        },
+        {
+          "map_seed": -8308303,
+          "seed": -8507702274,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 23
+        },
+        {
+          "map_seed": -8308303,
+          "seed": -8507702275,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 25
+        }
+      ]
+    },
+    {
+      "size": 8,
+      "scenario": "intelligent_prey",
+      "actor": "sensor_greedy",
+      "capture_count": 12,
+      "episode_count": 12,
+      "capture_steps_sum": 81,
+      "successful_mean_steps": 6.75,
+      "best_capture_steps": 1,
+      "capture_wilson95": [
+        0.7575059933447592,
+        1.0
+      ],
+      "successful_median_steps": 5.0,
+      "capture_rate": 1.0,
+      "mean_collisions": 0,
+      "episodes": [
+        {
+          "map_seed": -8308301,
+          "seed": -8507700224,
+          "capture": 1,
+          "steps": 3,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8308301,
+          "seed": -8507700225,
+          "capture": 1,
+          "steps": 4,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8308301,
+          "seed": -8507700226,
+          "capture": 1,
+          "steps": 10,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8308301,
+          "seed": -8507700227,
+          "capture": 1,
+          "steps": 6,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8308302,
+          "seed": -8507701248,
+          "capture": 1,
+          "steps": 11,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8308302,
+          "seed": -8507701249,
+          "capture": 1,
+          "steps": 1,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8308302,
+          "seed": -8507701250,
+          "capture": 1,
+          "steps": 4,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8308302,
+          "seed": -8507701251,
+          "capture": 1,
+          "steps": 6,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8308303,
+          "seed": -8507702272,
+          "capture": 1,
+          "steps": 25,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8308303,
+          "seed": -8507702273,
+          "capture": 1,
+          "steps": 2,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8308303,
+          "seed": -8507702274,
+          "capture": 1,
+          "steps": 7,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8308303,
+          "seed": -8507702275,
+          "capture": 1,
+          "steps": 2,
+          "blocked": 0
+        }
+      ]
+    },
+    {
+      "size": 12,
+      "scenario": "maze_novel",
+      "actor": "initial",
+      "capture_count": 0,
+      "episode_count": 12,
+      "capture_steps_sum": 0,
+      "successful_mean_steps": null,
+      "best_capture_steps": null,
+      "capture_wilson95": [
+        2.7755575615628914e-17,
+        0.24249400665524085
+      ],
+      "successful_median_steps": null,
+      "capture_rate": 0.0,
+      "mean_collisions": 20,
+      "mean_decision_microseconds": 27.427047272727272,
+      "episodes": [
+        {
+          "map_seed": -8312001,
+          "seed": -8511489024,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.014084507042253521,
+          "final_distance": 4,
+          "obstacles": 73,
+          "decision_ns": 549801,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312001,
+          "seed": -8511489025,
+          "capture": 0,
+          "steps": 20,
+          "reward": -20.88,
+          "stall": 1,
+          "blocked": 19,
+          "exploration": 0.028169014084507043,
+          "final_distance": 7,
+          "obstacles": 73,
+          "decision_ns": 625876,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312001,
+          "seed": -8511489026,
+          "capture": 0,
+          "steps": 23,
+          "reward": -22.759999999999998,
+          "stall": 1,
+          "blocked": 21,
+          "exploration": 0.04225352112676056,
+          "final_distance": 4,
+          "obstacles": 73,
+          "decision_ns": 616310,
+          "decoder_counts": {
+            "circuit": 23,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312001,
+          "seed": -8511489027,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.014084507042253521,
+          "final_distance": 8,
+          "obstacles": 73,
+          "decision_ns": 561290,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312002,
+          "seed": -8511490048,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.014084507042253521,
+          "final_distance": 1,
+          "obstacles": 73,
+          "decision_ns": 592907,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312002,
+          "seed": -8511490049,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.014084507042253521,
+          "final_distance": 8,
+          "obstacles": 73,
+          "decision_ns": 539958,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312002,
+          "seed": -8511490050,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.014084507042253521,
+          "final_distance": 5,
+          "obstacles": 73,
+          "decision_ns": 528570,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312002,
+          "seed": -8511490051,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.014084507042253521,
+          "final_distance": 2,
+          "obstacles": 73,
+          "decision_ns": 564703,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312003,
+          "seed": -8511491072,
+          "capture": 0,
+          "steps": 22,
+          "reward": -21.759999999999998,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.04225352112676056,
+          "final_distance": 7,
+          "obstacles": 73,
+          "decision_ns": 585183,
+          "decoder_counts": {
+            "circuit": 22,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312003,
+          "seed": -8511491073,
+          "capture": 0,
+          "steps": 31,
+          "reward": -24.04,
+          "stall": 1,
+          "blocked": 23,
+          "exploration": 0.1267605633802817,
+          "final_distance": 10,
+          "obstacles": 73,
+          "decision_ns": 855207,
+          "decoder_counts": {
+            "circuit": 31,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312003,
+          "seed": -8511491074,
+          "capture": 0,
+          "steps": 23,
+          "reward": -21.64,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.056338028169014086,
+          "final_distance": 5,
+          "obstacles": 73,
+          "decision_ns": 603181,
+          "decoder_counts": {
+            "circuit": 23,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312003,
+          "seed": -8511491075,
+          "capture": 0,
+          "steps": 36,
+          "reward": -17.43999999999999,
+          "stall": 0,
+          "blocked": 17,
+          "exploration": 0.04225352112676056,
+          "final_distance": 2,
+          "obstacles": 73,
+          "decision_ns": 919452,
+          "decoder_counts": {
+            "circuit": 36,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        }
+      ]
+    },
+    {
+      "size": 12,
+      "scenario": "maze_novel",
+      "actor": "trained8",
+      "capture_count": 0,
+      "episode_count": 12,
+      "capture_steps_sum": 0,
+      "successful_mean_steps": null,
+      "best_capture_steps": null,
+      "capture_wilson95": [
+        2.7755575615628914e-17,
+        0.24249400665524085
+      ],
+      "successful_median_steps": null,
+      "capture_rate": 0.0,
+      "mean_collisions": 20,
+      "mean_decision_microseconds": 29.515148014440435,
+      "episodes": [
+        {
+          "map_seed": -8312001,
+          "seed": -8511489024,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.014084507042253521,
+          "final_distance": 4,
+          "obstacles": 73,
+          "decision_ns": 569453,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312001,
+          "seed": -8511489025,
+          "capture": 0,
+          "steps": 20,
+          "reward": -20.88,
+          "stall": 1,
+          "blocked": 19,
+          "exploration": 0.028169014084507043,
+          "final_distance": 7,
+          "obstacles": 73,
+          "decision_ns": 543591,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312001,
+          "seed": -8511489026,
+          "capture": 0,
+          "steps": 23,
+          "reward": -22.759999999999998,
+          "stall": 1,
+          "blocked": 21,
+          "exploration": 0.04225352112676056,
+          "final_distance": 4,
+          "obstacles": 73,
+          "decision_ns": 622631,
+          "decoder_counts": {
+            "circuit": 23,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312001,
+          "seed": -8511489027,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.014084507042253521,
+          "final_distance": 8,
+          "obstacles": 73,
+          "decision_ns": 563129,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312002,
+          "seed": -8511490048,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.014084507042253521,
+          "final_distance": 1,
+          "obstacles": 73,
+          "decision_ns": 590994,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312002,
+          "seed": -8511490049,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.014084507042253521,
+          "final_distance": 8,
+          "obstacles": 73,
+          "decision_ns": 636323,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312002,
+          "seed": -8511490050,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.014084507042253521,
+          "final_distance": 5,
+          "obstacles": 73,
+          "decision_ns": 579895,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312002,
+          "seed": -8511490051,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.014084507042253521,
+          "final_distance": 2,
+          "obstacles": 73,
+          "decision_ns": 564658,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312003,
+          "seed": -8511491072,
+          "capture": 0,
+          "steps": 22,
+          "reward": -21.759999999999998,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.04225352112676056,
+          "final_distance": 7,
+          "obstacles": 73,
+          "decision_ns": 617504,
+          "decoder_counts": {
+            "circuit": 22,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312003,
+          "seed": -8511491073,
+          "capture": 0,
+          "steps": 32,
+          "reward": -23.919999999999998,
+          "stall": 1,
+          "blocked": 23,
+          "exploration": 0.14084507042253522,
+          "final_distance": 9,
+          "obstacles": 73,
+          "decision_ns": 1031101,
+          "decoder_counts": {
+            "circuit": 31,
+            "short": 1,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312003,
+          "seed": -8511491074,
+          "capture": 0,
+          "steps": 24,
+          "reward": -21.52,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.07042253521126761,
+          "final_distance": 4,
+          "obstacles": 73,
+          "decision_ns": 695880,
+          "decoder_counts": {
+            "circuit": 23,
+            "short": 1,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312003,
+          "seed": -8511491075,
+          "capture": 0,
+          "steps": 36,
+          "reward": -17.43999999999999,
+          "stall": 0,
+          "blocked": 17,
+          "exploration": 0.04225352112676056,
+          "final_distance": 2,
+          "obstacles": 73,
+          "decision_ns": 1160537,
+          "decoder_counts": {
+            "circuit": 36,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        }
+      ]
+    },
+    {
+      "size": 12,
+      "scenario": "maze_novel",
+      "actor": "random8",
+      "capture_count": 3,
+      "episode_count": 12,
+      "capture_steps_sum": 20,
+      "successful_mean_steps": 6.666666666666667,
+      "best_capture_steps": 3,
+      "capture_wilson95": [
+        0.08894166839405471,
+        0.5323053349335657
+      ],
+      "successful_median_steps": 3,
+      "capture_rate": 0.25,
+      "mean_collisions": 20.083333333333332,
+      "episodes": [
+        {
+          "map_seed": -8312001,
+          "seed": -8511489024,
+          "capture": 0,
+          "steps": 24,
+          "blocked": 21
+        },
+        {
+          "map_seed": -8312001,
+          "seed": -8511489025,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 24
+        },
+        {
+          "map_seed": -8312001,
+          "seed": -8511489026,
+          "capture": 0,
+          "steps": 35,
+          "blocked": 27
+        },
+        {
+          "map_seed": -8312001,
+          "seed": -8511489027,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 29
+        },
+        {
+          "map_seed": -8312002,
+          "seed": -8511490048,
+          "capture": 1,
+          "steps": 14,
+          "blocked": 13
+        },
+        {
+          "map_seed": -8312002,
+          "seed": -8511490049,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 25
+        },
+        {
+          "map_seed": -8312002,
+          "seed": -8511490050,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 20
+        },
+        {
+          "map_seed": -8312002,
+          "seed": -8511490051,
+          "capture": 1,
+          "steps": 3,
+          "blocked": 1
+        },
+        {
+          "map_seed": -8312003,
+          "seed": -8511491072,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 28
+        },
+        {
+          "map_seed": -8312003,
+          "seed": -8511491073,
+          "capture": 0,
+          "steps": 35,
+          "blocked": 27
+        },
+        {
+          "map_seed": -8312003,
+          "seed": -8511491074,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 24
+        },
+        {
+          "map_seed": -8312003,
+          "seed": -8511491075,
+          "capture": 1,
+          "steps": 3,
+          "blocked": 2
+        }
+      ]
+    },
+    {
+      "size": 12,
+      "scenario": "maze_novel",
+      "actor": "sensor_greedy",
+      "capture_count": 4,
+      "episode_count": 12,
+      "capture_steps_sum": 34,
+      "successful_mean_steps": 8.5,
+      "best_capture_steps": 1,
+      "capture_wilson95": [
+        0.13812009109121315,
+        0.6093779111272004
+      ],
+      "successful_median_steps": 1.5,
+      "capture_rate": 0.3333333333333333,
+      "mean_collisions": 9.083333333333334,
+      "episodes": [
+        {
+          "map_seed": -8312001,
+          "seed": -8511489024,
+          "capture": 1,
+          "steps": 30,
+          "blocked": 14
+        },
+        {
+          "map_seed": -8312001,
+          "seed": -8511489025,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 10
+        },
+        {
+          "map_seed": -8312001,
+          "seed": -8511489026,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 14
+        },
+        {
+          "map_seed": -8312001,
+          "seed": -8511489027,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 15
+        },
+        {
+          "map_seed": -8312002,
+          "seed": -8511490048,
+          "capture": 1,
+          "steps": 1,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8312002,
+          "seed": -8511490049,
+          "capture": 0,
+          "steps": 20,
+          "blocked": 14
+        },
+        {
+          "map_seed": -8312002,
+          "seed": -8511490050,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 8
+        },
+        {
+          "map_seed": -8312002,
+          "seed": -8511490051,
+          "capture": 1,
+          "steps": 2,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8312003,
+          "seed": -8511491072,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 22
+        },
+        {
+          "map_seed": -8312003,
+          "seed": -8511491073,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 5
+        },
+        {
+          "map_seed": -8312003,
+          "seed": -8511491074,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 7
+        },
+        {
+          "map_seed": -8312003,
+          "seed": -8511491075,
+          "capture": 1,
+          "steps": 1,
+          "blocked": 0
+        }
+      ]
+    },
+    {
+      "size": 12,
+      "scenario": "hidden",
+      "actor": "initial",
+      "capture_count": 0,
+      "episode_count": 12,
+      "capture_steps_sum": 0,
+      "successful_mean_steps": null,
+      "best_capture_steps": null,
+      "capture_wilson95": [
+        2.7755575615628914e-17,
+        0.24249400665524085
+      ],
+      "successful_median_steps": null,
+      "capture_rate": 0.0,
+      "mean_collisions": 20.416666666666668,
+      "mean_decision_microseconds": 28.43792565055762,
+      "episodes": [
+        {
+          "map_seed": -8312101,
+          "seed": -8511591424,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.007692307692307693,
+          "final_distance": 8,
+          "obstacles": 14,
+          "decision_ns": 544595,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312101,
+          "seed": -8511591425,
+          "capture": 0,
+          "steps": 24,
+          "reward": -22.64,
+          "stall": 1,
+          "blocked": 21,
+          "exploration": 0.03076923076923077,
+          "final_distance": 9,
+          "obstacles": 14,
+          "decision_ns": 655791,
+          "decoder_counts": {
+            "circuit": 24,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312101,
+          "seed": -8511591426,
+          "capture": 0,
+          "steps": 20,
+          "reward": -21.0,
+          "stall": 1,
+          "blocked": 19,
+          "exploration": 0.015384615384615385,
+          "final_distance": 13,
+          "obstacles": 14,
+          "decision_ns": 591434,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312101,
+          "seed": -8511591427,
+          "capture": 0,
+          "steps": 26,
+          "reward": -21.68,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.046153846153846156,
+          "final_distance": 9,
+          "obstacles": 14,
+          "decision_ns": 681031,
+          "decoder_counts": {
+            "circuit": 26,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312102,
+          "seed": -8511592448,
+          "capture": 0,
+          "steps": 25,
+          "reward": -22.64,
+          "stall": 1,
+          "blocked": 21,
+          "exploration": 0.03937007874015748,
+          "final_distance": 9,
+          "obstacles": 17,
+          "decision_ns": 917377,
+          "decoder_counts": {
+            "circuit": 25,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312102,
+          "seed": -8511592449,
+          "capture": 0,
+          "steps": 30,
+          "reward": -24.28,
+          "stall": 1,
+          "blocked": 23,
+          "exploration": 0.06299212598425197,
+          "final_distance": 14,
+          "obstacles": 17,
+          "decision_ns": 850163,
+          "decoder_counts": {
+            "circuit": 30,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312102,
+          "seed": -8511592450,
+          "capture": 0,
+          "steps": 24,
+          "reward": -22.64,
+          "stall": 1,
+          "blocked": 21,
+          "exploration": 0.031496062992125984,
+          "final_distance": 12,
+          "obstacles": 17,
+          "decision_ns": 638748,
+          "decoder_counts": {
+            "circuit": 24,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312102,
+          "seed": -8511592451,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.007874015748031496,
+          "final_distance": 13,
+          "obstacles": 17,
+          "decision_ns": 531953,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312103,
+          "seed": -8511593472,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.00819672131147541,
+          "final_distance": 13,
+          "obstacles": 22,
+          "decision_ns": 555593,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312103,
+          "seed": -8511593473,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.00819672131147541,
+          "final_distance": 18,
+          "obstacles": 22,
+          "decision_ns": 546868,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312103,
+          "seed": -8511593474,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.00819672131147541,
+          "final_distance": 3,
+          "obstacles": 22,
+          "decision_ns": 560951,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312103,
+          "seed": -8511593475,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.00819672131147541,
+          "final_distance": 10,
+          "obstacles": 22,
+          "decision_ns": 575298,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        }
+      ]
+    },
+    {
+      "size": 12,
+      "scenario": "hidden",
+      "actor": "trained8",
+      "capture_count": 0,
+      "episode_count": 12,
+      "capture_steps_sum": 0,
+      "successful_mean_steps": null,
+      "best_capture_steps": null,
+      "capture_wilson95": [
+        2.7755575615628914e-17,
+        0.24249400665524085
+      ],
+      "successful_median_steps": null,
+      "capture_rate": 0.0,
+      "mean_collisions": 21.083333333333332,
+      "mean_decision_microseconds": 37.01267796610169,
+      "episodes": [
+        {
+          "map_seed": -8312101,
+          "seed": -8511591424,
+          "capture": 0,
+          "steps": 27,
+          "reward": -23.56,
+          "stall": 1,
+          "blocked": 22,
+          "exploration": 0.038461538461538464,
+          "final_distance": 9,
+          "obstacles": 14,
+          "decision_ns": 1710678,
+          "decoder_counts": {
+            "circuit": 7,
+            "short": 20,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312101,
+          "seed": -8511591425,
+          "capture": 0,
+          "steps": 33,
+          "reward": -26.28,
+          "stall": 1,
+          "blocked": 25,
+          "exploration": 0.06923076923076923,
+          "final_distance": 8,
+          "obstacles": 14,
+          "decision_ns": 1077268,
+          "decoder_counts": {
+            "circuit": 30,
+            "short": 3,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312101,
+          "seed": -8511591426,
+          "capture": 0,
+          "steps": 26,
+          "reward": -23.8,
+          "stall": 1,
+          "blocked": 22,
+          "exploration": 0.03076923076923077,
+          "final_distance": 14,
+          "obstacles": 14,
+          "decision_ns": 1282207,
+          "decoder_counts": {
+            "circuit": 8,
+            "short": 18,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312101,
+          "seed": -8511591427,
+          "capture": 0,
+          "steps": 29,
+          "reward": -21.32,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.06923076923076923,
+          "final_distance": 8,
+          "obstacles": 14,
+          "decision_ns": 821462,
+          "decoder_counts": {
+            "circuit": 25,
+            "short": 4,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312102,
+          "seed": -8511592448,
+          "capture": 0,
+          "steps": 25,
+          "reward": -22.64,
+          "stall": 1,
+          "blocked": 21,
+          "exploration": 0.03937007874015748,
+          "final_distance": 9,
+          "obstacles": 17,
+          "decision_ns": 840055,
+          "decoder_counts": {
+            "circuit": 25,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312102,
+          "seed": -8511592449,
+          "capture": 0,
+          "steps": 30,
+          "reward": -24.28,
+          "stall": 1,
+          "blocked": 23,
+          "exploration": 0.06299212598425197,
+          "final_distance": 14,
+          "obstacles": 17,
+          "decision_ns": 959802,
+          "decoder_counts": {
+            "circuit": 30,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312102,
+          "seed": -8511592450,
+          "capture": 0,
+          "steps": 25,
+          "reward": -22.52,
+          "stall": 1,
+          "blocked": 21,
+          "exploration": 0.03937007874015748,
+          "final_distance": 11,
+          "obstacles": 17,
+          "decision_ns": 728265,
+          "decoder_counts": {
+            "circuit": 24,
+            "short": 1,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312102,
+          "seed": -8511592451,
+          "capture": 0,
+          "steps": 20,
+          "reward": -20.88,
+          "stall": 1,
+          "blocked": 19,
+          "exploration": 0.015748031496062992,
+          "final_distance": 12,
+          "obstacles": 17,
+          "decision_ns": 562582,
+          "decoder_counts": {
+            "circuit": 19,
+            "short": 1,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312103,
+          "seed": -8511593472,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.00819672131147541,
+          "final_distance": 13,
+          "obstacles": 22,
+          "decision_ns": 585202,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312103,
+          "seed": -8511593473,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.00819672131147541,
+          "final_distance": 18,
+          "obstacles": 22,
+          "decision_ns": 624336,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312103,
+          "seed": -8511593474,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.00819672131147541,
+          "final_distance": 3,
+          "obstacles": 22,
+          "decision_ns": 692937,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312103,
+          "seed": -8511593475,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.00819672131147541,
+          "final_distance": 10,
+          "obstacles": 22,
+          "decision_ns": 1033946,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        }
+      ]
+    },
+    {
+      "size": 12,
+      "scenario": "hidden",
+      "actor": "random8",
+      "capture_count": 1,
+      "episode_count": 12,
+      "capture_steps_sum": 32,
+      "successful_mean_steps": 32.0,
+      "best_capture_steps": 32,
+      "capture_wilson95": [
+        0.014865094404917095,
+        0.35387991114111694
+      ],
+      "successful_median_steps": 32,
+      "capture_rate": 0.08333333333333333,
+      "mean_collisions": 20.083333333333332,
+      "episodes": [
+        {
+          "map_seed": -8312101,
+          "seed": -8511591424,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 16
+        },
+        {
+          "map_seed": -8312101,
+          "seed": -8511591425,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 14
+        },
+        {
+          "map_seed": -8312101,
+          "seed": -8511591426,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 21
+        },
+        {
+          "map_seed": -8312101,
+          "seed": -8511591427,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 20
+        },
+        {
+          "map_seed": -8312102,
+          "seed": -8511592448,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 19
+        },
+        {
+          "map_seed": -8312102,
+          "seed": -8511592449,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 21
+        },
+        {
+          "map_seed": -8312102,
+          "seed": -8511592450,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 21
+        },
+        {
+          "map_seed": -8312102,
+          "seed": -8511592451,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 21
+        },
+        {
+          "map_seed": -8312103,
+          "seed": -8511593472,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 28
+        },
+        {
+          "map_seed": -8312103,
+          "seed": -8511593473,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 25
+        },
+        {
+          "map_seed": -8312103,
+          "seed": -8511593474,
+          "capture": 1,
+          "steps": 32,
+          "blocked": 16
+        },
+        {
+          "map_seed": -8312103,
+          "seed": -8511593475,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 19
+        }
+      ]
+    },
+    {
+      "size": 12,
+      "scenario": "hidden",
+      "actor": "sensor_greedy",
+      "capture_count": 2,
+      "episode_count": 12,
+      "capture_steps_sum": 41,
+      "successful_mean_steps": 20.5,
+      "best_capture_steps": 6,
+      "capture_wilson95": [
+        0.04696514218385378,
+        0.4480308622529734
+      ],
+      "successful_median_steps": 20.5,
+      "capture_rate": 0.16666666666666666,
+      "mean_collisions": 0,
+      "episodes": [
+        {
+          "map_seed": -8312101,
+          "seed": -8511591424,
+          "capture": 1,
+          "steps": 35,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8312101,
+          "seed": -8511591425,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8312101,
+          "seed": -8511591426,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8312101,
+          "seed": -8511591427,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8312102,
+          "seed": -8511592448,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8312102,
+          "seed": -8511592449,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8312102,
+          "seed": -8511592450,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8312102,
+          "seed": -8511592451,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8312103,
+          "seed": -8511593472,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8312103,
+          "seed": -8511593473,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8312103,
+          "seed": -8511593474,
+          "capture": 1,
+          "steps": 6,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8312103,
+          "seed": -8511593475,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 0
+        }
+      ]
+    },
+    {
+      "size": 12,
+      "scenario": "delayed_reward",
+      "actor": "initial",
+      "capture_count": 0,
+      "episode_count": 12,
+      "capture_steps_sum": 0,
+      "successful_mean_steps": null,
+      "best_capture_steps": null,
+      "capture_wilson95": [
+        2.7755575615628914e-17,
+        0.24249400665524085
+      ],
+      "successful_median_steps": null,
+      "capture_rate": 0.0,
+      "mean_collisions": 20.583333333333332,
+      "mean_decision_microseconds": 35.31253846153846,
+      "episodes": [
+        {
+          "map_seed": -8312201,
+          "seed": -8511693824,
+          "capture": 0,
+          "steps": 20,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.007633587786259542,
+          "final_distance": 4,
+          "obstacles": 13,
+          "decision_ns": 1033271,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312201,
+          "seed": -8511693825,
+          "capture": 0,
+          "steps": 34,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 26,
+          "exploration": 0.06870229007633588,
+          "final_distance": 15,
+          "obstacles": 13,
+          "decision_ns": 933606,
+          "decoder_counts": {
+            "circuit": 34,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312201,
+          "seed": -8511693826,
+          "capture": 0,
+          "steps": 20,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.007633587786259542,
+          "final_distance": 11,
+          "obstacles": 13,
+          "decision_ns": 899020,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312201,
+          "seed": -8511693827,
+          "capture": 0,
+          "steps": 20,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.007633587786259542,
+          "final_distance": 4,
+          "obstacles": 13,
+          "decision_ns": 559650,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312202,
+          "seed": -8511694848,
+          "capture": 0,
+          "steps": 30,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 23,
+          "exploration": 0.05426356589147287,
+          "final_distance": 5,
+          "obstacles": 15,
+          "decision_ns": 961158,
+          "decoder_counts": {
+            "circuit": 30,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312202,
+          "seed": -8511694849,
+          "capture": 0,
+          "steps": 23,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 21,
+          "exploration": 0.023255813953488372,
+          "final_distance": 6,
+          "obstacles": 15,
+          "decision_ns": 609522,
+          "decoder_counts": {
+            "circuit": 23,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312202,
+          "seed": -8511694850,
+          "capture": 0,
+          "steps": 24,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.03875968992248062,
+          "final_distance": 11,
+          "obstacles": 15,
+          "decision_ns": 664472,
+          "decoder_counts": {
+            "circuit": 24,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312202,
+          "seed": -8511694851,
+          "capture": 0,
+          "steps": 22,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.023255813953488372,
+          "final_distance": 9,
+          "obstacles": 15,
+          "decision_ns": 966224,
+          "decoder_counts": {
+            "circuit": 22,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312203,
+          "seed": -8511695872,
+          "capture": 0,
+          "steps": 20,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 18,
+          "exploration": 0.015037593984962405,
+          "final_distance": 6,
+          "obstacles": 11,
+          "decision_ns": 551485,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312203,
+          "seed": -8511695873,
+          "capture": 0,
+          "steps": 20,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.007518796992481203,
+          "final_distance": 11,
+          "obstacles": 11,
+          "decision_ns": 565938,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312203,
+          "seed": -8511695874,
+          "capture": 0,
+          "steps": 20,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.007518796992481203,
+          "final_distance": 12,
+          "obstacles": 11,
+          "decision_ns": 942313,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312203,
+          "seed": -8511695875,
+          "capture": 0,
+          "steps": 20,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 19,
+          "exploration": 0.015037593984962405,
+          "final_distance": 7,
+          "obstacles": 11,
+          "decision_ns": 953664,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        }
+      ]
+    },
+    {
+      "size": 12,
+      "scenario": "delayed_reward",
+      "actor": "trained8",
+      "capture_count": 0,
+      "episode_count": 12,
+      "capture_steps_sum": 0,
+      "successful_mean_steps": null,
+      "best_capture_steps": null,
+      "capture_wilson95": [
+        2.7755575615628914e-17,
+        0.24249400665524085
+      ],
+      "successful_median_steps": null,
+      "capture_rate": 0.0,
+      "mean_collisions": 20,
+      "mean_decision_microseconds": 50.597638436482086,
+      "episodes": [
+        {
+          "map_seed": -8312201,
+          "seed": -8511693824,
+          "capture": 0,
+          "steps": 20,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.007633587786259542,
+          "final_distance": 4,
+          "obstacles": 13,
+          "decision_ns": 645877,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312201,
+          "seed": -8511693825,
+          "capture": 0,
+          "steps": 34,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 26,
+          "exploration": 0.06870229007633588,
+          "final_distance": 15,
+          "obstacles": 13,
+          "decision_ns": 1077534,
+          "decoder_counts": {
+            "circuit": 34,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312201,
+          "seed": -8511693826,
+          "capture": 0,
+          "steps": 20,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.007633587786259542,
+          "final_distance": 11,
+          "obstacles": 13,
+          "decision_ns": 612086,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312201,
+          "seed": -8511693827,
+          "capture": 0,
+          "steps": 20,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.007633587786259542,
+          "final_distance": 4,
+          "obstacles": 13,
+          "decision_ns": 562987,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312202,
+          "seed": -8511694848,
+          "capture": 0,
+          "steps": 30,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 23,
+          "exploration": 0.05426356589147287,
+          "final_distance": 5,
+          "obstacles": 15,
+          "decision_ns": 1962549,
+          "decoder_counts": {
+            "circuit": 30,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312202,
+          "seed": -8511694849,
+          "capture": 0,
+          "steps": 24,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 21,
+          "exploration": 0.031007751937984496,
+          "final_distance": 5,
+          "obstacles": 15,
+          "decision_ns": 847565,
+          "decoder_counts": {
+            "circuit": 23,
+            "short": 1,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312202,
+          "seed": -8511694850,
+          "capture": 0,
+          "steps": 24,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.03875968992248062,
+          "final_distance": 11,
+          "obstacles": 15,
+          "decision_ns": 660512,
+          "decoder_counts": {
+            "circuit": 24,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312202,
+          "seed": -8511694851,
+          "capture": 0,
+          "steps": 36,
+          "reward": 0.0,
+          "stall": 0,
+          "blocked": 9,
+          "exploration": 0.046511627906976744,
+          "final_distance": 8,
+          "obstacles": 15,
+          "decision_ns": 1860417,
+          "decoder_counts": {
+            "circuit": 18,
+            "short": 18,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312203,
+          "seed": -8511695872,
+          "capture": 0,
+          "steps": 20,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 18,
+          "exploration": 0.015037593984962405,
+          "final_distance": 6,
+          "obstacles": 11,
+          "decision_ns": 701571,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312203,
+          "seed": -8511695873,
+          "capture": 0,
+          "steps": 25,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.045112781954887216,
+          "final_distance": 16,
+          "obstacles": 11,
+          "decision_ns": 2787021,
+          "decoder_counts": {
+            "circuit": 4,
+            "short": 21,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312203,
+          "seed": -8511695874,
+          "capture": 0,
+          "steps": 31,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 22,
+          "exploration": 0.07518796992481203,
+          "final_distance": 21,
+          "obstacles": 11,
+          "decision_ns": 2118662,
+          "decoder_counts": {
+            "circuit": 6,
+            "short": 25,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312203,
+          "seed": -8511695875,
+          "capture": 0,
+          "steps": 23,
+          "reward": -2.0,
+          "stall": 1,
+          "blocked": 21,
+          "exploration": 0.022556390977443608,
+          "final_distance": 8,
+          "obstacles": 11,
+          "decision_ns": 1696694,
+          "decoder_counts": {
+            "circuit": 6,
+            "short": 17,
+            "context": 0,
+            "hdc": 0
+          }
+        }
+      ]
+    },
+    {
+      "size": 12,
+      "scenario": "delayed_reward",
+      "actor": "random8",
+      "capture_count": 0,
+      "episode_count": 12,
+      "capture_steps_sum": 0,
+      "successful_mean_steps": null,
+      "best_capture_steps": null,
+      "capture_wilson95": [
+        2.7755575615628914e-17,
+        0.24249400665524085
+      ],
+      "successful_median_steps": null,
+      "capture_rate": 0.0,
+      "mean_collisions": 21.333333333333332,
+      "episodes": [
+        {
+          "map_seed": -8312201,
+          "seed": -8511693824,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 19
+        },
+        {
+          "map_seed": -8312201,
+          "seed": -8511693825,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 21
+        },
+        {
+          "map_seed": -8312201,
+          "seed": -8511693826,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 17
+        },
+        {
+          "map_seed": -8312201,
+          "seed": -8511693827,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 19
+        },
+        {
+          "map_seed": -8312202,
+          "seed": -8511694848,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 24
+        },
+        {
+          "map_seed": -8312202,
+          "seed": -8511694849,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 17
+        },
+        {
+          "map_seed": -8312202,
+          "seed": -8511694850,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 30
+        },
+        {
+          "map_seed": -8312202,
+          "seed": -8511694851,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 26
+        },
+        {
+          "map_seed": -8312203,
+          "seed": -8511695872,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 19
+        },
+        {
+          "map_seed": -8312203,
+          "seed": -8511695873,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 22
+        },
+        {
+          "map_seed": -8312203,
+          "seed": -8511695874,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 23
+        },
+        {
+          "map_seed": -8312203,
+          "seed": -8511695875,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 19
+        }
+      ]
+    },
+    {
+      "size": 12,
+      "scenario": "delayed_reward",
+      "actor": "sensor_greedy",
+      "capture_count": 7,
+      "episode_count": 12,
+      "capture_steps_sum": 97,
+      "successful_mean_steps": 13.857142857142858,
+      "best_capture_steps": 8,
+      "capture_wilson95": [
+        0.31951131254954973,
+        0.8067396863412435
+      ],
+      "successful_median_steps": 9,
+      "capture_rate": 0.5833333333333334,
+      "mean_collisions": 0,
+      "episodes": [
+        {
+          "map_seed": -8312201,
+          "seed": -8511693824,
+          "capture": 1,
+          "steps": 8,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8312201,
+          "seed": -8511693825,
+          "capture": 1,
+          "steps": 9,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8312201,
+          "seed": -8511693826,
+          "capture": 1,
+          "steps": 27,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8312201,
+          "seed": -8511693827,
+          "capture": 1,
+          "steps": 8,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8312202,
+          "seed": -8511694848,
+          "capture": 1,
+          "steps": 15,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8312202,
+          "seed": -8511694849,
+          "capture": 1,
+          "steps": 8,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8312202,
+          "seed": -8511694850,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8312202,
+          "seed": -8511694851,
+          "capture": 1,
+          "steps": 22,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8312203,
+          "seed": -8511695872,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8312203,
+          "seed": -8511695873,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8312203,
+          "seed": -8511695874,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8312203,
+          "seed": -8511695875,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 0
+        }
+      ]
+    },
+    {
+      "size": 12,
+      "scenario": "intelligent_prey",
+      "actor": "initial",
+      "capture_count": 2,
+      "episode_count": 12,
+      "capture_steps_sum": 22,
+      "successful_mean_steps": 11.0,
+      "best_capture_steps": 10,
+      "capture_wilson95": [
+        0.04696514218385378,
+        0.4480308622529734
+      ],
+      "successful_median_steps": 11.0,
+      "capture_rate": 0.16666666666666666,
+      "mean_collisions": 18.083333333333332,
+      "mean_decision_microseconds": 39.02863063063063,
+      "episodes": [
+        {
+          "map_seed": -8312301,
+          "seed": -8511796224,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.007692307692307693,
+          "final_distance": 13,
+          "obstacles": 14,
+          "decision_ns": 909715,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312301,
+          "seed": -8511796225,
+          "capture": 0,
+          "steps": 20,
+          "reward": -20.88,
+          "stall": 1,
+          "blocked": 19,
+          "exploration": 0.015384615384615385,
+          "final_distance": 1,
+          "obstacles": 14,
+          "decision_ns": 839160,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312301,
+          "seed": -8511796226,
+          "capture": 0,
+          "steps": 20,
+          "reward": -20.88,
+          "stall": 1,
+          "blocked": 19,
+          "exploration": 0.015384615384615385,
+          "final_distance": 14,
+          "obstacles": 14,
+          "decision_ns": 959844,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312301,
+          "seed": -8511796227,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.007692307692307693,
+          "final_distance": 10,
+          "obstacles": 14,
+          "decision_ns": 928915,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312302,
+          "seed": -8511797248,
+          "capture": 0,
+          "steps": 20,
+          "reward": -19.92,
+          "stall": 1,
+          "blocked": 18,
+          "exploration": 0.015384615384615385,
+          "final_distance": 3,
+          "obstacles": 14,
+          "decision_ns": 666067,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312302,
+          "seed": -8511797249,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.007692307692307693,
+          "final_distance": 12,
+          "obstacles": 14,
+          "decision_ns": 575297,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312302,
+          "seed": -8511797250,
+          "capture": 1,
+          "steps": 10,
+          "reward": 11.0,
+          "stall": 0,
+          "blocked": 10,
+          "exploration": 0.007692307692307693,
+          "final_distance": 0,
+          "obstacles": 14,
+          "decision_ns": 270000,
+          "decoder_counts": {
+            "circuit": 10,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312302,
+          "seed": -8511797251,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.007692307692307693,
+          "final_distance": 3,
+          "obstacles": 14,
+          "decision_ns": 567668,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312303,
+          "seed": -8511798272,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.007633587786259542,
+          "final_distance": 9,
+          "obstacles": 13,
+          "decision_ns": 607259,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312303,
+          "seed": -8511798273,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.007633587786259542,
+          "final_distance": 12,
+          "obstacles": 13,
+          "decision_ns": 911297,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312303,
+          "seed": -8511798274,
+          "capture": 1,
+          "steps": 12,
+          "reward": 9.0,
+          "stall": 0,
+          "blocked": 11,
+          "exploration": 0.015267175572519083,
+          "final_distance": 0,
+          "obstacles": 13,
+          "decision_ns": 526027,
+          "decoder_counts": {
+            "circuit": 12,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312303,
+          "seed": -8511798275,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.007633587786259542,
+          "final_distance": 2,
+          "obstacles": 13,
+          "decision_ns": 903107,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        }
+      ]
+    },
+    {
+      "size": 12,
+      "scenario": "intelligent_prey",
+      "actor": "trained8",
+      "capture_count": 1,
+      "episode_count": 12,
+      "capture_steps_sum": 12,
+      "successful_mean_steps": 12.0,
+      "best_capture_steps": 12,
+      "capture_wilson95": [
+        0.014865094404917095,
+        0.35387991114111694
+      ],
+      "successful_median_steps": 12,
+      "capture_rate": 0.08333333333333333,
+      "mean_collisions": 16.583333333333332,
+      "mean_decision_microseconds": 45.462492805755396,
+      "episodes": [
+        {
+          "map_seed": -8312301,
+          "seed": -8511796224,
+          "capture": 0,
+          "steps": 30,
+          "reward": -24.28,
+          "stall": 1,
+          "blocked": 23,
+          "exploration": 0.06153846153846154,
+          "final_distance": 8,
+          "obstacles": 14,
+          "decision_ns": 1518518,
+          "decoder_counts": {
+            "circuit": 28,
+            "short": 2,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312301,
+          "seed": -8511796225,
+          "capture": 0,
+          "steps": 20,
+          "reward": -20.88,
+          "stall": 1,
+          "blocked": 19,
+          "exploration": 0.015384615384615385,
+          "final_distance": 1,
+          "obstacles": 14,
+          "decision_ns": 882720,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312301,
+          "seed": -8511796226,
+          "capture": 0,
+          "steps": 20,
+          "reward": -20.88,
+          "stall": 1,
+          "blocked": 19,
+          "exploration": 0.015384615384615385,
+          "final_distance": 14,
+          "obstacles": 14,
+          "decision_ns": 895615,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312301,
+          "seed": -8511796227,
+          "capture": 0,
+          "steps": 27,
+          "reward": -10.879999999999999,
+          "stall": 1,
+          "blocked": 9,
+          "exploration": 0.05384615384615385,
+          "final_distance": 4,
+          "obstacles": 14,
+          "decision_ns": 1470243,
+          "decoder_counts": {
+            "circuit": 17,
+            "short": 10,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312302,
+          "seed": -8511797248,
+          "capture": 0,
+          "steps": 20,
+          "reward": -19.92,
+          "stall": 1,
+          "blocked": 18,
+          "exploration": 0.015384615384615385,
+          "final_distance": 3,
+          "obstacles": 14,
+          "decision_ns": 574819,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312302,
+          "seed": -8511797249,
+          "capture": 0,
+          "steps": 27,
+          "reward": -22.4,
+          "stall": 1,
+          "blocked": 21,
+          "exploration": 0.05384615384615385,
+          "final_distance": 5,
+          "obstacles": 14,
+          "decision_ns": 903010,
+          "decoder_counts": {
+            "circuit": 23,
+            "short": 4,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312302,
+          "seed": -8511797250,
+          "capture": 0,
+          "steps": 22,
+          "reward": -20.2,
+          "stall": 1,
+          "blocked": 18,
+          "exploration": 0.023076923076923078,
+          "final_distance": 3,
+          "obstacles": 14,
+          "decision_ns": 855277,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 2,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312302,
+          "seed": -8511797251,
+          "capture": 0,
+          "steps": 20,
+          "reward": -20.16,
+          "stall": 1,
+          "blocked": 18,
+          "exploration": 0.015384615384615385,
+          "final_distance": 3,
+          "obstacles": 14,
+          "decision_ns": 573296,
+          "decoder_counts": {
+            "circuit": 19,
+            "short": 1,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312303,
+          "seed": -8511798272,
+          "capture": 0,
+          "steps": 24,
+          "reward": -12.079999999999998,
+          "stall": 1,
+          "blocked": 10,
+          "exploration": 0.030534351145038167,
+          "final_distance": 7,
+          "obstacles": 13,
+          "decision_ns": 1045949,
+          "decoder_counts": {
+            "circuit": 16,
+            "short": 8,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312303,
+          "seed": -8511798273,
+          "capture": 0,
+          "steps": 36,
+          "reward": -12.319999999999995,
+          "stall": 0,
+          "blocked": 13,
+          "exploration": 0.08396946564885496,
+          "final_distance": 4,
+          "obstacles": 13,
+          "decision_ns": 2355777,
+          "decoder_counts": {
+            "circuit": 21,
+            "short": 15,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312303,
+          "seed": -8511798274,
+          "capture": 1,
+          "steps": 12,
+          "reward": 9.0,
+          "stall": 0,
+          "blocked": 11,
+          "exploration": 0.015267175572519083,
+          "final_distance": 0,
+          "obstacles": 13,
+          "decision_ns": 585728,
+          "decoder_counts": {
+            "circuit": 12,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312303,
+          "seed": -8511798275,
+          "capture": 0,
+          "steps": 20,
+          "reward": -22.0,
+          "stall": 1,
+          "blocked": 20,
+          "exploration": 0.007633587786259542,
+          "final_distance": 2,
+          "obstacles": 13,
+          "decision_ns": 977621,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        }
+      ]
+    },
+    {
+      "size": 12,
+      "scenario": "intelligent_prey",
+      "actor": "trained8_initial_evader",
+      "capture_count": 2,
+      "episode_count": 12,
+      "capture_steps_sum": 22,
+      "successful_mean_steps": 11.0,
+      "best_capture_steps": 10,
+      "capture_wilson95": [
+        0.04696514218385378,
+        0.4480308622529734
+      ],
+      "successful_median_steps": 11.0,
+      "capture_rate": 0.16666666666666666,
+      "mean_collisions": 15.833333333333334,
+      "mean_decision_microseconds": 45.33707490636704,
+      "episodes": [
+        {
+          "map_seed": -8312301,
+          "seed": -8511796224,
+          "capture": 0,
+          "steps": 30,
+          "reward": -24.28,
+          "stall": 1,
+          "blocked": 23,
+          "exploration": 0.06153846153846154,
+          "final_distance": 4,
+          "obstacles": 14,
+          "decision_ns": 1460406,
+          "decoder_counts": {
+            "circuit": 28,
+            "short": 2,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312301,
+          "seed": -8511796225,
+          "capture": 0,
+          "steps": 20,
+          "reward": -20.88,
+          "stall": 1,
+          "blocked": 19,
+          "exploration": 0.015384615384615385,
+          "final_distance": 4,
+          "obstacles": 14,
+          "decision_ns": 901245,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312301,
+          "seed": -8511796226,
+          "capture": 0,
+          "steps": 20,
+          "reward": -20.88,
+          "stall": 1,
+          "blocked": 19,
+          "exploration": 0.015384615384615385,
+          "final_distance": 17,
+          "obstacles": 14,
+          "decision_ns": 956700,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312301,
+          "seed": -8511796227,
+          "capture": 0,
+          "steps": 27,
+          "reward": -10.879999999999999,
+          "stall": 1,
+          "blocked": 9,
+          "exploration": 0.05384615384615385,
+          "final_distance": 6,
+          "obstacles": 14,
+          "decision_ns": 1284904,
+          "decoder_counts": {
+            "circuit": 17,
+            "short": 10,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312302,
+          "seed": -8511797248,
+          "capture": 0,
+          "steps": 20,
+          "reward": -19.92,
+          "stall": 1,
+          "blocked": 18,
+          "exploration": 0.015384615384615385,
+          "final_distance": 2,
+          "obstacles": 14,
+          "decision_ns": 541769,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312302,
+          "seed": -8511797249,
+          "capture": 0,
+          "steps": 27,
+          "reward": -22.4,
+          "stall": 1,
+          "blocked": 21,
+          "exploration": 0.05384615384615385,
+          "final_distance": 7,
+          "obstacles": 14,
+          "decision_ns": 864416,
+          "decoder_counts": {
+            "circuit": 23,
+            "short": 4,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312302,
+          "seed": -8511797250,
+          "capture": 0,
+          "steps": 22,
+          "reward": -20.2,
+          "stall": 1,
+          "blocked": 18,
+          "exploration": 0.023076923076923078,
+          "final_distance": 3,
+          "obstacles": 14,
+          "decision_ns": 1344273,
+          "decoder_counts": {
+            "circuit": 20,
+            "short": 2,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312302,
+          "seed": -8511797251,
+          "capture": 0,
+          "steps": 20,
+          "reward": -20.16,
+          "stall": 1,
+          "blocked": 18,
+          "exploration": 0.015384615384615385,
+          "final_distance": 3,
+          "obstacles": 14,
+          "decision_ns": 581892,
+          "decoder_counts": {
+            "circuit": 19,
+            "short": 1,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312303,
+          "seed": -8511798272,
+          "capture": 0,
+          "steps": 24,
+          "reward": -12.079999999999998,
+          "stall": 1,
+          "blocked": 10,
+          "exploration": 0.030534351145038167,
+          "final_distance": 6,
+          "obstacles": 13,
+          "decision_ns": 831775,
+          "decoder_counts": {
+            "circuit": 16,
+            "short": 8,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312303,
+          "seed": -8511798273,
+          "capture": 0,
+          "steps": 35,
+          "reward": -15.239999999999991,
+          "stall": 1,
+          "blocked": 14,
+          "exploration": 0.08396946564885496,
+          "final_distance": 3,
+          "obstacles": 13,
+          "decision_ns": 2306629,
+          "decoder_counts": {
+            "circuit": 21,
+            "short": 14,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312303,
+          "seed": -8511798274,
+          "capture": 1,
+          "steps": 12,
+          "reward": 9.0,
+          "stall": 0,
+          "blocked": 11,
+          "exploration": 0.015267175572519083,
+          "final_distance": 0,
+          "obstacles": 13,
+          "decision_ns": 564453,
+          "decoder_counts": {
+            "circuit": 12,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        },
+        {
+          "map_seed": -8312303,
+          "seed": -8511798275,
+          "capture": 1,
+          "steps": 10,
+          "reward": 11.0,
+          "stall": 0,
+          "blocked": 10,
+          "exploration": 0.007633587786259542,
+          "final_distance": 0,
+          "obstacles": 13,
+          "decision_ns": 466537,
+          "decoder_counts": {
+            "circuit": 10,
+            "short": 0,
+            "context": 0,
+            "hdc": 0
+          }
+        }
+      ]
+    },
+    {
+      "size": 12,
+      "scenario": "intelligent_prey",
+      "actor": "random8",
+      "capture_count": 2,
+      "episode_count": 12,
+      "capture_steps_sum": 20,
+      "successful_mean_steps": 10.0,
+      "best_capture_steps": 5,
+      "capture_wilson95": [
+        0.04696514218385378,
+        0.4480308622529734
+      ],
+      "successful_median_steps": 10.0,
+      "capture_rate": 0.16666666666666666,
+      "mean_collisions": 18,
+      "episodes": [
+        {
+          "map_seed": -8312301,
+          "seed": -8511796224,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 21
+        },
+        {
+          "map_seed": -8312301,
+          "seed": -8511796225,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 20
+        },
+        {
+          "map_seed": -8312301,
+          "seed": -8511796226,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 20
+        },
+        {
+          "map_seed": -8312301,
+          "seed": -8511796227,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 20
+        },
+        {
+          "map_seed": -8312302,
+          "seed": -8511797248,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 20
+        },
+        {
+          "map_seed": -8312302,
+          "seed": -8511797249,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 20
+        },
+        {
+          "map_seed": -8312302,
+          "seed": -8511797250,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 22
+        },
+        {
+          "map_seed": -8312302,
+          "seed": -8511797251,
+          "capture": 1,
+          "steps": 5,
+          "blocked": 4
+        },
+        {
+          "map_seed": -8312303,
+          "seed": -8511798272,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 17
+        },
+        {
+          "map_seed": -8312303,
+          "seed": -8511798273,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 19
+        },
+        {
+          "map_seed": -8312303,
+          "seed": -8511798274,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 23
+        },
+        {
+          "map_seed": -8312303,
+          "seed": -8511798275,
+          "capture": 1,
+          "steps": 15,
+          "blocked": 10
+        }
+      ]
+    },
+    {
+      "size": 12,
+      "scenario": "intelligent_prey",
+      "actor": "sensor_greedy",
+      "capture_count": 8,
+      "episode_count": 12,
+      "capture_steps_sum": 86,
+      "successful_mean_steps": 10.75,
+      "best_capture_steps": 3,
+      "capture_wilson95": [
+        0.39062208887279953,
+        0.8618799089087867
+      ],
+      "successful_median_steps": 8.0,
+      "capture_rate": 0.6666666666666666,
+      "mean_collisions": 0,
+      "episodes": [
+        {
+          "map_seed": -8312301,
+          "seed": -8511796224,
+          "capture": 1,
+          "steps": 14,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8312301,
+          "seed": -8511796225,
+          "capture": 1,
+          "steps": 3,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8312301,
+          "seed": -8511796226,
+          "capture": 1,
+          "steps": 32,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8312301,
+          "seed": -8511796227,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8312302,
+          "seed": -8511797248,
+          "capture": 1,
+          "steps": 12,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8312302,
+          "seed": -8511797249,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8312302,
+          "seed": -8511797250,
+          "capture": 1,
+          "steps": 14,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8312302,
+          "seed": -8511797251,
+          "capture": 1,
+          "steps": 3,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8312303,
+          "seed": -8511798272,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8312303,
+          "seed": -8511798273,
+          "capture": 0,
+          "steps": 36,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8312303,
+          "seed": -8511798274,
+          "capture": 1,
+          "steps": 4,
+          "blocked": 0
+        },
+        {
+          "map_seed": -8312303,
+          "seed": -8511798275,
+          "capture": 1,
+          "steps": 4,
+          "blocked": 0
+        }
+      ]
+    }
+  ]
+}

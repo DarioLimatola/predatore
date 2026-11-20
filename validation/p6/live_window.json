@@ -1,0 +1,87 @@
+{
+  "python": "3.12.14",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "predeclared_threshold_pct": 10,
+  "protocol": "Identical CLI worker budget, fresh profile, 4 generations, 4 agents, 12 training episodes, 24 validation, 100 holdout, 32 steps. Open Live Training Tk window before worker starts, render until worker exits. Baseline worker with observer disabled. Alternating paired order.",
+  "rows": [
+    {
+      "seed": 701,
+      "live_window": false,
+      "observed_frames": 0,
+      "exit_code": 0,
+      "wall_s": 4.665299359000073,
+      "champion_id": "1a0f272eb5b94072d748",
+      "holdout_captures": 15
+    },
+    {
+      "seed": 701,
+      "live_window": true,
+      "observed_frames": 14,
+      "exit_code": 0,
+      "wall_s": 4.781190160000051,
+      "champion_id": "1a0f272eb5b94072d748",
+      "holdout_captures": 15
+    },
+    {
+      "seed": 702,
+      "live_window": true,
+      "observed_frames": 12,
+      "exit_code": 0,
+      "wall_s": 4.894387934999941,
+      "champion_id": "0c4d745122f9c6e7e46e",
+      "holdout_captures": 28
+    },
+    {
+      "seed": 702,
+      "live_window": false,
+      "observed_frames": 0,
+      "exit_code": 0,
+      "wall_s": 4.966220496000005,
+      "champion_id": "0c4d745122f9c6e7e46e",
+      "holdout_captures": 28
+    },
+    {
+      "seed": 703,
+      "live_window": false,
+      "observed_frames": 0,
+      "exit_code": 0,
+      "wall_s": 4.919899902999987,
+      "champion_id": "69409208e26cdbee42f3",
+      "holdout_captures": 9
+    },
+    {
+      "seed": 703,
+      "live_window": true,
+      "observed_frames": 14,
+      "exit_code": 0,
+      "wall_s": 5.026184938999904,
+      "champion_id": "69409208e26cdbee42f3",
+      "holdout_captures": 9
+    },
+    {
+      "seed": 704,
+      "live_window": true,
+      "observed_frames": 15,
+      "exit_code": 0,
+      "wall_s": 5.170577018000131,
+      "champion_id": "cd0cb64b59e2fb1c6d19",
+      "holdout_captures": 29
+    },
+    {
+      "seed": 704,
+      "live_window": false,
+      "observed_frames": 0,
+      "exit_code": 0,
+      "wall_s": 4.67430992200002,
+      "champion_id": "cd0cb64b59e2fb1c6d19",
+      "holdout_captures": 29
+    }
+  ],
+  "paired_wall_delta_pct": [
+    2.4841021354054638,
+    -1.4464231110544068,
+    2.1603089106570827,
+    10.616906116224545
+  ],
+  "median_paired_wall_delta_pct": 2.3222055230312733
+}

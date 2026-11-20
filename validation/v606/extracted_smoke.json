@@ -1,0 +1,20 @@
+{
+  "seed": 83,
+  "size": 8,
+  "scenario_set": "extended",
+  "generations_before_resume": 2,
+  "generation_after_resume": 3,
+  "sources": [
+    "delayed_reward",
+    "hidden",
+    "intelligent_prey",
+    "maze",
+    "maze_novel",
+    "moving",
+    "static"
+  ],
+  "replay_files": 21,
+  "live_packet_source": "Live Training",
+  "checked_files": 66,
+  "all_files_valid": true
+}

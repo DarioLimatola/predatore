@@ -5,9 +5,10 @@ from engine.evolution import Config,run
 from engine.settings import Limits
 
 def main():
-    p=argparse.ArgumentParser(description='Predatore V6.05 — EVA learning agent / SMITH agent supervisor')
+    p=argparse.ArgumentParser(description=f'Predatore V{Limits.VERSION} — EVA learning agent / SMITH agent supervisor')
     p.add_argument('--monitor-every',type=int,default=0,help='Live validation every N generations; 0 disables extra monitoring')
     p.add_argument('--live',action='store_true',help='Publish sampled real training frames')
+    p.add_argument('--scenario-set',choices=('classic','extended'),help='Include maze, delayed reward and neural prey with extended')
     p.add_argument('--challenge-tests',metavar='EXPERIMENT_DIR',help='Independent invisible-prey and required-pounce probes')
     p.add_argument('--diagnose',metavar='EXPERIMENT_DIR',help='Paired behavioral and neuron ablations, isolated output')
     p.add_argument('--diagnostic-output',default='Analysis',help='Output directory for standalone diagnostics')
@@ -27,7 +28,14 @@ def main():
     p.add_argument('--no-circuit-plasticity',action='store_true',default=None,
                    help='Disable local circuit candidate learning (for controlled ablation)')
     p.add_argument('--no-context-distillation',action='store_true',default=None,help='Controlled ablation: disable contextual consolidation')
+    p.add_argument('--max-scenario-loss', type=int, metavar='CAPTURES',
+                   help='Experimental EVA gate: maximum paired capture loss per validation scenario and task')
+    p.add_argument('--relation-credit-horizon', type=int, metavar='TICKS',
+                   help='Experimental plastic motor readout and credit window, 0 disables it')
+    p.add_argument('--select-for-learning', action='store_true', default=None,
+                   help='Rank explorers by frozen training-probe transfer before/after personal learning')
     p.add_argument('--retention-tasks',type=int,default=Limits.DEFAULT_RETENTION_TASKS)
+    p.add_argument('--fork-v605', metavar='EXPERIMENT_DIR', help='Copy a V6.05 experiment into a new, unused --vault-root')
     p.add_argument('--smith-status',action='store_true')
     p.add_argument('--generations',type=int,default=Limits.DEFAULT_GENERATIONS)
     p.add_argument('--population',type=int,default=Limits.DEFAULT_POPULATION)
@@ -39,6 +47,10 @@ def main():
     p.add_argument('--verify',metavar='EXPERIMENT_DIR')
     p.add_argument('--gui',action='store_true',help='Open unified V6 laboratory')
     args=p.parse_args()
+    if args.fork_v605:
+        from engine.lineage import fork_v605
+        print(fork_v605(args.fork_v605, args.vault_root))
+        return
     if args.smith_status:
         from engine.continual import load_profile
         import json
@@ -82,7 +94,15 @@ def main():
             if found is None:raise FileNotFoundError('No valid checkpoint to resume')
             saved=read_json(found)['config']
             cfg=Config(**{k:v for k,v in saved.items() if k in {f.name for f in fields(Config)}})
+            if args.scenario_set is not None and args.scenario_set != cfg.scenario_set:
+                raise ValueError('Cannot change scenario set during resume')
             cfg.generations=args.generations
+            if args.max_scenario_loss is not None and args.max_scenario_loss != cfg.max_scenario_loss:
+                raise ValueError('Cannot change EVA guard during resume')
+            if args.relation_credit_horizon is not None and args.relation_credit_horizon != cfg.relation_credit_horizon:
+                raise ValueError('Cannot change relation credit during resume')
+            if args.select_for_learning and not cfg.select_for_learning:
+                raise ValueError('Cannot change learning selection during resume')
             if args.no_context_distillation is not None and cfg.contextual_distillation_enabled:
                 raise ValueError('Cannot change contextual distillation during resume')
             if args.no_circuit_plasticity is not None:
@@ -90,7 +110,7 @@ def main():
                 if requested!=cfg.circuit_plasticity_enabled:
                     raise ValueError('Cannot change circuit plasticity during resume')
         else:
-            cfg=Config(generations=args.generations,population=args.population,episodes=args.episodes,
+            cfg=Config(scenario_set=args.scenario_set or 'classic',generations=args.generations,population=args.population,episodes=args.episodes,
                        steps=args.steps,size=args.size,seed=args.seed,smith_profile=args.smith_profile,vector_width=args.vector_width,max_vector_width=args.max_vector_width,
                        memory_capacity=args.memory_capacity,experience_capacity=args.experience_capacity,
                        vector_shape=args.vector_shape,max_neurons=args.max_neurons,
@@ -98,6 +118,8 @@ def main():
                        internal_ticks=args.internal_ticks,trace_depth=args.trace_depth,
                        circuit_plasticity_enabled=not args.no_circuit_plasticity,
                        contextual_distillation_enabled=not args.no_context_distillation,
+                       relation_credit_horizon=args.relation_credit_horizon or 0,
+                       max_scenario_loss=args.max_scenario_loss, select_for_learning=bool(args.select_for_learning),
                        retention_tasks=args.retention_tasks)
         stop_file=folder/'stop_requested'
         if stop_file.exists():stop_file.unlink()

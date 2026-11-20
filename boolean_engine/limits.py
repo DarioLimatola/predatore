@@ -4,6 +4,8 @@
 class CoreLimits:
     VERSION = '6.05'
     ENGINE = 'boolean-vector/5'
+    RELATION_ENGINE = 'boolean-vector/5+relations/1'
+    SUPPORTED_ENGINES = (ENGINE, RELATION_ENGINE)
     SENSOR_BITS = 15
     ACTION_BITS = 3
     ACTIONS = 1 << ACTION_BITS

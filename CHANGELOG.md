@@ -1,3 +1,7 @@
+# V6.06 · Laboratorio comportamentale
+
+Curriculum esteso, preda neurale, credito temporale opzionale, protezione di EVA per scenario, verifica dei candidati, migrazione dei checkpoint e nuova navigazione dell’arena. Per opzioni, risultati e compatibilità vedere README.md e RISULTATI_V6_06.md.
+
 # Predatore V6.05
 
 - Isolato il motore riusabile in boolean_engine. Il simulatore conserva un

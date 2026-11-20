@@ -1,0 +1,8 @@
+[package]
+name = "predatore-lut-probe"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+monade-core = { git = "https://github.com/DarioLimatola/monade.git", rev = "d6e1b8a99b408a288529d059c81551a9135a5ffc" }

@@ -52,7 +52,7 @@ class BooleanNet:
 
     @classmethod
     def restore(cls, data):
-        if data.get('engine') != Limits.ENGINE:
+        if data.get('engine') not in Limits.SUPPORTED_ENGINES:
             raise ValueError('Unsupported brain format; start a new V6.05 profile')
         from .network import VectorBooleanNet
         return VectorBooleanNet.restore(data)

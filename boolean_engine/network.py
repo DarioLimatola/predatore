@@ -89,6 +89,7 @@ class VectorBooleanNet(BooleanNet):
         self.circuit_plasticity_enabled = True
         self.collect_experience = False
         self.experience_sink = None
+        self.relation_credit = None
         self.circuit_evidence = {}
         self._ancestor_cache = None
         self.reset()
@@ -119,6 +120,15 @@ class VectorBooleanNet(BooleanNet):
         self.last_payload=None
         self.computed_nodes=()
         self.decoder_counts=dict.fromkeys(('circuit','short','context','hdc'),0)
+
+        if self.relation_credit is not None:
+            self.relation_credit.reset()
+            self.decoder_counts['relation'] = 0
+
+    def enable_relation_credit(self, horizon=8):
+        from .relation_credit import RelationCredit
+        self.relation_credit = RelationCredit(horizon)
+        self.decoder_counts['relation'] = 0
 
     def _address(self, observation):
         current = pack(observation)
@@ -192,6 +202,13 @@ class VectorBooleanNet(BooleanNet):
         proposed = sum(((self.vectors[n] >> lane) & 1) << bit
                        for bit,(n,lane) in enumerate(zip(outputs,output_lanes)))
         action=proposed;origin='circuit';contextual_action=None
+        relation = self.relation_credit
+        if relation is not None:
+            signals = relation.signals(self.vectors, width, ancestors)
+            routed = relation.route(signals, self.action_bits, proposed)
+            if routed != proposed:
+                action = routed
+                origin = 'relation'
         if self.associative_enabled:
             short=self.short_memory.choose(str(address),action)
             if short is not None:action=short;origin='short'
@@ -209,6 +226,10 @@ class VectorBooleanNet(BooleanNet):
         self.decoder_counts[origin]+=1
         self.last_decoder={'context_key':self.current_context_key,'context_override':contextual_action,
                            'proposed':proposed,'address':str(address),'action':action,'source':origin}
+        if relation is not None:
+            self.last_decoder['relation_proposed'] = routed
+            if self.plasticity_enabled:
+                relation.observe(signals, action, origin in ('circuit', 'relation'))
         if collect_activity:
             ancestors = self._output_ancestors()
             active_patterns = []
@@ -265,6 +286,9 @@ class VectorBooleanNet(BooleanNet):
 
     def invalidate(self):
         self._ancestor_cache=None
+        if self.relation_credit is not None:
+            self.relation_credit.weights.clear()
+            self.relation_credit.reset()
 
     def _reinforce_circuit_bits(self, node, pattern, lanes, positive):
         low_pos, high_pos, low_neg, high_neg = self.circuit_evidence.get(
@@ -298,6 +322,7 @@ class VectorBooleanNet(BooleanNet):
                 type(lane) is not int or not 0 <= lane < self.width):
             raise ValueError('Local circuit candidate outside network bounds')
         self.rules[node]['lut'][pattern] ^= 1 << lane
+        self.invalidate()
 
     def feedback(self, reward):
         self.last_updates = []
@@ -306,6 +331,8 @@ class VectorBooleanNet(BooleanNet):
         address,action,obs,context,valid = self.last
         positive = reward > 0
         negative = reward < 0
+        if self.relation_credit is not None and self.plasticity_enabled:
+            self.relation_credit.feedback(reward, self.action_bits, self.width)
         next_obs = getattr(self,'next_observation',obs)
         prediction_key = f'{address}:{action}'
         predicted = self.predictions.get(prediction_key)
@@ -384,7 +411,7 @@ class VectorBooleanNet(BooleanNet):
         elif mode=='reactivate':self.nodes[i].active=True
         else:
             j=rng.randrange(self.action_bits);self.outputs[j]=i;self.output_lanes[j]=rng.randrange(self.width)
-        self._ancestor_cache = None
+        self.invalidate()
         self.clear_circuit_evidence()
         self.reset()
         return {'kind':'vector_'+mode,'neuron':i}
@@ -419,7 +446,7 @@ class VectorBooleanNet(BooleanNet):
                 self.outputs[slot] = target if target >= 0 else min(index, len(self.nodes)-1)
             else:
                 self.outputs[slot] = output - int(output > index)
-        self._ancestor_cache = None
+        self.invalidate()
         self.clear_circuit_evidence()
         self.reset()
         return True
@@ -438,7 +465,7 @@ class VectorBooleanNet(BooleanNet):
             slot = rng.randrange(self.action_bits)
             self.outputs[slot] = target
             self.output_lanes[slot] = rng.randrange(self.width)
-            self._ancestor_cache = None
+            self.invalidate()
             self.reset()
         return {'neurons_before': before, 'neurons_after': len(self.nodes),
                 'topology_delta': len(self.nodes)-before}
@@ -495,6 +522,7 @@ class VectorBooleanNet(BooleanNet):
         if math.prod(shape)!=self.width:raise ValueError('Reshape preserves bit count')
         self.shape=shape
         for rule in self.rules:rule['shape']=list(shape)
+        self.invalidate()
         self.reset()
 
     def extend_width(self, shape):
@@ -503,10 +531,15 @@ class VectorBooleanNet(BooleanNet):
             raise ValueError('Width/state budget exceeded')
         self.shape,self.width,self.mask=shape,width,(1<<width)-1
         for rule in self.rules:rule['shape']=list(shape)
+        self.invalidate()
         self.reset()
 
+    @property
+    def engine_id(self):
+        return Limits.RELATION_ENGINE if self.relation_credit is not None else ENGINE
+
     def export(self):
-        return {'engine':ENGINE,'sensors':self.sensors,'action_bits':self.action_bits,'nodes':[asdict(n) for n in self.nodes],
+        data = {'engine':self.engine_id,'sensors':self.sensors,'action_bits':self.action_bits,'nodes':[asdict(n) for n in self.nodes],
                 'outputs':list(self.outputs),'state':list(self.state),
                 'shape':list(self.shape),'sensor_encoding':self.sensor_encoding,'rules':[{**r,'lut':list(r['lut']),'shape':list(r.get('shape',self.shape))} for r in self.rules],
                 'output_lanes':list(self.output_lanes),'memory_capacity':self.memory_capacity,
@@ -527,10 +560,17 @@ class VectorBooleanNet(BooleanNet):
                                   'last_payload':self.last_payload,'next_observation':self.next_observation,
                                   'captured':self.captured}}
 
+        if self.relation_credit is not None:
+            data['relation_credit'] = self.relation_credit.export()
+            data['vector_runtime']['relation_trace'] = list(self.relation_credit.trace)
+        return data
+
     @classmethod
     def restore(cls,data):
-        if data.get('engine')!=ENGINE:
+        if data.get('engine') not in Limits.SUPPORTED_ENGINES:
             raise ValueError('Formato di un’altra versione: avviare un nuovo profilo V6.05')
+        if ('relation_credit' in data) != (data['engine'] == Limits.RELATION_ENGINE):
+            raise ValueError('Relation-credit payload and genome codec disagree')
         obj=cls(sensors=data['sensors'],neurons=0,shape=data['shape'],
                 memory_capacity=data['memory_capacity'],internal_ticks=data['internal_ticks'],
                 trace_depth=data['trace_depth'], action_bits=data['action_bits'],
@@ -582,6 +622,12 @@ class VectorBooleanNet(BooleanNet):
             if len(obj.vectors)!=len(obj.nodes) or any(not 0<=v<=obj.mask for v in obj.vectors):
                 raise ValueError('Invalid vector state')
             obj.state=[v&1 for v in obj.vectors]
+        if 'relation_credit' in data:
+            from .relation_credit import RelationCredit
+            obj.relation_credit = RelationCredit.restore(
+                data['relation_credit'], runtime.get('relation_trace', []),
+                obj._output_ancestors(), obj.action_bits)
+            obj.decoder_counts['relation'] = 0
         return obj
 
     def snapshot_id(self):
@@ -589,7 +635,7 @@ class VectorBooleanNet(BooleanNet):
         return hashlib.sha256(json.dumps(d,sort_keys=True).encode()).hexdigest()[:20]
 
     def frame_data(self):
-        return {'vector_state':[hex(v) for v in self.vectors],
+        data = {'vector_state':[hex(v) for v in self.vectors],
                 'vector_previous':[hex(v) for v in self.before_vectors],
                 'vector_width':self.width,'vector_shape':list(self.shape),
                 'vector_updates':list(self.last_updates),'vector_update_count':self.update_count,
@@ -597,3 +643,6 @@ class VectorBooleanNet(BooleanNet):
                 'prediction_error':self.last_prediction_error,'computed_nodes':list(self.computed_nodes),
                 'executed_neurons':len(self.computed_nodes),'decoder_counts':dict(self.decoder_counts),
                 'associative_entries':len(self.associative_memory.entries)}
+        if self.relation_credit is not None:
+            data['relation_credit'] = self.relation_credit.frame()
+        return data

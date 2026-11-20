@@ -28,6 +28,10 @@ class Config:
     retention_tasks: int = Limits.DEFAULT_RETENTION_TASKS
     smith_profile: str = Limits.DEFAULT_SMITH_PROFILE
     max_vector_width: int = Limits.MAX_EVOLVED_WIDTH
+    max_scenario_loss: int | None = None
+    relation_credit_horizon: int = 0
+    select_for_learning: bool = False
+    scenario_set: str = 'classic'
     novelty_archive_size: int = Limits.DEFAULT_NOVELTY_ARCHIVE
 
 

@@ -5,7 +5,7 @@ EVA_COLOR = '#2563eb'
 POPULATION_COLOR = '#16a34a'
 VALIDATION_COLOR = '#d97706'
 BEST_COLOR = '#8b5cf6'
-BASELINE_COLORS = {'random': '#64748b', 'greedy': '#db2777'}
+BASELINE_COLORS = {'random': '#64748b', 'greedy': '#db2777', 'sensor_greedy':'#0891b2'}
 
 
 def draw_progress(canvas, history, metric, validation=(), baselines=None):
@@ -24,7 +24,7 @@ def draw_progress(canvas, history, metric, validation=(), baselines=None):
             value=(baselines or {}).get('train',{}).get(name,{}).get('capture_rate')
             if value is not None and history:
                 series.append(([(history[0]['generation'],value),(history[-1]['generation'],value)],color))
-                legend+=(' · Grigio: casuale' if name=='random' else ' · Magenta: inseguitore privilegiato')
+                legend+={'random':' · Grigio: casuale','greedy':' · Magenta: inseguitore privilegiato','sensor_greedy':' · Turchese: inseguitore con sensori'}[name]
         peak=1
     elif metric=='Passi per cattura':
         series=[([(r['generation'],r.get(k)) for r in history],c) for k,c in

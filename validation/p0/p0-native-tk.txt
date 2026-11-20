@@ -1,0 +1,6 @@
+test_native_start_modes_and_close_when_display_available (test_gui_callbacks.NativeTkSmoke.test_native_start_modes_and_close_when_display_available) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.626s
+
+OK

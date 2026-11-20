@@ -68,10 +68,13 @@ class World:
 
     def observe(self):
         """Only local perception; no global distance or position leak when prey is hidden."""
-        x,y=self.predator;px,py=self.prey
+        return self.observe_from(self.predator, self.prey, self.collisions)
+
+    def observe_from(self, observer, target, collisions=0):
+        x,y=observer;px,py=target
         distance=abs(x-px)+abs(y-py)
-        visible=distance<=self.visibility and self._line_of_sight(self.predator,self.prey)
-        neighbors = self._neighbor_flags.get(self.predator)
+        visible=distance<=self.visibility and self._line_of_sight(observer,target)
+        neighbors = self._neighbor_flags.get(observer)
         if neighbors is None:
             # Preserve observation behavior for manually positioned test agents.
             neighbors = tuple(self.free((x + dx*d, y + dy*d))
@@ -80,7 +83,7 @@ class World:
         return (int(visible), int(visible and py<y), int(visible and py>y),
                 int(visible and px<x), int(visible and px>x),
                 *map(int, neighbors), int(visible and distance<=2),
-                int(self.collisions>0))
+                int(collisions>0))
 
     def _line_of_sight(self,a,b):
         # Grid ray tracing prevents seeing through walls, including diagonal rays.
@@ -107,13 +110,15 @@ class World:
         self.steps+=1
         self.captured=self.predator==self.prey
         if not self.captured and self.prey_moves:
-            options=[self.prey]+[(self.prey[0]+u,self.prey[1]+v) for u,v in DIRS]
-            options=[p for p in options if self.free(p)]
-            self.prey=self.rng.choice(options)
+            self.move_prey()
             self.captured=self.predator==self.prey
         # Sparse terminal feedback only: no privileged distance-based shaping.
         reward=20 if self.captured else (-1.0 if not legal else (.12 if new_cell else -.04) - (.12 if leap else 0))
         return reward,self.captured
+
+    def move_prey(self):
+        options=[self.prey]+[(self.prey[0]+u,self.prey[1]+v) for u,v in DIRS]
+        self.prey=self.rng.choice([p for p in options if self.free(p)])
 
     def snapshot(self):
         return {'predator':list(self.predator),'prey':list(self.prey),'steps':self.steps,

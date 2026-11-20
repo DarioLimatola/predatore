@@ -1,0 +1,64 @@
+{
+  "compared_fields": [
+    "initial",
+    "final",
+    "population",
+    "initial_id",
+    "final_id",
+    "personal_regressions",
+    "transfers",
+    "decoder_counts",
+    "replay_episodes"
+  ],
+  "runs": [
+    {
+      "seed": 42,
+      "modules": 32,
+      "different_fields": []
+    },
+    {
+      "seed": 117,
+      "modules": 32,
+      "different_fields": []
+    },
+    {
+      "seed": 809,
+      "modules": 32,
+      "different_fields": []
+    },
+    {
+      "seed": 42,
+      "modules": 64,
+      "different_fields": []
+    },
+    {
+      "seed": 117,
+      "modules": 64,
+      "different_fields": []
+    },
+    {
+      "seed": 809,
+      "modules": 64,
+      "different_fields": []
+    },
+    {
+      "seed": 42,
+      "modules": 96,
+      "different_fields": []
+    },
+    {
+      "seed": 117,
+      "modules": 96,
+      "different_fields": []
+    },
+    {
+      "seed": 809,
+      "modules": 96,
+      "different_fields": []
+    }
+  ],
+  "generations_each": 10,
+  "regressions_initial_final": 4,
+  "below_explorers": 5,
+  "regressions_post_personal": 62
+}

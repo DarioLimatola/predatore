@@ -1,0 +1,38 @@
+         38014250 function calls (35765354 primitive calls) in 12.587 seconds
+
+   Ordered by: cumulative time
+   List reduced from 673 to 30 due to restriction <30>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.003    0.003   12.589   12.589 benchmark_release.py:24(case)
+        1    0.000    0.000   12.515   12.515 evolution.py:38(run)
+        1    0.012    0.012   12.515   12.515 continual.py:298(run_vector)
+        1    0.028    0.028   12.503   12.503 continual.py:306(_run)
+      748    0.151    0.000    6.771    0.009 evaluation.py:24(rollout)
+       52    0.007    0.000    5.757    0.111 evaluation.py:106(evaluate_suite)
+        1    0.012    0.012    5.092    5.092 continual.py:677(_finish)
+       31    0.011    0.000    3.924    0.127 continual.py:87(assessment)
+    28156    1.318    0.000    3.714    0.000 network.py:138(decide)
+      371    0.106    0.000    2.454    0.007 network.py:541(export)
+       21    0.000    0.000    2.362    0.112 continual.py:269(train_actor)
+    28156    0.475    0.000    2.315    0.000 network.py:327(feedback)
+      742    0.131    0.000    2.177    0.003 memory.py:152(export)
+   175689    0.072    0.000    2.046    0.000 memory.py:154(pack)
+   175689    0.523    0.000    1.946    0.000 {method 'join' of 'bytes' objects}
+       30    0.000    0.000    1.902    0.063 continual.py:115(probe_scores)
+       30    0.002    0.000    1.902    0.063 continual.py:97(assess)
+        3    0.005    0.002    1.893    0.631 continual.py:141(select_transfer)
+      199    0.002    0.000    1.459    0.007 network.py:633(snapshot_id)
+  5797737    0.963    0.000    1.424    0.000 memory.py:155(<genexpr>)
+        1    0.025    0.025    1.395    1.395 diagnostics.py:48(assess_champion)
+       79    0.008    0.000    1.347    0.017 continual.py:77(evaluation_copy)
+   960934    0.602    0.000    1.122    0.000 network.py:177(operand)
+       38    0.001    0.000    1.059    0.028 vault.py:37(atomic_json)
+       38    0.151    0.004    1.048    0.028 __init__.py:120(dump)
+       97    0.034    0.000    0.925    0.010 network.py:568(restore)
+       95    0.003    0.000    0.916    0.010 graph.py:53(restore)
+   694480    0.098    0.000    0.822    0.000 encoder.py:414(_iterencode)
+    56744    0.114    0.000    0.741    0.000 memory.py:95(update)
+      194    0.107    0.001    0.732    0.004 memory.py:160(restore)
+
+

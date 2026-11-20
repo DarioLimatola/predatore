@@ -5,6 +5,7 @@ from boolean_engine.limits import CoreLimits
 
 
 class Limits(CoreLimits):
+    VERSION = '6.06'
     PROFILE_SCHEMA = 'smith.supervisor/2'
     MIN_NEURONS = 32
     DEFAULT_MIN_NEURONS = 32

@@ -147,10 +147,22 @@ class LiveBuffer:
         self.timestamp = 0.
         self.status = 'unavailable'
         self.error = ''
+        self.file_stamp = None
+        self.last_read = 0.
 
     def poll(self, experiment):
         try:
-            packet = json.loads((Path(experiment) / 'live/latest.json').read_text(encoding='utf-8'))
+            path=Path(experiment)/'live/latest.json'
+            stat=path.stat()
+            stamp=(path,stat.st_ino,stat.st_size,stat.st_mtime_ns)
+            now=time.monotonic()
+            # Atomic replacement changes file identity. Recheck periodically on
+            # filesystems with coarse timestamps or unavailable file IDs.
+            if stamp==self.file_stamp and now-self.last_read<1. and not self.error:
+                return False
+            packet=json.loads(path.read_text(encoding='utf-8'))
+            self.file_stamp=stamp
+            self.last_read=now
             if ((self.individual>=0 and packet.get('individual')!=self.individual) or
                     self.scenario not in ('all',packet.get('scenario'))):
                 self.status='in attesa della selezione richiesta'
@@ -163,6 +175,7 @@ class LiveBuffer:
                 self.sequence = -1
                 self.run_id = packet.get('run_id')
             if packet['sequence'] <= self.sequence:
+                self.error=''
                 return False
             self.sequence = packet['sequence']
             self.timestamp = packet['timestamp']

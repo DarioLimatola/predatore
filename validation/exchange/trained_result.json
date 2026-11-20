@@ -1,0 +1,1 @@
+{"candidate_id":"d4d4abd130c0c59b0c8f0384702455bdc1779fba37d88b8ecb82ac5c8cd388f7","evaluated_episodes":0,"exit_code":2,"field":"sensor_mask","reason":"Exchange failed: Raw circuit contract mismatch; exchange named experiences instead","schema_version":"predatore.candidate-import/1","source":32766,"stage":"contract","status":"rejected","target":32767}

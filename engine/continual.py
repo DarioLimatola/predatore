@@ -21,14 +21,14 @@ import time
 from .vector_boolean import VectorBooleanNet
 from .contextual import distill_into
 from .settings import Limits
-from .paired_evidence import paired_capture_evidence
+from .learning_gate import scenario_evidence, exceeds_loss, proposal_channel
 from . import smith
 from .boolean_net import BooleanNet
 from .challenges import prepare_suites, seeds_for, training_generation
 from .evaluation import rollout, evaluate_suite, baseline_suite, rank
 from .progress_monitor import population_completion
 from .vault import (atomic_json, append_jsonl, read_json, save_checkpoint,
-                    latest_checkpoint_path, reconcile_evolution_logs, seal, SCHEMA)
+                    latest_checkpoint_path, reconcile_evolution_logs, seal, verify, experiment_input_hashes, verify_experiment_inputs, SCHEMA)
 
 
 @contextmanager
@@ -138,34 +138,30 @@ def selection_key(rows, neurons):
             -balanced('stall_count'), reward, -neurons)
 
 
-def select_transfer(eva, proposals, tasks, cache=None):
+def select_transfer(eva, proposals, tasks, cache=None, max_scenario_loss=None):
     before = probe_scores(eva, tasks, cache)
     baseline_key = selection_key(before, len(eva.nodes))
     best_key, selected, selected_rows = baseline_key, None, before
     decisions = []
     for label, candidate, taught in proposals:
+        started = time.perf_counter()
         identity = candidate.snapshot_id()
         changed = identity != eva.snapshot_id()
         rows = probe_scores(candidate, tasks, cache) if changed else before
         key = selection_key(rows, len(candidate.nodes))
-        eligible = changed and key >= baseline_key
+        scenarios = scenario_evidence(tasks, before, rows)
+        lost = exceeds_loss(scenarios, max_scenario_loss)
+        eligible = changed and key >= baseline_key and not lost
         # Prefer the first equal candidate (contextual student), but retain a better one.
         if eligible and (selected is None or key > best_key):
             best_key, selected, selected_rows = key, (label, candidate, taught), rows
-        scenarios = []
-        for task, old, new in zip(tasks, before, rows):
-            for name in sorted(old['by_scenario']):
-                a, b = old['by_scenario'][name], new['by_scenario'][name]
-                scenarios.append({'task_run': task['run'], 'scenario': name,
-                    'capture_delta': b['capture_count']-a['capture_count'],
-                    'stall_delta': b['stall_count']-a['stall_count'],
-                    'reward_delta': b['mean_reward']-a['mean_reward'],
-                    'paired_capture_evidence': paired_capture_evidence(a, b)})
         decisions.append({'proposal': label, 'eligible': eligible, 'selected': False,
+                          'validation_seconds': time.perf_counter() - started,
+                          'channel': proposal_channel(label), 'reference_id': eva.snapshot_id(),
                           'candidate_id': identity, 'neurons': len(candidate.nodes),
                           'score_before': [str(v) for v in baseline_key],
                           'score_after': [str(v) for v in key],
-                          'reason': 'unchanged' if not changed else 'competitive' if eligible else 'lower_balanced_score',
+                          'reason': 'unchanged' if not changed else 'scenario_loss' if lost else 'competitive' if eligible else 'lower_balanced_score',
                           'diagnostics': {'complete': True, 'scenarios': scenarios}})
     if selected:
         next(d for d in decisions if d['proposal']==selected[0])['selected'] = True
@@ -301,11 +297,17 @@ def train_actor(net, source, suites, c, count, sample_seed, observer=None):
 
 def run_vector(root, config, resume=False, progress=None, should_stop=None, observer=None, monitor=None):
     directory = profile_path(root, config.smith_profile)
-    with profile_lock(directory):
+    # Experiment paths are keyed by seed/size, independently of the selected SMITH profile.
+    experiment_lock = Path(root)/'EvolutionVault'/'run_locks'/f'EXP_seed{config.seed}_size{config.size}'
+    with profile_lock(directory), profile_lock(experiment_lock):
         return _run(root, config, resume, progress, should_stop, observer, monitor, directory)
 
 
 def _run(root, c, resume, progress, should_stop, observer, monitor, directory):
+    if type(c.relation_credit_horizon) is not int or not 0 <= c.relation_credit_horizon <= Limits.MAX_TRACE:
+        raise ValueError('Relation credit horizon exceeds the trace budget')
+    if c.max_scenario_loss is not None and (type(c.max_scenario_loss) is not int or c.max_scenario_loss < 0):
+        raise ValueError('max_scenario_loss must be a nonnegative capture count')
     if not (Limits.MIN_POPULATION<=c.population<=Limits.MAX_POPULATION and
             1<=c.elite<c.population and 1<=c.generations<=Limits.MAX_GENERATIONS and
             1<=c.episodes<=Limits.MAX_EPISODES and 1<=c.steps<=Limits.MAX_STEPS and
@@ -322,22 +324,38 @@ def _run(root, c, resume, progress, should_stop, observer, monitor, directory):
     existing = load_profile(root, c.smith_profile)
     cp = latest_checkpoint_path(folder/'checkpoints')
     scored = []
+    if existing and 'engine_version' not in existing:
+        raise ValueError('Profilo storico in sola lettura. Usare --fork-v605 ESPERIMENTO --vault-root NUOVA_CARTELLA.')
     if resume:
         if cp is None:
             raise FileNotFoundError('Nessun checkpoint valido')
         saved = read_json(cp)
+        if saved.get('schema') != SCHEMA:
+            raise ValueError('Checkpoint storico in sola lettura. Usare --fork-v605 ESPERIMENTO --vault-root NUOVA_CARTELLA.')
+        verify_experiment_inputs(folder, saved)
         if saved['supervisor_state']['schema'] != Limits.PROFILE_SCHEMA:
             raise ValueError('Schema checkpoint non supportato')
-        if any(saved['config'].get(k)!=v for k,v in asdict(c).items() if k!='generations'):
+        historical_defaults = {'max_scenario_loss': None, 'select_for_learning': False, 'scenario_set': 'classic', 'relation_credit_horizon': 0}
+        if any(saved['config'].get(k, historical_defaults.get(k))!=v for k,v in asdict(c).items() if k!='generations'):
             raise ValueError('Resume configuration differs')
         if c.generations<saved['generation']:
             raise ValueError('Cannot resume backwards')
         state = saved['supervisor_state']
-        if existing and (existing['generation']>state['generation'] or
+        same_run_recovery = (
+            existing and cp.name != 'latest.json'
+            and existing['generation'] == state['generation'] + 1
+            and existing['transaction'] == f"{folder.name}:{saved['generation'] + 1}"
+            and (saved['generation'] == 0 or state['transaction'] == f"{folder.name}:{saved['generation']}")
+        )
+        if existing and not same_run_recovery and (existing['generation']>state['generation'] or
                          existing['generation']==state['generation'] and existing['transaction']!=state['transaction']):
             raise ValueError('SMITH è avanzato in un’altra run: avviarne una nuova')
-        save_checkpoint(directory/'latest.json', state)
-        if saved['generation']==c.generations and (folder/'results.json').exists():
+        if saved['generation'] > 0:
+            save_checkpoint(directory/'latest.json', state)
+        if (saved['generation'] == c.generations and (folder/'results.json').is_file()
+                and read_json(folder/'results.json').get('generations') == c.generations
+                and not same_run_recovery and (folder/'integrity/checksums.json').is_file()
+                and all(verify(folder).values())):
             return folder, saved['generation']
         population = [BooleanNet.restore(n) for n in saved['population']]
         scored = [(m, BooleanNet.restore(n)) for m,n in saved['evaluated_population']]
@@ -349,6 +367,9 @@ def _run(root, c, resume, progress, should_stop, observer, monitor, directory):
         if existing:
             state = copy.deepcopy(existing)
             base = BooleanNet.restore(state['eva'])
+            previous_horizon = base.relation_credit.horizon if base.relation_credit else 0
+            if previous_horizon != c.relation_credit_horizon:
+                raise ValueError('Cambiare profilo SMITH per modificare la finestra di credito relazionale')
             if (base.width>c.max_vector_width or base.memory_capacity!=c.memory_capacity or
                     base.internal_ticks!=c.internal_ticks or base.trace_depth!=c.trace_depth):
                 raise ValueError('Budget larghezza/memoria incompatibili dal profilo SMITH: usare i valori salvati o un nuovo profilo')
@@ -358,7 +379,9 @@ def _run(root, c, resume, progress, should_stop, observer, monitor, directory):
             base = VectorBooleanNet(c.seed, neurons=c.initial_neurons, shape=shape,
                                     memory_capacity=c.memory_capacity, internal_ticks=c.internal_ticks,
                                     trace_depth=c.trace_depth)
-            state = {'schema': Limits.PROFILE_SCHEMA, 'generation': 0, 'history': [],
+            if c.relation_credit_horizon:
+                base.enable_relation_credit(c.relation_credit_horizon)
+            state = {'schema': Limits.PROFILE_SCHEMA, 'engine_version': Limits.VERSION, 'generation': 0, 'history': [],
                      'eva': base.export(), 'events': [], 'tasks': [], 'novelty': [],
                      'contributors': {}, 'promotions': 0, 'runs': [], 'transaction': 'initial',
                      'meta': {}, 'teacher_sources': [], 'explorers': []}
@@ -374,18 +397,30 @@ def _run(root, c, resume, progress, should_stop, observer, monitor, directory):
             population.append(net)
         state['runs']=(state['runs']+[folder.name])[-Limits.RUN_NAMES_LIMIT:]
         atomic_json(folder/'config.json', asdict(c))
-        atomic_json(folder/'manifest.json', {'schema': SCHEMA, 'engine': 'Predatore V6.05 Boolean Vector',
+        atomic_json(folder/'manifest.json', {'schema': SCHEMA, 'schema_version': SCHEMA,
+                    'engine': f'Predatore V{Limits.VERSION} Boolean Vector', 'engine_version': Limits.VERSION,
+                    'genome_codec': state['eva']['engine'], 'tensor_shape': list(base.shape), 'vector_width': base.width,
+                    'sensor_contract': 'grid-local/15-v1', 'action_contract': 'move-pounce/8-v1',
+                    'checkpoint_codec': 'canonical-json-utf8/sha256-v1', 'maps': 'environment/suites',
                     'experiment_id': folder.name, 'seed': c.seed, 'created_unix': time.time(),
                     'smith_profile': c.smith_profile, 'initial_revision': state['generation'],
                     'training_protocol': 'Independent adaptive explorers; teacher transfer; adaptive EVA; isolated validation/test copies'})
         atomic_json(folder/'brains/initial_eva.json', base.export())
         atomic_json(folder/'brains/initial_explorers.json', [net.export() for net in population])
-    suites = prepare_suites(folder, c.size, c.seed)
+    suites = prepare_suites(folder, c.size, c.seed, c.scenario_set)
     counts = {split: max(1, math.ceil(n/len(suites[split]))) for split,n in
               (('train', c.episodes), ('validation', c.validation_episodes), ('holdout', c.holdout_episodes))}
     atomic_json(folder/'environment/seed_protocol.json', {
         split: {s['name']: seeds_for(c.seed,split,s['name'],count) for s in suites[split]}
         for split,count in counts.items()})
+    input_hashes = experiment_input_hashes(folder)
+    if not resume:
+        save_checkpoint(folder/'checkpoints/latest.json', {
+            'schema': SCHEMA, 'schema_version': SCHEMA, 'engine_version': Limits.VERSION,
+            'generation': 0, 'config': asdict(c), 'input_sha256': input_hashes,
+            'population': [net.export() for net in population], 'history': [],
+            'evaluated_population': [], 'supervisor_state': state,
+        })
     task = {'run': folder.name, 'suites': suites['validation'], 'seed': c.seed,
             'episodes': counts['validation'], 'steps': c.steps}
     state['tasks'] = [t for t in state['tasks'] if t['run']!=folder.name] + [task]
@@ -405,31 +440,75 @@ def _run(root, c, resume, progress, should_stop, observer, monitor, directory):
         strategy_context = state.get('pending_context', supervisor.get('last_context',0))
         strategy = state.get('pending_strategy', smith.choose(supervisor,strategy_context))
         train_suites,replay_archive,replayed=training_generation(c.size,c.seed,gen,counts['train'],
-            state.get('training_replay',[]),folder.name)
+            state.get('training_replay',[]),folder.name, c.scenario_set)
         if monitor:monitor.training_suites=train_suites
-        before_key=selection_key(probe_scores(eva,state['tasks'],cache),len(eva.nodes))
+        generation_rows = probe_scores(eva, state['tasks'], cache)
+        before_key = selection_key(generation_rows, len(eva.nodes))
+        guard_active = c.max_scenario_loss is not None
+        if c.select_for_learning:
+            # A new training-only map and episode stream; never drawn from validation or holdout.
+            probe_suites, _, _ = training_generation(c.size, -c.seed-1, gen, counts['train'], [], folder.name + '/probe', c.scenario_set)
         incoming, scored, contributions = [], [], {}
         for slot, net in enumerate(population):
             source = f'{folder.name}/g{gen}/explorer{slot+1}'
             if observer:
                 observer.set_context(generation=gen,individual=slot,phase='explorer',genome_id=net.snapshot_id())
+            origin_id = net.snapshot_id()
+            if c.select_for_learning:
+                probe_before = evaluate_suite(evaluation_copy(net, learning=False), probe_suites,
+                                              -c.seed-1, 'train', counts['train'], c.steps)
             m, sample, seen = train_actor(net, source, train_suites, c, counts['train'], c.seed*99991+gen*257+slot, observer)
+            if guard_active:
+                for event in sample:
+                    event['teacher_identity'] = origin_id
+            if c.select_for_learning:
+                probe_after = evaluate_suite(evaluation_copy(net, learning=False), probe_suites,
+                                             -c.seed-1, 'train', counts['train'], c.steps)
+                m['transfer_probe'] = {
+                    'split': 'train', 'seed': -c.seed-1, 'generation': gen,
+                    'episodes': probe_after['episode_count'],
+                    'captures_before': probe_before['capture_count'],
+                    'captures_after': probe_after['capture_count'],
+                    'gain': probe_after['capture_count'] - probe_before['capture_count'],
+                }
             incoming.extend(sample)
             contributions[source] = seen
             m['novelty'] = novelty(behavior(m), state['novelty'])
             scored.append((m,net))
-        scored.sort(key=lambda pair: rank(pair[0]), reverse=True)
+        if c.select_for_learning:
+            def explorer_rank(pair):
+                row = pair[0]
+                probe = row['transfer_probe']
+                return (probe['captures_after'] + probe['gain'], probe['captures_after'], rank(row))
+            scored.sort(key=explorer_rank, reverse=True)
+        else:
+            scored.sort(key=lambda pair: rank(pair[0]), reverse=True)
         teachers = choose_teachers(scored)
         current_sources = {m['source'] for m,_ in teachers}
         eligible_sources = set(state['teacher_sources']) | current_sources
         teaching_stream = list({e['event_id']:e for e in state['events']+incoming if e['source'] in eligible_sources}.values())
+        if guard_active:
+            # Replayed events and copies starting from the same brain get one vote per context.
+            teaching_stream = [{**e, 'source': e.get('teacher_identity', e['source'])} for e in teaching_stream]
         distillation = {'current_teachers': sorted(current_sources), 'explorers_observed': len(scored)}
         proposals = build_transfer_proposals(eva, teachers, teaching_stream,
             contextual=c.contextual_distillation_enabled, focus_terminal=strategy=='consolidate',
             distillation_report=distillation)
         generation_start_id = eva.snapshot_id()
         neurons_before = len(eva.nodes)
-        selected, improved, decisions = select_transfer(eva, proposals, state['tasks'], cache)
+        transfer_started = time.perf_counter()
+        selected, improved, decisions = select_transfer(eva, proposals, state['tasks'], cache, c.max_scenario_loss)
+        transfer_seconds = time.perf_counter() - transfer_started
+        teacher_order = [m['source'] for m, _ in teachers]
+        for decision in decisions:
+            label = decision['proposal']
+            if label.startswith('teacher_') and label[7:].isdigit():
+                sources = [teacher_order[int(label[7:])-1]]
+            elif label.startswith('local_circuit_'):
+                sources = teacher_order[:1]
+            else:
+                sources = sorted({e['source'] for e in teaching_stream})
+            decision['sources'] = sources
         promoted = selected is not None
         reason, consolidated = 'self_learning', 0
         if promoted:
@@ -440,13 +519,51 @@ def _run(root, c, resume, progress, should_stop, observer, monitor, directory):
                             accepted=promoted and reason in ('contextual_distillation','teacher_distilled'))
         # EVA is a separate real learner, with the same train episodes/seeds as explorers.
         eva_before_training = eva.snapshot_id()
-        pre_key=selection_key(probe_scores(eva,state['tasks'],cache),len(eva.nodes))
+        pre_rows = probe_scores(eva, state['tasks'], cache)
+        pre_key = selection_key(pre_rows, len(eva.nodes))
+        if guard_active:
+            stable_snapshot = eva.export()
+        personal_started = time.perf_counter()
         if observer:
             observer.set_context(generation=gen,individual=c.population,phase='eva',genome_id=eva_before_training)
         best, sample, seen = train_actor(eva, f'{folder.name}/g{gen}/EVA', train_suites, c,
                                          counts['train'], c.seed*99991+gen*257+c.population, observer)
         incoming.extend(sample)
-        after_key=selection_key(probe_scores(eva,state['tasks'],cache),len(eva.nodes))
+        after_rows = probe_scores(eva, state['tasks'], cache)
+        candidate_key = selection_key(after_rows, len(eva.nodes))
+        candidate_id = eva.snapshot_id()
+        personal_scenarios = scenario_evidence(state['tasks'], pre_rows, after_rows)
+        # Comparing with generation start as well prevents two individually admissible
+        # updates from silently spending the loss budget twice in one generation.
+        cumulative = scenario_evidence(state['tasks'], generation_rows, after_rows) if guard_active else []
+        rollback = guard_active and (candidate_key < pre_key or exceeds_loss(personal_scenarios, c.max_scenario_loss)
+                                     or exceeds_loss(cumulative, c.max_scenario_loss))
+        if guard_active:
+            state['eva_guard'] = {
+                'run': folder.name, 'generation': gen, 'split': 'validation', 'max_scenario_loss': c.max_scenario_loss,
+                'stable_before_training': stable_snapshot,
+                'personal_candidate': eva.export(), 'candidate_id': candidate_id,
+                'rollback_id': eva_before_training, 'rolled_back': rollback,
+            }
+        if rollback:
+            eva = BooleanNet.restore(stable_snapshot)
+            eva.reset()
+        after_key = pre_key if rollback else candidate_key
+        personal_seconds = time.perf_counter() - personal_started
+        personal = {
+            'proposal': 'personal_training', 'channel': 'personal', 'reference_id': eva_before_training,
+            'candidate_id': candidate_id, 'sources': [best['source']], 'selected': not rollback,
+            'policy': 'guarded' if guard_active else 'v605', 'max_scenario_loss': c.max_scenario_loss,
+            'reason': 'validation_rollback' if rollback else 'retained',
+            'training_and_validation_seconds': personal_seconds,
+            'diagnostics': {'scenarios': personal_scenarios, 'vs_generation_start': cumulative},
+        }
+        channels = {key: {'attempted': 0, 'accepted': 0, 'rejected': 0}
+                    for key in ('personal', 'distillation', 'adoption', 'structural')}
+        for decision in [*decisions, personal]:
+            counts_by_channel = channels[decision['channel']]
+            counts_by_channel['attempted'] += 1
+            counts_by_channel['accepted' if decision['selected'] else 'rejected'] += 1
         contributions[best['source']] = seen
         state['training_replay']=replay_archive
         state['transitions_total']=state.get('transitions_total',0)+sum(contributions.values())
@@ -478,7 +595,9 @@ def _run(root, c, resume, progress, should_stop, observer, monitor, directory):
             'eva_active_neurons': len(eva.nodes), 'minimum_active_neurons': c.minimum_active_neurons,
             'initial_neurons': c.initial_neurons, 'max_neurons': c.max_neurons,
             'topology_delta': len(eva.nodes)-neurons_before,
-            'post_learning_regression':after_key<pre_key,'post_learning_improvement':after_key>pre_key,
+            'post_learning_regression':candidate_key<pre_key,'post_learning_improvement':candidate_key>pre_key,
+            'personal_rollback': rollback, 'personal_candidate_id': candidate_id, 'learning_channels': channels,
+            'explorer_selection': 'transfer_gain' if c.select_for_learning else 'training_rank',
             'replayed_training_episodes':replayed,'context_history':eva.context_codec.history,
             'associative_entries':len(eva.associative_memory.entries),
             'shared_events': len(state['events']), 'agent_contributors': len(scored),
@@ -527,12 +646,18 @@ def _run(root, c, resume, progress, should_stop, observer, monitor, directory):
         state['generation'] += 1
         state['eva'] = eva.export()
         state['transaction'] = f'{folder.name}:{gen}'
-        state['config'] = {'profile': c.smith_profile, 'engine': Limits.ENGINE}
+        state['config'] = {'profile': c.smith_profile, 'engine': state['eva']['engine']}
         state['history'] = (state['history']+[{'run':folder.name,**summary}])[-Limits.HISTORY_ENTRIES:]
-        snapshot = {'schema': SCHEMA, 'generation': gen, 'config': asdict(c),
+        snapshot = {'schema': SCHEMA, 'schema_version': SCHEMA, 'engine_version': Limits.VERSION, 'generation': gen, 'input_sha256': input_hashes, 'config': asdict(c),
                     'population': [n.export() for n in population], 'history': history,
                     'evaluated_population': [(m,n.export()) for m,n in scored],
                     'supervisor_state': copy.deepcopy(state)}
+        append_jsonl(folder/'evolution/generations.jsonl', summary)
+        append_jsonl(folder/'evolution/consolidation.jsonl', {'generation':gen,'decisions':decisions,
+            'transfer_selected':reason,'distillation':distillation,'contributors':contributions,
+            'personal_decision':personal, 'seconds':{'transfer_validation': transfer_seconds,
+                                                    'personal_training_and_validation': personal_seconds},
+            'eva_lifetime_changed':summary['eva_lifetime_changed'],'topology_delta':summary['topology_delta']})
         save_checkpoint(folder/'checkpoints/latest.json', snapshot)
         save_checkpoint(directory/'latest.json', state)
         atomic_json(directory/'status.json', {'profile':c.smith_profile,'revision':state['generation'],
@@ -540,7 +665,7 @@ def _run(root, c, resume, progress, should_stop, observer, monitor, directory):
             'roles':state['roles'],'knowledge_entries':len(eva.knowledge),'contextual_entries':len(eva.contextual_memory.rows),
             'distillation':distillation,'smith_knowledge':smith.describe(supervisor),'shared_events':len(state['events']),
             'contributors':len(state['contributors']),'transitions':state['transitions_total'],
-            'last_decisions':decisions,'transfer_accepted':promoted,'transfer_reason':reason,
+            'last_decisions':decisions,'last_personal_decision':personal,'transfer_accepted':promoted,'transfer_reason':reason,
             'retention_tasks':len(state['tasks']),'snapshot_id':eva.snapshot_id(),'meta':supervisor,
             'eva_neurons':len(eva.nodes),'eva_updated':summary['eva_updated']})
         atomic_json(folder/'brains/eva.json', eva.export())
@@ -550,10 +675,6 @@ def _run(root, c, resume, progress, should_stop, observer, monitor, directory):
         keys=('engine','nodes','outputs','shape','rules','sensors','output_lanes')
         atomic_json(circuits/f'g{gen:06}.json',{**{k:data[k] for k in keys},'generation':gen})
         for old in sorted(circuits.glob('g*.json'))[:-Limits.CIRCUIT_HISTORY_LIMIT]:old.unlink()
-        append_jsonl(folder/'evolution/generations.jsonl', summary)
-        append_jsonl(folder/'evolution/consolidation.jsonl', {'generation':gen,'decisions':decisions,
-            'transfer_selected':reason,'distillation':distillation,'contributors':contributions,
-            'eva_lifetime_changed':summary['eva_lifetime_changed'],'topology_delta':summary['topology_delta']})
         if progress:
             progress(summary)
         if monitor:
@@ -578,7 +699,7 @@ def _finish(folder,c,eva,suites,valid_count,test_count,begin,cpu,state,evaluated
         'generation':c.generations,'eva':assessments['holdout'],
         'population_mean_capture':statistics.mean(m['capture_rate'] for m in population_tests),
         'population_best_capture':max(m['capture_rate'] for m in population_tests),'individuals':population_tests})
-    baseline = {name:baseline_suite(name,suites['holdout'],c.seed,'holdout',test_count,c.steps) for name in ('random','greedy')}
+    baseline = {name:baseline_suite(name,suites['holdout'],c.seed,'holdout',test_count,c.steps) for name in ('random','greedy','sensor_greedy')}
     atomic_json(folder/'benchmarks/baselines.json', baseline)
     for si,scenario in enumerate(suites['holdout']):
         for i,seed in enumerate(seeds_for(c.seed,'holdout',scenario['name'],min(3,test_count))):
@@ -591,7 +712,7 @@ def _finish(folder,c,eva,suites,valid_count,test_count,begin,cpu,state,evaluated
                 'brain':brain,'frames':frames,'genome_id':eva.snapshot_id(),'learning':'isolated_adaptive'})
     atomic_json(folder/'neuroscience/brain_graph.json',eva.export())
     atomic_json(folder/'results.json',{'complete':True,'generations':c.generations,
-        'engine':Limits.ENGINE,'elapsed_this_session_seconds':time.perf_counter()-begin,
+        'engine':state['eva']['engine'],'elapsed_this_session_seconds':time.perf_counter()-begin,
         'cpu_this_session_seconds':time.process_time()-cpu,'champion_id':eva.snapshot_id(),
         'benchmarks':assessments,'baseline_comparison':baseline,'revision':state['generation'],
         'smith_profile':c.smith_profile,'note':'Adaptive isolated test; empirical selection, no guarantee of improvement.'})

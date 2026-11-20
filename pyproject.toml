@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "predatore-boolean-engine"
-version = "6.5.0"
-description = "Reusable Boolean vector learner from Predatore V6.05"
+version = "6.6.0"
+description = "Reusable Boolean vector learner from Predatore V6.06"
 requires-python = ">=3.10"
 dependencies = []
 

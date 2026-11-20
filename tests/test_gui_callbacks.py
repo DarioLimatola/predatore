@@ -38,7 +38,7 @@ class Widget:
     def __setitem__(self,key,value):self.options[key]=value
     def __getitem__(self,key):return self.options[key]
     def pack(self,*a,**k):pass
-    grid=pack;pack_propagate=pack;columnconfigure=pack;title=pack;geometry=pack;minsize=pack
+    grid=pack;grid_remove=pack;pack_propagate=pack;columnconfigure=pack;title=pack;geometry=pack;minsize=pack
     theme_use=pack;map=pack;heading=pack;column=pack;bind=pack;tag_bind=pack;see=pack;protocol=pack
     yview=pack;xview=pack;set=pack;itemconfigure=pack;coords=pack
     def configure(self,**kwargs):self.options.update(kwargs)

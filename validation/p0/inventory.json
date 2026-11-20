@@ -1,0 +1,22 @@
+{
+  "repository": "DarioLimatola/predatore",
+  "base_commit": "8f724235accc041c9e11c700786ac55cec9e3123",
+  "base_tree": "974459f82c08b01848f36e9956d95cec7ca94fc1",
+  "release_branch_same_tree": true,
+  "published_manifest_entries": 66,
+  "all_published_hashes_match": true,
+  "mismatching_entries": [],
+  "tracked_files": 67,
+  "tracked_files_by_path": {
+    ".": 9,
+    "boolean_engine": 9,
+    "docs": 2,
+    "engine": 17,
+    "examples": 1,
+    "gui": 5,
+    "tests": 11,
+    "tools": 5,
+    "validation": 8
+  },
+  "user_checkpoints_in_checkout": 0
+}

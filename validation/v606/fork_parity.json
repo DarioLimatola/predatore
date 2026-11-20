@@ -1,0 +1,13 @@
+{
+  "seed": 271,
+  "size": 8,
+  "generations": 3,
+  "forked_after_generation": 2,
+  "old_schema": "predatore.evolution-vault/3.0",
+  "new_schema": "predatore.evolution-vault/3.1",
+  "identical_eva_genome": true,
+  "identical_explorer_genomes": true,
+  "recorded_fork_hash_matches_original": true,
+  "original_seal_valid": true,
+  "resumed_seal_valid": true
+}

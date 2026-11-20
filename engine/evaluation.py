@@ -3,9 +3,12 @@ import hashlib
 import json
 import random
 import statistics
+import math
+import time
 
 from .progress_monitor import completion_metrics
-from .world import World, DIRS
+from .world import DIRS
+from .challenge_worlds import make_world
 from .challenges import episode_specs
 
 
@@ -18,9 +21,9 @@ def genome_id(net):
     return hashlib.sha256(json.dumps(data, sort_keys=True).encode()).hexdigest()[:16]
 
 
-def rollout(net, scenario, seed, steps, record=False, observer=None):
-    world = World(scenario['map'], seed=seed, visibility=scenario['visibility'],
-                  prey_moves=scenario['prey_moves'])
+def rollout(net, scenario, seed, steps, record=False, observer=None, measure=False):
+    world = make_world(scenario, seed)
+    decision_ns = 0
     net.reset()
     frames = [{'t': 0, 'predator': list(world.predator), 'prey': list(world.prey)}] if record else None
     live = observer is not None and observer.begin_episode(net, scenario, seed)
@@ -34,7 +37,11 @@ def rollout(net, scenario, seed, steps, record=False, observer=None):
     for _ in range(steps):
         observation = world.observe()
         before_state = list(net.state) if record or live else None
+        if measure:
+            begin = time.perf_counter_ns()
         action = net.decide(observation)
+        if measure:
+            decision_ns += time.perf_counter_ns() - begin
         previous = world.predator
         reward, captured = world.step(action)
         total += reward
@@ -52,13 +59,15 @@ def rollout(net, scenario, seed, steps, record=False, observer=None):
                      'observation': list(observation), 'previous_state': before_state,
                      'neural_state': list(net.state)}
             frame.update(net.frame_data())
+            if hasattr(world, 'world_events'):
+                frame['world_events'] = world.world_events()
             if record:
                 frames.append(frame)
             if live:
                 observer.add_frame(frame)
         if captured:
             break
-        if len(trail) >= 20 and len(set(trail[-20:])) <= 2:
+        if len(trail) >= 20 and len(set(trail[-20:])) <= 2 and getattr(world, 'due_tick', None) is None:
             stalled = True
             total -= 2
             break
@@ -67,7 +76,31 @@ def rollout(net, scenario, seed, steps, record=False, observer=None):
     return {'capture': int(world.captured), 'steps': world.steps, 'reward': total,
             'stall': int(stalled), 'blocked': blocked,
             'exploration': len(world.visited)/len(world._free_cells),
+            'final_distance': sum(abs(a-b) for a,b in zip(world.predator, world.prey)),
+            'obstacles': len(world.obstacles),
+            **({'decision_ns': decision_ns} if measure else {}),
             'decoder_counts':dict(getattr(net,'decoder_counts',{}))}, frames
+
+
+def capture_summary(rows):
+    """Descriptive 95% Wilson interval conditional on this set of episodes."""
+    n = len(rows)
+    p = sum(row['capture'] for row in rows)/n
+    z = 1.959963984540054
+    scale = 1 + z*z/n
+    center = (p + z*z/(2*n))/scale
+    half = z*math.sqrt(p*(1-p)/n + z*z/(4*n*n))/scale
+    times = [row['steps'] for row in rows if row['capture']]
+    return {'capture_wilson95': [max(0.,center-half), min(1.,center+half)],
+            'successful_median_steps': statistics.median(times) if times else None}
+
+
+def sensor_greedy(observation, rng):
+    """Only the 15 EVA inputs: prefer valid moves toward a visible target."""
+    options = [i for i in range(4) if observation[5+i]]
+    options.extend(4+i for i in range(4) if not observation[5+i] and observation[9+i])
+    toward = [action for action in options if observation[1 + action % 4]]
+    return rng.choice(toward or options or [0])
 
 
 def evaluate_suite(net, suites, seed, split, episodes, steps, observer=None):
@@ -78,6 +111,10 @@ def evaluate_suite(net, suites, seed, split, episodes, steps, observer=None):
                          for task,sample_seed in episode_specs(scenario,seed,split,episodes)]
         task_metrics[scenario['name']] = {
             **completion_metrics(scenario_rows),
+            **capture_summary(scenario_rows),
+            'mean_final_distance': statistics.mean(r['final_distance'] for r in scenario_rows),
+            'mean_obstacles': statistics.mean(r['obstacles'] for r in scenario_rows),
+            'decoder_counts': {key: sum(r['decoder_counts'].get(key,0) for r in scenario_rows) for key in net.decoder_counts},
             'capture_rate': statistics.mean(row['capture'] for row in scenario_rows),
             'mean_steps': statistics.mean(row['steps'] for row in scenario_rows),
             'stall_rate': statistics.mean(row['stall'] for row in scenario_rows),
@@ -121,14 +158,14 @@ def rank(metrics):
 
 def baseline_suite(kind, suites, base_seed, split, episodes, steps):
     """Diagnostic random and full-information Greedy baselines, not EVA training."""
+    if kind not in ('random','sensor_greedy','greedy'):
+        raise ValueError(f'Unknown baseline: {kind}')
     metrics = {}
     all_rows = []
     for scenario in suites:
         task_rows = []
         for task,sample_seed in episode_specs(scenario,base_seed,split,episodes):
-            world = World(task['map'], seed=sample_seed,
-                          visibility=scenario['visibility'],
-                          prey_moves=scenario['prey_moves'])
+            world = make_world(task, sample_seed)
             rng = random.Random(sample_seed + 81282)
             reward_total = 0.
             blocked = 0
@@ -137,6 +174,8 @@ def baseline_suite(kind, suites, base_seed, split, episodes, steps):
             for _ in range(steps):
                 if kind == 'random':
                     action = rng.randrange(4)
+                elif kind == 'sensor_greedy':
+                    action = sensor_greedy(world.observe(), rng)
                 else:
                     options = []
                     for index, (dx, dy) in enumerate(DIRS):
@@ -153,7 +192,7 @@ def baseline_suite(kind, suites, base_seed, split, episodes, steps):
                 trail.append(world.predator)
                 if captured:
                     break
-                if len(trail) >= 20 and len(set(trail[-20:])) <= 2:
+                if len(trail) >= 20 and len(set(trail[-20:])) <= 2 and getattr(world, 'due_tick', None) is None:
                     stalled = True
                     reward_total -= 2
                     break
@@ -163,6 +202,7 @@ def baseline_suite(kind, suites, base_seed, split, episodes, steps):
                               'exploration': len(world.visited)/len(world._free_cells)})
         metrics[scenario['name']] = {
             **completion_metrics(task_rows),
+            **capture_summary(task_rows),
             'capture_rate': statistics.mean(row['capture'] for row in task_rows),
             'mean_steps': statistics.mean(row['steps'] for row in task_rows),
             'stall_rate': statistics.mean(row['stall'] for row in task_rows),
@@ -178,6 +218,7 @@ def baseline_suite(kind, suites, base_seed, split, episodes, steps):
         'exploration': statistics.mean(row['exploration'] for row in all_rows),
         'mean_reward': statistics.mean(row['reward'] for row in all_rows),
         'by_scenario': metrics,
-        'note': ('Uses true prey coordinates; not restricted to EVA sensors' if kind == 'greedy'
-                 else 'Uniform random cardinal actions'),
+        'note': {'greedy': 'Privileged reference using true prey coordinates',
+                 'sensor_greedy':'Greedy with the same 15 local sensors as EVA',
+                 'random':'Uniform random cardinal actions'}[kind],
     }
