@@ -106,6 +106,29 @@ class ProbeCache:
             self.rows.popitem(last=False)
         return value
 
+    def prefetch(self, nets, tasks):
+        """Compute missing (net, task) probes in parallel; later assess() calls hit the cache."""
+        from .parallel import assess_many, workers
+        if workers() <= 1:
+            return
+        jobs, keys, exported = [], [], {}
+        for net in nets:
+            ident = net.snapshot_id()
+            for task in tasks:
+                key = (ident, json.dumps(task, sort_keys=True))
+                if key in self.rows or key in keys:
+                    continue
+                if ident not in exported:
+                    exported[ident] = net.export()
+                keys.append(key)
+                jobs.append((exported[ident], task['suites'], task['seed'], task['episodes'], task['steps'], 'validation'))
+        if len(jobs) < 2:
+            return
+        for key, value in zip(keys, assess_many(jobs)):
+            self.rows[key] = value
+            if len(self.rows) > Limits.PROBE_CACHE_ENTRIES:
+                self.rows.popitem(last=False)
+
 
 def quality(rows):
     return (sum(r['capture_rate'] for r in rows), -sum(r['stall_rate'] for r in rows),
@@ -114,6 +137,8 @@ def quality(rows):
 
 def probe_scores(net, tasks, cache=None):
     # One adaptive copy per task, preserving learning across that task's episodes.
+    if cache:
+        cache.prefetch([net], tasks)
     return [(cache.assess(net, task) if cache else
              assessment(net, task['suites'], task['seed'], task['episodes'], task['steps']))
             for task in tasks]
@@ -139,6 +164,8 @@ def selection_key(rows, neurons):
 
 
 def select_transfer(eva, proposals, tasks, cache=None, max_scenario_loss=None):
+    if cache:
+        cache.prefetch([eva] + [candidate for _, candidate, _ in proposals], tasks)
     before = probe_scores(eva, tasks, cache)
     baseline_key = selection_key(before, len(eva.nodes))
     best_key, selected, selected_rows = baseline_key, None, before
@@ -685,15 +712,22 @@ def _run(root, c, resume, progress, should_stop, observer, monitor, directory):
 
 
 def _finish(folder,c,eva,suites,valid_count,test_count,begin,cpu,state,evaluated_population):
-    atomic_json(folder/'brains/eva.json',eva.export())
-    assessments = {split:assessment(eva,suites[split],c.seed,count,c.steps,split)
-                   for split,count in (('validation',valid_count),('holdout',test_count))}
+    from .parallel import assess_many
+    exported_eva=eva.export()
+    atomic_json(folder/'brains/eva.json',exported_eva)
+    initial_data=read_json(folder/'brains/initial_eva.json')
+    BooleanNet.restore(initial_data)  # same validation as before the parallel path
+    # Independent isolated copies: EVA (validation, holdout), initial EVA, every explorer.
+    finals=assess_many([(exported_eva,suites['validation'],c.seed,valid_count,c.steps,'validation'),
+                        (exported_eva,suites['holdout'],c.seed,test_count,c.steps,'holdout'),
+                        (initial_data,suites['holdout'],c.seed,test_count,c.steps,'holdout')]+
+                       [(net.export(),suites['holdout'],c.seed,test_count,c.steps,'holdout') for net in evaluated_population])
+    assessments={'validation':finals[0],'holdout':finals[1]}
     atomic_json(folder/'benchmarks/results.json', assessments)
-    initial=BooleanNet.restore(read_json(folder/'brains/initial_eva.json'))
-    initial_test=assessment(initial,suites['holdout'],c.seed,test_count,c.steps,'holdout')
+    initial_test=finals[2]
     atomic_json(folder/'benchmarks/learning_comparison.json',{'initial':initial_test,'final':assessments['holdout'],
         'capture_delta':assessments['holdout']['capture_rate']-initial_test['capture_rate']})
-    population_tests = [assessment(net,suites['holdout'],c.seed,test_count,c.steps,'holdout') for net in evaluated_population]
+    population_tests = finals[3:]
     atomic_json(folder/'benchmarks/population_comparison.json', {
         'protocol':'Identical held-out maps/seeds/count/steps; adaptive isolated copies; no test feedback to agents or SMITH.',
         'generation':c.generations,'eva':assessments['holdout'],

@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "name": "holdout_moving",
+  "size": 8,
+  "density": 0.09375,
+  "requested_density": 0.06,
+  "seed": 3198,
+  "obstacles": [
+    [
+      0,
+      7
+    ],
+    [
+      1,
+      0
+    ],
+    [
+      1,
+      1
+    ],
+    [
+      1,
+      3
+    ],
+    [
+      5,
+      1
+    ],
+    [
+      5,
+      6
+    ]
+  ]
+}
