@@ -71,7 +71,7 @@ class RefreshTests(CallbackContracts):
                 ui['exp_name'].set(pending.name)
                 self.assertEqual(ui['table'].get_children(),[])
                 self.assertEqual(ui['plot'].items,{})
-                self.assertEqual(ui['preview_actors'],[])
+                self.assertEqual(ui['replay_group'],[])
                 self.assertEqual(ui['replay_frames'][0],[])
                 self.assertIsNone(ui['inspector'].brain)
                 self.assertIn(pending.name,ui['diagnostics_text'].text)

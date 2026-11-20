@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "name": "validation_static",
+  "size": 8,
+  "density": 0.0625,
+  "requested_density": 0.06,
+  "seed": 2003,
+  "obstacles": [
+    [
+      1,
+      7
+    ],
+    [
+      2,
+      2
+    ],
+    [
+      2,
+      5
+    ],
+    [
+      4,
+      4
+    ]
+  ]
+}

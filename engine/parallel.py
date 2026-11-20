@@ -1,60 +1,122 @@
-"""Process pool for independent, isolated assessments.
+"""Parallel execution of independent, isolated work (assessments, explorer training).
 
-Each job restores its own disposable copy from an exported brain, exactly like
-``evaluation_copy``; nothing flows back into persistent agents. Results are the
-same as the sequential path, only computed on several CPU cores.
+Every job works on its own disposable brain; nothing flows back into persistent
+agents except through the caller, in a fixed order. Results are therefore the same
+with 1 or N workers (tests/test_v7_parallel.py).
 
-PREDATORE_WORKERS=1 disables the pool; any other integer fixes the worker count.
+- Native kernel available: a thread pool. Episodes run in Rust without Python's
+  global lock, so threads share brains without copying them between processes.
+- Pure Python: a process pool (spawn), which receives exported brains.
+
+PREDATORE_WORKERS sets the number of workers (default 16, at most the CPU threads).
+PREDATORE_WORKERS=1 runs everything in the calling thread.
 """
 import atexit
 import os
+import sys
+import threading
 
-_pool = None
-_size = None
+DEFAULT_WORKERS = 16
+
+_threads = None
+_processes = None
+_lock = threading.Lock()
+_fallbacks = 0
 
 
 def workers():
     value = os.environ.get('PREDATORE_WORKERS')
     if value is not None:
         return max(1, int(value))
-    return max(1, min(8, (os.cpu_count() or 1) - 1))
+    return max(1, min(DEFAULT_WORKERS, os.cpu_count() or 1))
 
 
-def _get_pool():
-    global _pool, _size
-    if _pool is None:
-        _size = workers()
-        if _size <= 1:
-            return None
-        import multiprocessing as mp
-        from concurrent.futures import ProcessPoolExecutor
-        # 'spawn' behaves the same on Windows, Linux and macOS.
-        _pool = ProcessPoolExecutor(_size, mp_context=mp.get_context('spawn'))
-        atexit.register(shutdown)
-    return _pool
+def native():
+    from boolean_engine import native_backend
+    return native_backend.AVAILABLE
+
+
+def status():
+    return {'workers': workers(), 'mode': ('threads' if native() else 'processes') if workers() > 1 else 'serial',
+            'fallbacks': _fallbacks}
+
+
+def _thread_pool():
+    global _threads
+    with _lock:
+        if _threads is None:
+            from concurrent.futures import ThreadPoolExecutor
+            _threads = ThreadPoolExecutor(workers(), thread_name_prefix='predatore')
+            atexit.register(shutdown)
+        return _threads
+
+
+def _process_pool():
+    global _processes
+    with _lock:
+        if _processes is None:
+            import multiprocessing as mp
+            from concurrent.futures import ProcessPoolExecutor
+            # 'spawn' behaves the same on Windows, Linux and macOS.
+            _processes = ProcessPoolExecutor(workers(), mp_context=mp.get_context('spawn'))
+            atexit.register(shutdown)
+        return _processes
 
 
 def shutdown():
-    global _pool
-    if _pool is not None:
-        _pool.shutdown(wait=False, cancel_futures=True)
-        _pool = None
+    global _threads, _processes
+    for pool in (_threads, _processes):
+        if pool is not None:
+            pool.shutdown(wait=False, cancel_futures=True)
+    _threads = _processes = None
 
 
-def _assess(exported, suites, seed, count, steps, split):
-    from .boolean_net import BooleanNet
+def _report_fallback(exc):
+    global _fallbacks
+    _fallbacks += 1
+    print(f'[parallel] pool failed ({type(exc).__name__}: {exc}); continuing in one thread',
+          file=sys.stderr, flush=True)
+
+
+def map_ordered(fn, items):
+    """fn over items, results in input order. Threads when native, else in-process."""
+    items = list(items)
+    if workers() <= 1 or len(items) < 2 or not native():
+        return [fn(item) for item in items]
+    try:
+        return list(_thread_pool().map(fn, items))
+    except RuntimeError as exc:  # pool shut down during interpreter exit
+        _report_fallback(exc)
+        return [fn(item) for item in items]
+
+
+def _assess(net, suites, seed, count, steps, split):
     from .continual import assessment
-    return assessment(BooleanNet.restore(exported), suites, seed, count, steps, split)
+    return assessment(net, suites, seed, count, steps, split)
+
+
+def _assess_exported(exported, suites, seed, count, steps, split):
+    from .boolean_net import BooleanNet
+    return _assess(BooleanNet.restore(exported), suites, seed, count, steps, split)
 
 
 def assess_many(jobs):
-    """jobs: list of (exported_brain, suites, seed, count, steps, split). Ordered results."""
-    pool = _get_pool() if len(jobs) > 1 else None
-    if pool is None:
+    """jobs: list of (brain, suites, seed, count, steps, split). Ordered results.
+
+    `brain` is a network or an exported brain dict. Every assessment works on its own
+    evaluation copy, so jobs never share state.
+    """
+    from .boolean_net import BooleanNet
+    jobs = [((BooleanNet.restore(b) if isinstance(b, dict) else b), *rest) for b, *rest in jobs]
+    if workers() <= 1 or len(jobs) < 2:
         return [_assess(*job) for job in jobs]
+    if native():
+        return map_ordered(lambda job: _assess(*job), jobs)
     try:
-        return list(pool.map(_assess, *zip(*jobs)))
-    except Exception:
-        # A broken pool (e.g. a killed worker) must not stop training: fall back.
+        exported = [(net.export(), *rest) for net, *rest in jobs]
+        return list(_process_pool().map(_assess_exported, *zip(*exported)))
+    except Exception as exc:
+        # A broken pool (e.g. a killed worker) must not stop training: visible fallback.
+        _report_fallback(exc)
         shutdown()
         return [_assess(*job) for job in jobs]

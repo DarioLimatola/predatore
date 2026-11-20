@@ -58,10 +58,10 @@ class EVAGuardTests(unittest.TestCase):
     def test_learning_probe_uses_other_training_maps_and_frozen_copies(self):
         observed = []
         real = continual.evaluate_suite
-        def observe(net, suites, seed, split, count, steps, observer=None):
+        def observe(net, suites, seed, split, count, steps, observer=None, **kwargs):
             if split == 'train':
                 observed.append((seed, [s['map']['seed'] for s in suites], net.plasticity_enabled))
-            return real(net, suites, seed, split, count, steps, observer=observer)
+            return real(net, suites, seed, split, count, steps, observer=observer, **kwargs)
         with tempfile.TemporaryDirectory() as root, patch.object(continual, 'evaluate_suite', side_effect=observe):
             cfg = Config(seed=8, generations=1, population=4, episodes=4, steps=8, validation_episodes=4,
                          holdout_episodes=4, select_for_learning=True, max_scenario_loss=0)

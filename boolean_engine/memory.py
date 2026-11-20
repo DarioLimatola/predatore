@@ -169,6 +169,14 @@ class ContextMemory:
         return {'clock':self.clock,'rows':[[k,*cached(k,row),dict(self.meta[k])]
                  for k,row in self.rows.items()]}
 
+    def digest(self):
+        import hashlib, json
+        return hashlib.sha256(json.dumps(self.export(),sort_keys=True).encode()).hexdigest()
+
+    def copy(self):
+        import copy as _copy
+        return _copy.deepcopy(self)
+
     def restore(self,data,codec=None):
         self.clear()
         self.clock=data['clock']

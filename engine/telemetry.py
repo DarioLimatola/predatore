@@ -207,7 +207,7 @@ class LiveBuffer:
         age = time.time() - self.timestamp
         if not self.timestamp:
             return 'Live non disponibile: in attesa di episodi realmente eseguiti.'
-        status = self.status
-        if self.error or (age > 3 and status == 'running'):
+        status = {'running': 'in corso', 'finished': 'terminato', 'stopped': 'fermato'}.get(self.status, self.status)
+        if self.error or (age > 3 and self.status == 'running'):
             status = 'nessun dato recente / cache / processo interrotto'
         return f'{status} · ultimo pacchetto {max(0, age):.1f}s fa · buffer {len(self.pending)}'

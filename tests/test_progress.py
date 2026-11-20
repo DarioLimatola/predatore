@@ -79,10 +79,11 @@ class NewGuiContracts(unittest.TestCase):
             folder=Path(tmp)/'EvolutionVault/experiments/EXP_seed29_size6'
             run(tmp,cfg,monitor=ProgressMonitor(folder,cfg,1))
             def hook(app,ui):
-                ui['mode'].set('preview')
-                self.assertEqual(len(ui['preview_actors']),7)
-                ui['scenario_name'].set('Visibilità ridotta (3 celle)')
-                self.assertEqual(ui['preview_actors'][0]['world'].visibility,3)
+                ui['mode'].set('replay')
+                ui['replay_all'].set(True)
+                # EVA and the four explorers, all on the same recorded training episode.
+                self.assertEqual(len(ui['replay_group']),5)
+                self.assertEqual(len({str(item['frames'][0]['predator']) for item in ui['replay_group']}),1)
                 for metric in ('Catture','Passi per cattura','Neuroni attivi'):ui['graph_metric'].set(metric)
                 ui['graph_scenario'].set('Preda mobile')
                 self.assertGreater(len(ui['table'].get_children()),4)

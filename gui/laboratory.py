@@ -1,13 +1,13 @@
-"""Predatore V6 laboratory UI.
+"""Predatore V7 laboratory UI.
 
 Tkinter remains on the main thread. Training happens in a separate Python process.
-Live Training observes real worker frames. Independent Preview simulates saved genotypes.
-Recorded Replay uses actual logged positions and actions.
+The Arena shows only real episodes: live training frames, training episodes recorded
+every generation for every agent, and (labelled) final-test episodes. Nothing is
+simulated by the interface.
 """
 import colorsys
 import json
 import math
-import random
 import re
 import subprocess
 from types import SimpleNamespace
@@ -19,11 +19,9 @@ from pathlib import Path
 from engine.boolean_net import BooleanNet
 from engine.settings import Limits
 from engine.evolution import Config
-from engine.world import DIRS
-from engine.challenge_worlds import make_world
 from engine.challenges import ALL_SCENARIOS
 from engine.vault import read_json, latest_checkpoint_path, checkpoint_paths
-from gui.arena_state import preview_settings, episode_finished, frame_summary
+from gui.arena_state import frame_summary
 from engine.telemetry import LiveBuffer, write_mailbox
 from gui.brain_inspector import BrainInspector
 from gui.progress_chart import EVA_COLOR, POPULATION_COLOR
@@ -48,8 +46,8 @@ def friendly(value):
     return {'train':'Addestramento','validation':'Validazione','holdout':'Test finale',
             'random':'Movimenti casuali (4 direzioni)','greedy':'Inseguitore privilegiato','sensor_greedy':'Inseguitore con sensori',**SCENARIO_LABELS}.get(value,value)
 
-def available_agent_specs(exp, comparison="greedy"):
-    """The actual EVA and explorers evaluated in this generation."""
+def available_agent_specs(exp):
+    """The actual EVA and explorers evaluated in the latest generation (no baselines)."""
     exp = Path(exp)
     specs = []
     file = exp/'brains/eva.json'
@@ -68,27 +66,7 @@ def available_agent_specs(exp, comparison="greedy"):
                               'color': agent_color(i+2), 'brain': BooleanNet.restore(item)})
         except (OSError, ValueError, KeyError, TypeError, IndexError):
             pass
-    specs.append({'name': friendly(comparison), 'color': '#d97706', 'baseline': comparison})
-    specs.append({'name': 'Movimenti casuali (4 direzioni)', 'color': '#64748b', 'baseline': 'random'})
     return specs
-
-
-def preview_action(actor):
-    world = actor['world']
-    if actor.get('baseline') == 'random':
-        return actor['rng'].randrange(4)
-    if actor.get('baseline') == 'sensor_greedy':
-        from engine.evaluation import sensor_greedy
-        return sensor_greedy(world.observe(),actor['rng'])
-    if actor.get('baseline') == 'greedy':
-        # Diagnostic heuristic; accesses true prey coordinates, unlike the EVA sensors.
-        options = []
-        for index, (dx, dy) in enumerate(DIRS):
-            q = (world.predator[0] + dx, world.predator[1] + dy)
-            if world.free(q):
-                options.append((abs(q[0]-world.prey[0]) + abs(q[1]-world.prey[1]), index))
-        return min(options)[1] if options else 0
-    return actor['brain'].decide(world.observe())
 
 
 def launch(root_dir=None, *, test_hook=None):
@@ -97,7 +75,9 @@ def launch(root_dir=None, *, test_hook=None):
     vault.mkdir(parents=True, exist_ok=True)
 
     app = tk.Tk()
-    app.title(f'Predatore {Limits.VERSION} · Laboratorio evolutivo')
+    from boolean_engine import native_backend
+    engine_label = 'motore Rust nativo' if native_backend.AVAILABLE else 'motore Python (modulo nativo non compilato)'
+    app.title(f'Predatore {Limits.VERSION} · Laboratorio evolutivo · {engine_label}')
     app.geometry('1240x830')
     app.minsize(950, 640)
     app.configure(background=BG)
@@ -363,359 +343,426 @@ def launch(root_dir=None, *, test_hook=None):
     ttk.Button(tbar, text='Aggiorna', command=lambda:refresh_all()).pack(side='left', padx=5)
     ttk.Label(tbar, text='Live campionato; pausa e velocità riguardano solo la visualizzazione.', style='Muted.TLabel').pack(side='right')
 
-    # Arena: actual training frames, replay and independent agent previews.
-    toolbar = ttk.Frame(panels['arena'])
-    toolbar.pack(fill='x', padx=15, pady=5)
+    # Arena (V7): only real episodes. Live = frames of the training in progress;
+    # Registrazioni = training episodes recorded every generation (all agents) and,
+    # clearly labelled, final-test episodes run on isolated copies. No simulations.
+    arena_panel = panels['arena']
+    toolbar = ttk.Frame(arena_panel)
+    toolbar.pack(fill='x', padx=15, pady=(8, 2))
     mode = tk.StringVar(value='live')
     live_buffer = [LiveBuffer()]
     live_exp = [None]
-    live_tiles={}
-    live_mosaic=tk.BooleanVar(value=False)
+    live_tiles = {}
+    live_mosaic = tk.BooleanVar(value=False)
     closing = [False]
     replay_brain = [None]
     replay_meta = [{}]
+    replay_files = {}
+    replay_group = []          # all agents of one generation, for the side-by-side view
     display_trail = []
     trail_key = [None]
-    ttk.Radiobutton(toolbar, text='Training reale', variable=mode, value='live').pack(side='left', padx=4)
-    ttk.Radiobutton(toolbar, text='Simulazione agenti', variable=mode, value='preview').pack(side='left', padx=4)
-    ttk.Radiobutton(toolbar, text='Replay registrato', variable=mode, value='replay').pack(side='left', padx=4)
-    replay_name = tk.StringVar()
-
-
-    scenario_name=tk.StringVar(value='Preda ferma')
-
+    ttk.Radiobutton(toolbar, text='Live · training in corso', variable=mode, value='live').pack(side='left', padx=(0, 6))
+    ttk.Radiobutton(toolbar, text='Registrazioni', variable=mode, value='replay').pack(side='left', padx=6)
+    ttk.Label(toolbar, text='│', style='Muted.TLabel').pack(side='left', padx=8)
+    source_area = ttk.Frame(toolbar)
+    source_area.pack(side='left')
+    selection_bar = ttk.Frame(source_area)
+    replay_bar = ttk.Frame(source_area)
+    source_bars = {'live': selection_bar, 'replay': replay_bar}
+    for bar in source_bars.values():
+        bar.grid(row=0, column=0, sticky='w')
     speed = tk.IntVar(value=130)
-    ttk.Label(toolbar, text='Velocità visiva').pack(side='left', padx=(14,4))
-    ttk.Scale(toolbar, from_=320, to=45, variable=speed, orient='horizontal', length=120).pack(side='left')
-    source_area=ttk.Frame(panels['arena'])
-    source_area.pack(fill='x',padx=15,pady=2)
-    selection_bar=ttk.Frame(source_area)
-    preview_bar=ttk.Frame(source_area)
-    replay_bar=ttk.Frame(source_area)
-    source_bars={'live':selection_bar,'preview':preview_bar,'replay':replay_bar}
-    for bar in source_bars.values():bar.grid(row=0,column=0,sticky='w')
-    ttk.Label(preview_bar,text='Scenario').pack(side='left')
-    scenario_combo=ttk.Combobox(preview_bar,textvariable=scenario_name,values=list(SCENARIO_LABELS.values()),state='readonly',width=27)
-    scenario_combo.pack(side='left',padx=7)
-    comparison=tk.StringVar(value='Inseguitore con sensori')
-    ttk.Label(preview_bar,text='Controllo di confronto').pack(side='left')
-    ttk.Combobox(preview_bar,textvariable=comparison,values=('Inseguitore con sensori','Inseguitore privilegiato'),
-                 state='readonly',width=24).pack(side='left',padx=7)
-    ttk.Label(replay_bar,text='Episodio registrato').pack(side='left')
-    replay_combo=ttk.Combobox(replay_bar,textvariable=replay_name,state='readonly',width=30)
-    replay_combo.pack(side='left',padx=7)
-    replay_position=tk.IntVar(value=0)
-    ttk.Label(replay_bar,text='Fotogramma').pack(side='left')
-    def seek_replay(position):
-        if mode.get()!='replay' or not replay_frames[0]:return
-        index=max(0,min(len(replay_frames[0])-1,round(float(position))))
-        if playing[0]:toggle_play()
-        replay_index[0]=index
-        replay_position.set(index)
-        draw_arena();draw_brain()
-    timeline=ttk.Scale(replay_bar,from_=0,to=0,variable=replay_position,command=seek_replay,
-                       orient='horizontal',length=220)
-    timeline.pack(side='left',padx=7)
-    ttk.Label(selection_bar,text='Slot (-1 tutti; N = EVA)').pack(side='left')
-    live_slot=tk.StringVar(value='-1')
-    ttk.Spinbox(selection_bar,from_=-1,to=Limits.MAX_POPULATION,textvariable=live_slot,width=5).pack(side='left',padx=5)
-    live_scenario=tk.StringVar(value='all')
-    ttk.Combobox(selection_bar,textvariable=live_scenario,values=['all',*ALL_SCENARIOS],state='readonly',width=14).pack(side='left')
-    def select_live():
-        exp=active_experiment()
-        if not exp:return
-        try:
-            write_mailbox(exp/'live/control.json',{'individual':int(live_slot.get()),'scenario':live_scenario.get(),'stride':1})
-            live_buffer[0]=LiveBuffer(individual=int(live_slot.get()),scenario=live_scenario.get())
-        except (OSError,ValueError) as exc:arena_status.set('Selezione non disponibile: '+str(exc))
-    ttk.Button(selection_bar,text='Applica al training',command=select_live).pack(side='left',padx=5)
-    ttk.Button(selection_bar,text='Vai all’ultimo dato',command=lambda:(live_buffer[0].latest(),draw_arena(),draw_brain())).pack(side='left',padx=5)
+    ttk.Scale(toolbar, from_=320, to=45, variable=speed, orient='horizontal', length=110).pack(side='right')
+    ttk.Label(toolbar, text='Velocità', style='Muted.TLabel').pack(side='right', padx=(10, 4))
 
-    canvas = tk.Canvas(panels['arena'], bg='#f8fafc', highlightthickness=1,
-                       highlightbackground='#cbd5e1')
-    canvas.pack(fill='both', expand=True, padx=15, pady=(6, 2))
-    controls = ttk.Frame(panels['arena'])
-    controls.pack(fill='x', padx=15, pady=(5, 6))
+    # Live: which training slot to follow.
+    ttk.Label(selection_bar, text='Agente').pack(side='left')
+    live_slot = tk.StringVar(value='-1')
+    ttk.Spinbox(selection_bar, from_=-1, to=Limits.MAX_POPULATION, textvariable=live_slot, width=4).pack(side='left', padx=4)
+    live_scenario = tk.StringVar(value='all')
+    ttk.Combobox(selection_bar, textvariable=live_scenario, values=['all', *ALL_SCENARIOS], state='readonly', width=13).pack(side='left', padx=4)
+    def select_live():
+        exp = active_experiment()
+        if not exp:
+            return
+        try:
+            write_mailbox(exp/'live/control.json', {'individual': int(live_slot.get()), 'scenario': live_scenario.get(), 'stride': 1})
+            live_buffer[0] = LiveBuffer(individual=int(live_slot.get()), scenario=live_scenario.get())
+        except (OSError, ValueError) as exc:
+            arena_status.set('Selezione non disponibile: ' + str(exc))
+    ttk.Button(selection_bar, text='Applica', command=select_live).pack(side='left', padx=4)
+    ttk.Checkbutton(selection_bar, text='Mosaico', variable=live_mosaic,
+                    command=lambda: (rebuild_legend(), draw_arena())).pack(side='left', padx=6)
+
+    # Registrazioni: origin, episode, all agents of the generation.
+    replay_source = tk.StringVar(value='Training')
+    replay_source_combo = ttk.Combobox(replay_bar, textvariable=replay_source, values=('Training', 'Test finale'),
+                                       state='readonly', width=11)
+    replay_source_combo.pack(side='left')
+    replay_name = tk.StringVar()
+    replay_combo = ttk.Combobox(replay_bar, textvariable=replay_name, state='readonly', width=42)
+    replay_combo.pack(side='left', padx=6)
+    replay_all = tk.BooleanVar(value=False)
+    ttk.Checkbutton(replay_bar, text='Tutti gli agenti della generazione', variable=replay_all).pack(side='left', padx=4)
+
+    body = ttk.Frame(arena_panel)
+    body.pack(fill='both', expand=True, padx=15, pady=(4, 0))
+    canvas = tk.Canvas(body, bg='#f8fafc', highlightthickness=1, highlightbackground='#cbd5e1')
+    canvas.pack(side='left', fill='both', expand=True)
+    side = tk.Frame(body, bg=PANEL, width=270, highlightthickness=1, highlightbackground='#cbd5e1')
+    side.pack(side='right', fill='y', padx=(10, 0))
+    side.pack_propagate(False)
+    tk.Label(side, text='Decisione', bg=PANEL, fg=INK, font=('Segoe UI', 11, 'bold')).pack(anchor='w', padx=12, pady=(10, 4))
+    decision_fields = {}
+    for key, label in (('source', 'Origine dati'), ('actor', 'Agente'), ('generation', 'Generazione'),
+                       ('scenario', 'Scenario'), ('step', 'Passo'), ('action', 'Azione'), ('decoder', 'Scelta da'),
+                       ('reward', 'Ricompensa'), ('visible', 'Preda'), ('captured', 'Esito'), ('memory', 'Memoria')):
+        row = tk.Frame(side, bg=PANEL)
+        row.pack(fill='x', padx=12, pady=1)
+        tk.Label(row, text=label, bg=PANEL, fg=MUTED, width=12, anchor='w', font=('Segoe UI', 9)).pack(side='left')
+        var = tk.StringVar(value='—')
+        tk.Label(row, textvariable=var, bg=PANEL, fg=INK, anchor='w', justify='left', wraplength=150,
+                 font=('Segoe UI', 9, 'bold')).pack(side='left', fill='x')
+        decision_fields[key] = var
+    DECODER_NAMES = {'circuit': 'circuito', 'short': 'memoria breve', 'context': 'memoria contestuale',
+                     'hdc': 'memoria associativa (HDC)', 'relation': 'credito relazionale'}
+
+    timeline_bar = ttk.Frame(arena_panel)
+    timeline_bar.pack(fill='x', padx=15, pady=(4, 0))
+    replay_position = tk.IntVar(value=0)
+    def seek_replay(position):
+        if mode.get() != 'replay' or not replay_frames[0]:
+            return
+        index = max(0, min(replay_length() - 1, round(float(position))))
+        if playing[0]:
+            toggle_play()
+        replay_index[0] = index
+        replay_position.set(index)
+        draw_arena(); draw_brain()
+    timeline = ttk.Scale(timeline_bar, from_=0, to=0, variable=replay_position, command=seek_replay, orient='horizontal')
+    timeline.pack(fill='x')
+    controls = ttk.Frame(arena_panel)
+    controls.pack(fill='x', padx=15, pady=(4, 2))
     playing = [True]
     tick_id = [None]
-    preview_actors = []
     scene = [None]
     replay_frames = [[]]
     replay_index = [0]
-    arena_step = [0]
-    preview_limit = [100]
-    legend = ttk.Frame(panels['arena'])
-    legend.pack(fill='x', padx=15, pady=(0, 12))
-    arena_status = tk.StringVar(value='Choose an experiment; playback starts automatically.')
-    ttk.Label(panels['arena'], textvariable=arena_status, style='Muted.TLabel').pack(anchor='w', padx=18, pady=(0, 7))
+    legend = ttk.Frame(arena_panel)
+    legend.pack(fill='x', padx=15, pady=(0, 4))
+    arena_status = tk.StringVar(value='Seleziona un esperimento: la riproduzione parte da sola.')
+    ttk.Label(arena_panel, textvariable=arena_status, style='Muted.TLabel', wraplength=1100).pack(anchor='w', padx=18, pady=(0, 8))
     visibility = {}
-    legend_signature=[None]
-    legend_page=[0]
-    def legend_step(delta):
-        legend_page[0]+=delta
-        rebuild_legend()
+    legend_signature = [None]
+
+    def replay_length():
+        if replay_group:
+            return max(len(item['frames']) for item in replay_group)
+        return len(replay_frames[0])
+
     def rebuild_legend():
-        previous={name:var.get() for name,var in visibility.items()}
-        if mode.get()=='live' and live_mosaic.get():
-            specs=[(a['name'],a['color']) for a in live_tiles.values()]
-        elif mode.get() in ('replay','live'):
-            specs = ([(Limits.EVA_LABEL,EVA_COLOR),('Esploratore in training',POPULATION_COLOR)] if mode.get()=='live' else [(Limits.EVA_LABEL,EVA_COLOR)]) + [('Prey','#ef4444')]
+        previous = {name: var.get() for name, var in visibility.items()}
+        if mode.get() == 'live' and live_mosaic.get():
+            specs = [(a['name'], a['color']) for a in live_tiles.values()]
+        elif mode.get() == 'replay' and replay_group:
+            specs = [(item['label'], item['color']) for item in replay_group]
+        elif mode.get() == 'live':
+            specs = [(Limits.EVA_LABEL, EVA_COLOR), ('Esploratore', POPULATION_COLOR), ('Preda', '#ef4444')]
         else:
-            specs = [(a['name'], a['color']) for a in preview_actors]
-        page_size=8
-        page_count=max(1,math.ceil(len(specs)/page_size))
-        legend_page[0]=max(0,min(page_count-1,legend_page[0]))
-        key=(tuple(specs),legend_page[0])
-        if key==legend_signature[0]:return
-        legend_signature[0]=key
-        for w in legend.winfo_children():w.destroy()
+            specs = [(replay_meta[0].get('actor') or Limits.EVA_LABEL, replay_meta[0].get('color', EVA_COLOR)), ('Preda', '#ef4444')]
+        key = tuple(specs)
+        if key == legend_signature[0]:
+            return
+        legend_signature[0] = key
+        for w in legend.winfo_children():
+            w.destroy()
         visibility.clear()
-        for name,_ in specs:visibility[name]=tk.BooleanVar(value=previous.get(name,True))
-        begin=legend_page[0]*page_size
-        for index,(name,color) in enumerate(specs[begin:begin+page_size]):
-            enabled=visibility[name]
-            item=ttk.Frame(legend)
-            item.grid(row=index//4,column=index%4,sticky='w',padx=7)
-            tk.Label(item,text='●',fg=color,bg=BG).pack(side='left')
-            ttk.Checkbutton(item,text=name,variable=enabled,command=lambda:draw_arena()).pack(side='left')
-        if page_count>1:
-            controls=ttk.Frame(legend)
-            controls.grid(row=2,column=0,columnspan=4,sticky='w')
-            ttk.Button(controls,text='‹',command=lambda:legend_step(-1)).pack(side='left')
-            ttk.Label(controls,text=f'Legenda {legend_page[0]+1}/{page_count}').pack(side='left',padx=8)
-            ttk.Button(controls,text='›',command=lambda:legend_step(1)).pack(side='left')
-        if not specs:ttk.Label(legend, text='No agents available yet', style='Muted.TLabel').pack(side='left')
-    def load_preview():
-        preview_actors.clear()
-        scene[0]=None
-        exp=active_experiment()
+        for name, _ in specs:
+            visibility[name] = tk.BooleanVar(value=previous.get(name, True))
+        for index, (name, color) in enumerate(specs[:24]):
+            item = ttk.Frame(legend)
+            item.grid(row=index // 6, column=index % 6, sticky='w', padx=6)
+            tk.Label(item, text='●', fg=color, bg=BG).pack(side='left')
+            ttk.Checkbutton(item, text=name, variable=visibility[name], command=lambda: draw_arena()).pack(side='left')
+
+    def recording_label(path, item):
+        actor = item.get('actor') or (Limits.EVA_LABEL if 'eva' in path.name else path.stem)
+        if item.get('kind') == 'training':
+            return f'Gen {item.get("generation", "?")} · {actor} · {friendly(item.get("scenario", "—"))}'
+        return f'TEST · {actor if item.get("actor") else Limits.EVA_LABEL} · {friendly(item.get("scenario", "—"))} · seed {item.get("seed", "—")}'
+
+    def list_recordings():
+        exp = active_experiment()
+        replay_files.clear()
         if exp is None:
-            arena_status.set('No experiment selected.');rebuild_legend();return
-        settings=preview_settings(exp,scenario_id(scenario_name.get()))
-        if settings is None:
-            arena_status.set('Experiment unavailable or incomplete (config/map missing). Select a valid experiment.')
-            rebuild_legend();return
-        try:
-            scene[0]=settings['map']
-            preview_limit[0]=settings['limit']
-            rng_seed=settings['seed']*100000+31000
-            for i,spec in enumerate(available_agent_specs(exp,'sensor_greedy' if comparison.get()=='Inseguitore con sensori' else 'greedy')):
-                w=make_world(settings,rng_seed)
-                a=dict(spec,world=w,rng=random.Random(rng_seed+5000+i),steps=0)
-                if 'brain' in a:a['brain'].reset()
-                preview_actors.append(a)
-            arena_step[0]=0
-            rebuild_legend()
-        except (OSError, ValueError, KeyError, TypeError) as exc:
-            preview_actors.clear();scene[0]=None
-            arena_status.set('Could not load Arena: '+str(exc));rebuild_legend()
+            replay_combo['values'] = []
+            return
+        if replay_source.get() == 'Training':
+            paths = sorted((exp/'recordings').glob('g*_*.json'), key=lambda p: p.name, reverse=True)
+        else:
+            paths = sorted((exp/'replays').glob('*.json'))
+        labels = []
+        for path in paths:
+            try:
+                head = read_json(path)
+            except (OSError, ValueError):
+                continue
+            label = recording_label(path, head)
+            replay_files[label] = path
+            labels.append(label)
+        replay_combo['values'] = labels
+        if replay_name.get() not in labels:
+            replay_name.set(labels[0] if labels else '')
+
     def load_replay():
-        exp=active_experiment()
-        replay_frames[0]=[]; replay_index[0]=0;replay_brain[0]=None;replay_meta[0]={}
+        exp = active_experiment()
+        replay_frames[0] = []; replay_index[0] = 0; replay_brain[0] = None; replay_meta[0] = {}
+        replay_group.clear()
         timeline.configure(to=0)
         replay_position.set(0)
-        if exp is None or not replay_name.get():return
+        path = replay_files.get(replay_name.get())
+        if exp is None or path is None:
+            rebuild_legend()
+            return
         try:
-            item=read_json(exp/'replays'/replay_name.get())
-            scene[0]=read_json(exp/'environment'/f'{item["map"]}.json')
-            replay_frames[0]=item['frames']
-            replay_meta[0]={key:item.get(key) for key in ('seed','scenario','genome_id')}
-            timeline.configure(to=max(0,len(replay_frames[0])-1))
-            replay_brain[0]=item.get('brain')
-            if replay_brain[0] is None and (exp/'brains/eva.json').is_file():
-                candidate=read_json(exp/'brains/eva.json')
-                from engine.evaluation import genome_id
-                if genome_id(BooleanNet.restore(candidate))==item.get('genome_id'):
-                    replay_brain[0]=candidate
+            item = read_json(path)
+            scene[0] = item['map'] if isinstance(item.get('map'), dict) else read_json(exp/'environment'/f'{item["map"]}.json')
+            replay_frames[0] = item['frames']
+            training = item.get('kind') == 'training'
+            replay_meta[0] = {'seed': item.get('seed'), 'scenario': item.get('scenario'), 'genome_id': item.get('genome_id'),
+                              'generation': item.get('generation'), 'training': training,
+                              'actor': item.get('actor') or Limits.EVA_LABEL,
+                              'color': EVA_COLOR if not training or 'EVA' in str(item.get('actor', ''))
+                              else agent_color(int(item.get('individual', 0)) + 2)}
+            replay_brain[0] = item.get('brain')
+            if training and replay_all.get():
+                for other in sorted((exp/'recordings').glob(f'g{int(item["generation"]):04d}_*.json')):
+                    data = read_json(other)
+                    eva_like = 'EVA' in str(data.get('actor', ''))
+                    replay_group.append({'label': data.get('actor', other.stem), 'frames': data['frames'],
+                                         'map': data['map'], 'brain': data.get('brain'),
+                                         'color': EVA_COLOR if eva_like else agent_color(int(data.get('individual', 0)) + 2)})
+            timeline.configure(to=max(0, replay_length() - 1))
+            legend_signature[0] = None
             rebuild_legend()
         except (OSError, ValueError, KeyError, TypeError) as exc:
-            arena_status.set('Cannot load replay: '+str(exc))
+            arena_status.set('Registrazione non leggibile: ' + str(exc))
+
     def update_mode(*_):
-        for name,bar in source_bars.items():
-            if name==mode.get():bar.grid()
-            else:bar.grid_remove()
-        if mode.get()=='live':
-            scene[0]=None;rebuild_legend()
-        elif mode.get()=='replay':load_replay()
-        else:load_preview()
-        playing[0]=True
+        for name, bar in source_bars.items():
+            if name == mode.get():
+                bar.grid()
+            else:
+                bar.grid_remove()
+        legend_signature[0] = None
+        if mode.get() == 'live':
+            scene[0] = None
+            rebuild_legend()
+        else:
+            list_recordings(); load_replay()
+        playing[0] = True
         play_button.configure(text='Pausa')
-        if tick_id[0] is None:tick_id[0]=app.after(max(35,int(speed.get())),schedule_tick)
-        draw_arena();draw_brain()
+        if tick_id[0] is None:
+            tick_id[0] = app.after(max(35, int(speed.get())), schedule_tick)
+        draw_arena(); draw_brain()
+
+    def show_decision(origin, actor, generation, scenario, frame):
+        from engine.world import ACTIONS
+        frame = frame or {}
+        action = frame.get('action')
+        obs = frame.get('observation') or []
+        decoder = (frame.get('decoder') or {}).get('source')
+        reward = frame.get('reward')
+        values = {'source': origin, 'actor': actor, 'generation': str(generation if generation is not None else '—'),
+                  'scenario': friendly(scenario or '—'), 'step': str(frame.get('t', '—')),
+                  'action': ACTIONS[action] if type(action) is int and 0 <= action < len(ACTIONS) else '—',
+                  'decoder': DECODER_NAMES.get(decoder, decoder or '—'),
+                  'reward': f'{reward:+.2f}' if isinstance(reward, (int, float)) else '—',
+                  'visible': ('visibile' if obs[0] else 'fuori vista') if obs else '—',
+                  'captured': ('catturata' if frame.get('captured') else 'in corso') if 'captured' in frame else '—',
+                  'memory': f'{frame["contextual_entries"]} contesti' if 'contextual_entries' in frame else '—'}
+        for key, var in decision_fields.items():
+            var.set(values.get(key, '—'))
+
     def arena_positions():
-        if mode.get()=='live':
-            current=live_buffer[0].current
-            if not current:return None,[],live_buffer[0].label()
-            packet,f=current
-            actor=Limits.EVA_LABEL if packet.get('phase')=='eva' else f'Esploratore {packet.get("individual",0)+1}'
-            label=(f'Live Training · {actor} · gen {packet.get("generation","—")} · {friendly(packet.get("scenario","—"))}'
-                   f' · genoma {str(packet.get("genome_id","—"))[:10]} · seed {packet.get("seed","—")}\n'
-                   f'{frame_summary(f)} · {live_buffer[0].label()}')
-            return packet['map'],[{'name':Limits.EVA_LABEL if packet.get('phase')=='eva' else 'Esploratore in training','color':EVA_COLOR if packet.get('phase')=='eva' else POPULATION_COLOR,'pos':tuple(f['predator'])},
-                                  {'name':'Prey','color':'#ef4444','pos':tuple(f['prey'])}],label
-        if mode.get()=='replay':
-            if not replay_frames[0]:return None,[],''
-            f=replay_frames[0][replay_index[0]]
-            actors=[{'name':Limits.EVA_LABEL,'color':EVA_COLOR,'pos':tuple(f['predator'])}]
-            actors.append({'name':'Prey','color':'#ef4444','pos':tuple(f['prey'])})
-            meta=replay_meta[0]
-            label=(f'Recorded Replay · EVA · {friendly(meta.get("scenario","—"))} · seed {meta.get("seed","—")}'
-                   f' · genoma {str(meta.get("genome_id","—"))[:10]} · frame {replay_index[0]+1}/{len(replay_frames[0])}\n'
-                   +frame_summary(f))
-            return scene[0],actors,label
-        if not preview_actors:return None,[],''
-        actors=[{'name':a['name'],'color':a['color'],'pos':a['world'].predator} for a in preview_actors]
-        actors.append({'name':'Prey','color':'#ef4444','pos':preview_actors[0]['world'].prey})
-        captures=sum(a['world'].captured for a in preview_actors)
-        label=f'Independent Preview · step {arena_step[0]} · captured {captures}/{len(preview_actors)} · independent same-seed arenas (not live training frames)'
-        return scene[0],actors,label
-    def draw_mosaic(source=None):
-        actors=[a for a in (preview_actors if source is None else source) if visibility.get(a['name']) is None or visibility[a['name']].get()]
-        if not actors:
-            arena_status.set('Nessun agente visibile. Seleziona un agente nella legenda.')
+        if mode.get() == 'live':
+            current = live_buffer[0].current
+            if not current:
+                show_decision('Live', '—', None, None, {})
+                return None, [], live_buffer[0].label()
+            packet, f = current
+            eva_phase = packet.get('phase') == 'eva'
+            actor = Limits.EVA_LABEL if eva_phase else f'Esploratore {packet.get("individual", 0)+1}'
+            show_decision('Live · training reale', actor, packet.get('generation'), packet.get('scenario'), f)
+            label = (f'Live · training reale · {actor} · gen {packet.get("generation", "—")} · {friendly(packet.get("scenario", "—"))}'
+                     f' · seed {packet.get("seed", "—")} · {live_buffer[0].label()}')
+            return packet['map'], [{'name': Limits.EVA_LABEL if eva_phase else 'Esploratore',
+                                    'color': EVA_COLOR if eva_phase else POPULATION_COLOR, 'pos': tuple(f['predator'])},
+                                   {'name': 'Preda', 'color': '#ef4444', 'pos': tuple(f['prey'])}], label
+        if not replay_frames[0]:
+            show_decision('Registrazione', '—', None, None, {})
+            return None, [], 'Nessuna registrazione disponibile per questo esperimento.'
+        meta = replay_meta[0]
+        f = replay_frames[0][min(replay_index[0], len(replay_frames[0]) - 1)]
+        origin = 'Registrazione · training reale' if meta.get('training') else 'TEST finale · copia isolata'
+        show_decision(origin, meta.get('actor'), meta.get('generation'), meta.get('scenario'), f)
+        actors = [{'name': meta.get('actor') or Limits.EVA_LABEL, 'color': meta.get('color', EVA_COLOR), 'pos': tuple(f['predator'])},
+                  {'name': 'Preda', 'color': '#ef4444', 'pos': tuple(f['prey'])}]
+        label = (f'{origin} · {meta.get("actor")} · {friendly(meta.get("scenario", "—"))} · seed {meta.get("seed", "—")}'
+                 f' · fotogramma {replay_index[0]+1}/{len(replay_frames[0])}')
+        return scene[0], actors, label
+
+    def draw_grid(m, ox, oy, cell):
+        obstacles = {tuple(p) for p in m['obstacles']}
+        for y in range(m['size']):
+            for x in range(m['size']):
+                canvas.create_rectangle(ox+x*cell, oy+y*cell, ox+(x+1)*cell, oy+(y+1)*cell,
+                                        fill='#334155' if (x, y) in obstacles else '#ffffff', outline='#e2e8f0')
+
+    def draw_mosaic(tiles, caption):
+        tiles = [t for t in tiles if visibility.get(t['name']) is None or visibility[t['name']].get()]
+        if not tiles:
+            arena_status.set('Nessun agente visibile: seleziona un agente nella legenda.')
             return
-        width=max(300,canvas.winfo_width());height=max(300,canvas.winfo_height())
-        cols=max(1,math.ceil(math.sqrt(len(actors)*width/height)))
-        rows=math.ceil(len(actors)/cols);tw=width/cols;th=height/rows
-        for i,a in enumerate(actors):
-            world=a['world'];m=a.get('map',scene[0]);size=m['size']
-            cell=max(1,min((tw-16)/size,(th-30)/size));ox=(i%cols)*tw+8;oy=(i//cols)*th+26
-            canvas.create_text(ox,oy-14,text=a['name']+(f' · g{a["generation"]} · {friendly(a["scenario"])}' if 'generation' in a else ''),anchor='w',fill=a['color'],font=('Segoe UI',8))
-            obstacles={tuple(p) for p in m['obstacles']}
-            for y in range(size):
-                for x in range(size):
-                    canvas.create_rectangle(ox+x*cell,oy+y*cell,ox+(x+1)*cell,oy+(y+1)*cell,
-                                            fill='#334155' if (x,y) in obstacles else 'white',outline='#e2e8f0')
-            for position,color in [(world.prey,'#ef4444'),(world.predator,a['color'])]:
-                x,y=position;r=cell*.34;cx=ox+(x+.5)*cell;cy=oy+(y+.5)*cell
-                canvas.create_oval(cx-r,cy-r,cx+r,cy+r,fill=color,outline='white')
-        if source is not None:
-            arena_status.set('Ultime osservazioni reali per slot (massimo 32), raccolte in momenti diversi; non sono agenti simultanei.')
-            return
-        arena_status.set(f'Simulazioni indipendenti · {scenario_name.get()} · passo {arena_step[0]} · '
-                         f'catture {sum(a["world"].captured for a in actors)}/{len(actors)} agenti visibili · preda rossa per ciascun mondo')
+        width = max(300, canvas.winfo_width()); height = max(300, canvas.winfo_height())
+        cols = max(1, math.ceil(math.sqrt(len(tiles)*width/height)))
+        rows = math.ceil(len(tiles)/cols); tw = width/cols; th = height/rows
+        for i, t in enumerate(tiles):
+            m = t['map']; size = m['size']
+            cell = max(1, min((tw-16)/size, (th-30)/size)); ox = (i % cols)*tw+8; oy = (i // cols)*th+26
+            canvas.create_text(ox, oy-14, text=t['title'], anchor='w', fill=t['color'], font=('Segoe UI', 9, 'bold'))
+            draw_grid(m, ox, oy, cell)
+            for position, color in [(t['prey'], '#ef4444'), (t['predator'], t['color'])]:
+                x, y = position; r = cell*.34; cx = ox+(x+.5)*cell; cy = oy+(y+.5)*cell
+                canvas.create_oval(cx-r, cy-r, cx+r, cy+r, fill=color, outline='white')
+        arena_status.set(caption)
 
     def draw_arena():
         canvas.delete('all')
-        if mode.get()=='live' and live_mosaic.get() and live_tiles:
-            draw_mosaic(list(live_tiles.values()));return
-        if mode.get()=='preview' and preview_actors:
-            draw_mosaic();return
-        m, agents, label=arena_positions()
-        if not m:
-            arena_status.set(label or 'Select an experiment with available data.')
+        if mode.get() == 'live' and live_mosaic.get() and live_tiles:
+            tiles = [{'name': a['name'], 'color': a['color'], 'map': a['map'], 'predator': a['world'].predator,
+                      'prey': a['world'].prey, 'title': f'{a["name"]} · g{a["generation"]} · {friendly(a["scenario"])}'}
+                     for a in live_tiles.values()]
+            draw_mosaic(tiles, 'Ultimi fotogrammi reali per agente, ricevuti in momenti diversi: non sono simultanei.')
             return
-        size=m['size'];w=max(300, canvas.winfo_width());h=max(300, canvas.winfo_height())
-        cell=min((w-35)/size,(h-35)/size)
-        ox=(w-size*cell)/2;oy=(h-size*cell)/2
-        obstacles={tuple(p) for p in m['obstacles']}
-        for y in range(size):
-            for x in range(size):
-                canvas.create_rectangle(ox+x*cell,oy+y*cell,ox+(x+1)*cell,oy+(y+1)*cell,
-                                        fill='#334155' if (x,y) in obstacles else '#ffffff',outline='#cbd5e1')
-        if mode.get()=='live' and live_buffer[0].current:
-            packet,frame=live_buffer[0].current
-            key=(packet.get('run_id'),packet.get('episode_id'))
-            if trail_key[0]!=key:display_trail.clear();trail_key[0]=key
-            # Draw only consecutive, actually captured positions; never interpolate a gap.
-            trace=[point for point in packet.get('trajectory',[]) if point['t']<=frame['t']]
-            for before,after in zip(trace,trace[1:]):
-                if after['t']==before['t']+1:
-                    x0,y0=before['position'];x1,y1=after['position']
-                    canvas.create_line(ox+(x0+.5)*cell,oy+(y0+.5)*cell,
-                                       ox+(x1+.5)*cell,oy+(y1+.5)*cell,fill='#93c5fd',width=2)
-        positions={}
+        if mode.get() == 'replay' and replay_group:
+            index = replay_index[0]
+            tiles = []
+            for item in replay_group:
+                frames = item['frames']
+                f = frames[min(index, len(frames)-1)]
+                done = index >= len(frames)-1
+                tiles.append({'name': item['label'], 'color': item['color'], 'map': item['map'],
+                              'predator': f['predator'], 'prey': f['prey'],
+                              'title': item['label'] + (' · catturata' if f.get('captured') else ' · fine' if done else '')})
+            meta = replay_meta[0]
+            # Only what all agents share; per-agent values are on the tiles.
+            show_decision('Registrazione · training reale', f'{len(replay_group)} agenti', meta.get('generation'),
+                          meta.get('scenario'), {'t': index})
+            caught = sum(any(f.get('captured') for f in item['frames'][:index+1]) for item in replay_group)
+            decision_fields['captured'].set(f'{caught}/{len(replay_group)} catture')
+            draw_mosaic(tiles, f'Generazione {meta.get("generation")} · stesso episodio di training per tutti gli agenti · '
+                               f'{friendly(meta.get("scenario", "—"))} · seed {meta.get("seed")} · passo {index}')
+            return
+        m, agents, label = arena_positions()
+        if not m:
+            arena_status.set(label or 'Seleziona un esperimento con dati disponibili.')
+            return
+        size = m['size']; w = max(300, canvas.winfo_width()); h = max(300, canvas.winfo_height())
+        cell = min((w-35)/size, (h-35)/size)
+        ox = (w-size*cell)/2; oy = (h-size*cell)/2
+        draw_grid(m, ox, oy, cell)
+        if mode.get() == 'live' and live_buffer[0].current:
+            packet, frame = live_buffer[0].current
+            key = (packet.get('run_id'), packet.get('episode_id'))
+            if trail_key[0] != key:
+                display_trail.clear(); trail_key[0] = key
+            # Only consecutive, actually received positions; gaps are never interpolated.
+            trace = [point for point in packet.get('trajectory', []) if point['t'] <= frame['t']]
+            for before, after in zip(trace, trace[1:]):
+                if after['t'] == before['t']+1:
+                    x0, y0 = before['position']; x1, y1 = after['position']
+                    canvas.create_line(ox+(x0+.5)*cell, oy+(y0+.5)*cell, ox+(x1+.5)*cell, oy+(y1+.5)*cell, fill='#93c5fd', width=2)
+        elif mode.get() == 'replay' and replay_frames[0]:
+            path = replay_frames[0][:replay_index[0]+1]
+            for before, after in zip(path, path[1:]):
+                x0, y0 = before['predator']; x1, y1 = after['predator']
+                canvas.create_line(ox+(x0+.5)*cell, oy+(y0+.5)*cell, ox+(x1+.5)*cell, oy+(y1+.5)*cell, fill='#93c5fd', width=2)
         for a in agents:
-            if a['name'] != 'Prey' and a['name'] in visibility and not visibility[a['name']].get():continue
-            if a['name']=='Prey' and mode.get() in ('replay','live') and 'Prey' in visibility and not visibility['Prey'].get():continue
-            positions.setdefault(a['pos'], []).append(a)
-        for (x,y),group in positions.items():
-            for idx,a in enumerate(group):
-                theta=2*math.pi*idx/len(group)
-                r=cell*.24 if len(group)>1 else 0
-                cx=ox+(x+.5)*cell+r*math.cos(theta);cy=oy+(y+.5)*cell+r*math.sin(theta)
-                radius=min(cell*.22,cell*.4/max(1,math.sqrt(len(group))))
-                canvas.create_oval(cx-radius,cy-radius,cx+radius,cy+radius,fill=a['color'],outline='white',width=2)
-                canvas.create_text(cx,cy,text='P' if a['name']=='Prey' else 'E',fill='white',
-                                   font=('Segoe UI',max(7,int(radius*.8)),'bold'))
+            if a['name'] in visibility and not visibility[a['name']].get():
+                continue
+            x, y = a['pos']
+            cx = ox+(x+.5)*cell; cy = oy+(y+.5)*cell; radius = cell*.3
+            canvas.create_oval(cx-radius, cy-radius, cx+radius, cy+radius, fill=a['color'], outline='white', width=2)
+            canvas.create_text(cx, cy, text='P' if a['name'] == 'Preda' else 'E', fill='white',
+                               font=('Segoe UI', max(7, int(radius*.8)), 'bold'))
         arena_status.set(label)
+
     def next_step():
-        if mode.get()=='live':
-            if playing[0]:live_buffer[0].latest()
-            else:live_buffer[0].advance()
-        elif mode.get()=='replay':
-            if replay_frames[0]:
-                if replay_index[0] + 1 >= len(replay_frames[0]):return False
-                replay_index[0]+=1
-                replay_position.set(replay_index[0])
-        elif preview_actors:
-            if episode_finished(preview_actors,preview_limit[0]):
-                load_preview()   # Automatically restart; safe if source was removed.
+        if mode.get() == 'live':
+            if playing[0]:
+                live_buffer[0].latest()
             else:
-                limit=preview_limit[0]
-                for a in preview_actors:
-                    if a['world'].captured or a['world'].steps>=limit:continue
-                    obs=a['world'].observe()
-                    previous=list(a['brain'].state) if 'brain' in a else []
-                    action=preview_action(a)
-                    reward,captured=a['world'].step(action)
-                    if 'brain' in a:
-                        brain=a['brain']
-                        if hasattr(brain,'transition'):brain.transition(a['world'].observe(),captured)
-                        if hasattr(brain,'feedback'):brain.feedback(reward)
-                        a['frame']={'t':a['world'].steps,'action':action,'observation':list(obs),
-                                    'previous_state':previous,'neural_state':list(brain.state)}
-                        if hasattr(a['world'],'world_events'):a['frame']['world_events']=a['world'].world_events()
-                        if hasattr(brain,'frame_data'):a['frame'].update(brain.frame_data())
-                        if hasattr(brain,'tables'):
-                            a['frame'].update(plastic_tables=[list(t) for t in brain.tables],
-                                              plastic_updates=list(brain.last_updates),plastic_update_count=brain.update_count)
-                arena_step[0]+=1
-        else:return False
+                live_buffer[0].advance()
+        elif replay_frames[0]:
+            if replay_index[0]+1 >= replay_length():
+                return False
+            replay_index[0] += 1
+            replay_position.set(replay_index[0])
+        else:
+            return False
         draw_arena()
         draw_brain()
         return True
-    def schedule_tick():
-        tick_id[0]=None
-        if closing[0] or not playing[0]:return
-        if mode.get()=='replay' and replay_frames[0] and replay_index[0]==len(replay_frames[0])-1:
-            restart()
-        elif mode.get()!='live':
-            next_step()
-        tick_id[0]=app.after(max(35,int(speed.get())),schedule_tick)
-    def toggle_play():
-        playing[0]=not playing[0]
-        play_button.configure(text='Pausa' if playing[0] else 'Riprendi')
-        if playing[0] and tick_id[0] is None:schedule_tick()
-    def step_observed():
-        if playing[0]:toggle_play()
-        next_step()
-    def restart():
-        if mode.get()=='live':live_buffer[0].latest()
-        elif mode.get()=='replay':replay_index[0]=0;replay_position.set(0)
-        else:load_preview()
-        draw_arena();draw_brain()
-    play_button=ttk.Button(controls, text='Pausa', command=toggle_play)
-    play_button.pack(side='left',padx=4)
-    ttk.Button(controls,text='Un passo',command=lambda:step_observed()).pack(side='left',padx=4)
-    ttk.Button(controls,text='↻ Ricomincia / Ultimo dato',command=restart).pack(side='left',padx=4)
-    ttk.Button(controls,text='Mostra tutti',command=lambda:([v.set(True) for v in visibility.values()],draw_arena())).pack(side='left',padx=4)
-    ttk.Button(controls,text='Nascondi tutti',command=lambda:([v.set(False) for v in visibility.values()],draw_arena())).pack(side='left',padx=4)
-    ttk.Checkbutton(selection_bar,text='Mosaico live',variable=live_mosaic,command=lambda:(rebuild_legend(),draw_arena())).pack(side='left',padx=4)
-    canvas.bind('<Configure>',lambda _:draw_arena())
-    for name,bar in source_bars.items():
-        if name!=mode.get():bar.grid_remove()
-    mode.trace_add('write',update_mode)
-    replay_name.trace_add('write',lambda *_: (load_replay(),draw_arena(),draw_brain()) if mode.get()=='replay' else None)
-    comparison.trace_add('write',lambda *_: (load_preview(),draw_arena(),draw_brain()) if mode.get()=='preview' else None)
-    scenario_name.trace_add('write',lambda *_: (load_preview(),draw_arena()) if mode.get()=='preview' else None)
 
-    ttk.Button(controls,text='Guida ai controlli',command=lambda:messagebox.showinfo('Arena',
-        'Training reale: osserva esploratori ed EVA mentre apprendono. Con N esploratori, lo slot N è EVA. Slot -1 accetta tutti; Applica imposta il filtro.\n'
-        'Simulazione agenti: confronta campioni, popolazione e controlli in arene indipendenti con lo stesso seed. Le caselle mostrano/nascondono gli agenti.\n'
-        'Replay: riproduce un episodio registrato. Pausa, passo e velocità cambiano solo la visualizzazione.\n'
-        'static = preda ferma; moving = preda mobile; maze = ostacoli; hidden = visibilità ridotta a 3 celle, NON preda invisibile.\n'
-        'Random usa 4 movimenti; Greedy conosce la posizione vera della preda. I confronti non hanno tutti gli stessi sensori.')).pack(side='left')
+    def schedule_tick():
+        tick_id[0] = None
+        if closing[0] or not playing[0]:
+            return
+        if mode.get() == 'replay' and replay_frames[0] and replay_index[0] >= replay_length()-1:
+            restart()
+        elif mode.get() != 'live':
+            next_step()
+        tick_id[0] = app.after(max(35, int(speed.get())), schedule_tick)
+
+    def toggle_play():
+        playing[0] = not playing[0]
+        play_button.configure(text='Pausa' if playing[0] else 'Riprendi')
+        if playing[0] and tick_id[0] is None:
+            schedule_tick()
+
+    def step_observed():
+        if playing[0]:
+            toggle_play()
+        next_step()
+
+    def restart():
+        if mode.get() == 'live':
+            live_buffer[0].latest()
+        else:
+            replay_index[0] = 0; replay_position.set(0)
+        draw_arena(); draw_brain()
+
+    play_button = ttk.Button(controls, text='Pausa', command=toggle_play)
+    play_button.pack(side='left', padx=(0, 4))
+    ttk.Button(controls, text='Un passo', command=lambda: step_observed()).pack(side='left', padx=4)
+    ttk.Button(controls, text='↻ Dall’inizio / ultimo dato', command=restart).pack(side='left', padx=4)
+    ttk.Button(controls, text='Guida', command=lambda: messagebox.showinfo('Arena',
+        'Live: fotogrammi reali del training in corso. Gli esploratori si addestrano in parallelo: '
+        'ogni generazione uno di loro (a rotazione, o quello scelto in «Agente») invia i fotogrammi dal vivo; '
+        'con N esploratori, l’agente N è EVA; -1 = automatico.\n\n'
+        'Registrazioni · Training: a ogni generazione si registra un episodio reale di training per EVA e per ogni esploratore, '
+        'tutti sullo stesso episodio. «Tutti gli agenti della generazione» li mostra affiancati.\n\n'
+        'Registrazioni · Test finale: episodi del test finale su copie isolate (non training), etichettati TEST.\n\n'
+        'Pausa, passo e velocità cambiano solo la visualizzazione. Nessun agente viene simulato dalla GUI.')).pack(side='right')
+    canvas.bind('<Configure>', lambda _: draw_arena())
+    for name, bar in source_bars.items():
+        if name != mode.get():
+            bar.grid_remove()
+    mode.trace_add('write', update_mode)
+    replay_name.trace_add('write', lambda *_: (load_replay(), draw_arena(), draw_brain()) if mode.get() == 'replay' else None)
+    replay_all.trace_add('write', lambda *_: (load_replay(), draw_arena(), draw_brain()) if mode.get() == 'replay' else None)
+    replay_source.trace_add('write', lambda *_: (list_recordings(), load_replay(), draw_arena(), draw_brain()) if mode.get() == 'replay' else None)
 
     # Evolution and benchmark measurements use the same agent labels and palette.
     graph_scenario=tk.StringVar(value='Tutti gli scenari')
@@ -751,31 +798,39 @@ def launch(root_dir=None, *, test_hook=None):
     ttk.Button(brain_controls,text='Passo osservato',command=step_observed).pack(side='left')
     ttk.Label(brain_controls,text='Sorgente e selezione condivise con Arena').pack(side='left',padx=10)
     inspector=BrainInspector(panels['brain']);inspector.pack(fill='both',expand=True)
+    def eva_references():
+        exp=active_experiment();refs={}
+        if not exp:return refs
+        def checkpoint_eva(path):
+            try:return read_json(path)['supervisor_state']['eva']
+            except (OSError,ValueError,KeyError,TypeError):return None
+        latest=latest_checkpoint_path(exp/'checkpoints')
+        refs['EVA attuale']=checkpoint_eva(latest) if latest else None
+        refs['Generazione precedente']=checkpoint_eva(exp/'checkpoints'/'previous.json')
+        try:refs['Inizio run']=read_json(exp/'brains/initial_eva.json')
+        except (OSError,ValueError):refs['Inizio run']=None
+        return refs
+    inspector.reference_provider=eva_references
     brain_choice=tk.StringVar()
     brain_combo=ttk.Combobox(brain_controls,textvariable=brain_choice,state='readonly',width=42)
     brain_combo.pack(side='left',padx=6)
     brain_combo.bind('<<ComboboxSelected>>',lambda _:draw_brain())
     def draw_brain():
-        brain_combo.configure(state='readonly' if mode.get()=='preview' else 'disabled')
+        brain_combo.configure(state='disabled')
         if mode.get()=='live':
             current=live_buffer[0].current
             if current:
                 packet,frame=current
                 brain_choice.set(Limits.EVA_LABEL if packet.get('phase')=='eva' else f'Esploratore {packet.get("individual",0)+1}')
                 inspector.show(packet.get('brain'),frame,
-                               f'Live Training / gen {packet.get("generation")} / slot {packet.get("individual")} / {packet.get("scenario")}')
+                               f'Live · training reale / gen {packet.get("generation")} / slot {packet.get("individual")} / {packet.get("scenario")}')
             else:inspector.show(None,source='Live non disponibile')
         elif mode.get()=='replay' and replay_frames[0]:
-            brain_choice.set(Limits.EVA_LABEL)
-            inspector.show(replay_brain[0],replay_frames[0][replay_index[0]],'Recorded Replay')
-        elif mode.get()=='preview' and preview_actors:
-            brains=[a for a in preview_actors if 'brain' in a]
-            brain_combo['values']=[a['name'] for a in brains]
-            actor=next((a for a in brains if a['name']==brain_choice.get()),brains[0] if brains else None)
-            if actor:
-                brain_choice.set(actor['name'])
-                inspector.show(actor['brain'].export(),actor.get('frame'),actor['name']+' / Independent Preview')
-            else:inspector.show(None,source='Independent Preview')
+            meta=replay_meta[0]
+            brain_choice.set(meta.get('actor') or Limits.EVA_LABEL)
+            origin='Registrazione di training' if meta.get('training') else 'TEST finale (copia isolata)'
+            index=min(replay_index[0],len(replay_frames[0])-1)
+            inspector.show(replay_brain[0],replay_frames[0][index],f'{origin} / {meta.get("actor")}')
         else:inspector.show(None,source='Nessun dato sincronizzato')
     diagnostics_text=tk.Text(panels['diagnostics'],wrap='word',font=('Consolas',10))
     diagnostics_text.pack(fill='both',expand=True,padx=15,pady=15)
@@ -875,7 +930,7 @@ def launch(root_dir=None, *, test_hook=None):
         if exp_name.get()!=chosen:
             exp_name.set(chosen)
             if not chosen:
-                preview_actors.clear();scene[0]=None
+                scene[0]=None
                 live_buffer[0]=LiveBuffer();live_exp[0]=None
                 arena_status.set('No valid experiment found; config.json is missing.')
                 rebuild_legend()
@@ -885,8 +940,8 @@ def launch(root_dir=None, *, test_hook=None):
         if selected_source[0]!=exp:
             selected_source[0]=exp
             last_refresh[0]=None;loaded_checkpoint[0]=None;displayed_log[0]=None
-            preview_actors.clear();scene[0]=None;replay_frames[0]=[];replay_brain[0]=None
-            replay_index[0]=0;arena_step[0]=0;logs.delete('1.0','end')
+            scene[0]=None;replay_frames[0]=[];replay_brain[0]=None;replay_group.clear()
+            replay_index[0]=0;logs.delete('1.0','end')
             plot.delete('all')
             benchmark_note.set('')
             for item in table.get_children():table.delete(item)
@@ -897,14 +952,7 @@ def launch(root_dir=None, *, test_hook=None):
             display_trail.clear();trail_key[0]=None
         if not exp:
             refresh_diagnostics();draw_arena();draw_brain();return
-        replays=sorted(p.name for p in (exp/'replays').glob('*.json'))
-        replay_combo['values']=replays
-        if replay_name.get() not in replays:replay_name.set(replays[0] if replays else '')
-        available_scenarios=[name for name in ALL_SCENARIOS
-                            if (exp/'environment'/'suites'/f'holdout_{name}.json').is_file()]
-        scenario_combo['values']=[friendly(n) for n in available_scenarios] or ['Preda ferma']
-        if available_scenarios and scenario_id(scenario_name.get()) not in available_scenarios:
-            scenario_name.set(friendly(available_scenarios[0]))
+        list_recordings()
         update_mode()
         last_refresh[0]=None
         refresh_data(force=True)
@@ -1006,9 +1054,11 @@ def launch(root_dir=None, *, test_hook=None):
                 cp=latest_checkpoint_path(exp/'checkpoints') if exp else None
                 if cp and cp.exists():
                     m=cp.stat().st_mtime_ns
-                    if loaded_checkpoint[0]!=(str(exp),m) and mode.get()=='preview':
+                    if loaded_checkpoint[0]!=(str(exp),m):
                         loaded_checkpoint[0]=(str(exp),m)
-                        load_preview()
+                        if mode.get()=='replay' and replay_source.get()=='Training':
+                            # New generation recorded: list it, keep the episode being watched.
+                            list_recordings()
                 if worker_log[0] and worker_log[0].exists():
                     blob=worker_log[0].read_bytes()[-8000:].decode('utf-8',errors='replace')
                     if blob!=displayed_log[0]:

@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "name": "train_hidden",
+  "size": 8,
+  "density": 0.09375,
+  "requested_density": 0.08,
+  "seed": 1594,
+  "obstacles": [
+    [
+      0,
+      2
+    ],
+    [
+      0,
+      6
+    ],
+    [
+      2,
+      3
+    ],
+    [
+      3,
+      0
+    ],
+    [
+      4,
+      1
+    ],
+    [
+      4,
+      4
+    ]
+  ]
+}

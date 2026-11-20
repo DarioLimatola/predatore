@@ -45,8 +45,15 @@ def main():
     p.add_argument('--seed',type=int,default=Limits.DEFAULT_SEED)
     p.add_argument('--vault-root',default='.')
     p.add_argument('--verify',metavar='EXPERIMENT_DIR')
-    p.add_argument('--gui',action='store_true',help='Open unified V6 laboratory')
+    p.add_argument('--gui',action='store_true',help='Open the V7 laboratory')
+    p.add_argument('--engine-status',action='store_true',help='Show whether the native Rust kernel and parallel workers are active')
     args=p.parse_args()
+    if args.engine_status:
+        import json
+        from boolean_engine import native_backend
+        from engine import parallel
+        print(json.dumps({'version':Limits.VERSION,'native':native_backend.status(),'parallel':parallel.status()},indent=2))
+        return
     if args.fork_v605:
         from engine.lineage import fork_v605
         print(fork_v605(args.fork_v605, args.vault_root))

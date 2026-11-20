@@ -1,4 +1,4 @@
-"""Build a V6 source release without runtime data or bytecode."""
+"""Build a V7 source release without runtime data, bytecode or compiled modules."""
 from pathlib import Path
 import hashlib
 import json
@@ -10,14 +10,14 @@ def main():
     destination=root.parent/'output';destination.mkdir(exist_ok=True)
     paths=sorted(p.relative_to(root) for p in root.rglob('*') if p.is_file()
                  and p.name!='RELEASE_SHA256.json'
-                 and not any(part.startswith('.') or part in ('__pycache__','EvolutionVault','Analysis','output','target','build','dist','.venv')
+                 and not any((part.startswith('.') and part!='.github') or part in ('__pycache__','EvolutionVault','Analysis','output','target','build','dist','.venv')
                              for part in p.relative_to(root).parts)
-                 and p.suffix not in ('.pyc','.building','.zip'))
+                 and p.suffix not in ('.pyc','.building','.zip','.so','.pyd','.whl','.dll'))
     manifest={p.as_posix():hashlib.sha256((root/p).read_bytes()).hexdigest() for p in paths}
     manifest_json=json.dumps(manifest,indent=2,sort_keys=True)+'\n'
     with (root/'RELEASE_SHA256.json').open('w',encoding='utf-8',newline='\n') as stream:
         stream.write(manifest_json)
-    archive=destination/'Predatore_V6_06.zip'
+    archive=destination/'Predatore_V7_00.zip'
     temporary=archive.with_suffix('.building')
     with zipfile.ZipFile(temporary,'w',zipfile.ZIP_DEFLATED,compresslevel=6) as z:
         for p in paths:z.write(root/p,'predatore/'+p.as_posix())

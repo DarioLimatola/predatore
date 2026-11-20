@@ -5,6 +5,8 @@ from collections import deque
 from functools import lru_cache
 from pathlib import Path
 
+from boolean_engine.rng import Rng
+
 DIRS = ((0,-1),(0,1),(-1,0),(1,0))
 ACTIONS = ('UP','DOWN','LEFT','RIGHT','POUNCE_UP','POUNCE_DOWN','POUNCE_LEFT','POUNCE_RIGHT')
 
@@ -54,7 +56,8 @@ class World:
         self.map=record; self.size=record['size']
         self.obstacles, self._free_cells, self._neighbor_flags = _compiled_geometry(
             self.size, tuple(tuple(p) for p in record['obstacles']))
-        self.rng=random.Random(seed); self.visibility=visibility; self.prey_moves=prey_moves
+        # V7 episode stream (declared change): xoshiro256**, identical in the native kernel.
+        self.rng=Rng(seed); self.visibility=visibility; self.prey_moves=prey_moves
         self.predator=(0,0); self.prey=(0,0); self.steps=0; self.collisions=0; self.captured=False
         self.visited=set();self.reset()
 
@@ -62,7 +65,7 @@ class World:
         return 0<=p[0]<self.size and 0<=p[1]<self.size and p not in self.obstacles
 
     def reset(self):
-        self.predator,self.prey=self.rng.sample(self._free_cells,2)
+        self.predator,self.prey=self.rng.sample2(self._free_cells)
         self.steps=0;self.collisions=0;self.captured=False;self.visited={self.predator}
         return self.observe()
 
@@ -122,4 +125,4 @@ class World:
 
     def snapshot(self):
         return {'predator':list(self.predator),'prey':list(self.prey),'steps':self.steps,
-                'collisions':self.collisions,'captured':self.captured,'rng':repr(self.rng.getstate())}
+                'collisions':self.collisions,'captured':self.captured,'rng':list(self.rng.getstate())}

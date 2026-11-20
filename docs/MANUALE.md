@@ -10,7 +10,7 @@ attraversa generazioni e run. Il core è indipendente dal simulatore.
 ## 1. Installazione, nuova run e ripresa
 
 Estrarre lo ZIP in una cartella nuova. Python 3.10 o successivo è sufficiente
-per il motore; la GUI richiede Tkinter. Su Windows eseguire AVVIA_PREDATORE_V6.bat,
+per il motore; la GUI richiede Tkinter. Su Windows eseguire AVVIA_PREDATORE_V7.bat,
 su Linux/macOS usare il comando sotto. Se Tkinter manca su Linux, installare
 il pacchetto della distribuzione per Python e Tk. Il motore gira anche senza GUI.
 

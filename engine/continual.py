@@ -26,6 +26,7 @@ from . import smith
 from .boolean_net import BooleanNet
 from .challenges import prepare_suites, seeds_for, training_generation
 from .evaluation import rollout, evaluate_suite, baseline_suite, rank
+from .parallel import map_ordered
 from .progress_monitor import population_completion
 from .vault import (atomic_json, append_jsonl, read_json, save_checkpoint,
                     latest_checkpoint_path, reconcile_evolution_logs, seal, verify, experiment_input_hashes, verify_experiment_inputs, SCHEMA)
@@ -74,9 +75,23 @@ def load_profile(root, name=Limits.DEFAULT_SMITH_PROFILE):
     return None
 
 
+_DEFAULT_SWITCHES = ('memory_enabled', 'tensor_enabled', 'sparse_enabled', 'hdc_enabled',
+                     'contextual_enabled', 'associative_enabled')
+
+
 def evaluation_copy(net, learning=True):
-    """Disposable evaluation object, never a second persistent agent."""
-    result = BooleanNet.restore(net.export())
+    """Disposable evaluation object, never a second persistent agent.
+
+    V7: a direct clone, equal to restore(export()) (which rebuilds a brain with
+    default switches) without serialising the memories.
+    """
+    if hasattr(net, 'clone'):
+        result = net.clone()
+        for name in _DEFAULT_SWITCHES:
+            setattr(result, name, True)
+        result.experience_sink = None
+    else:
+        result = BooleanNet.restore(net.export())
     result.reset()
     result.plasticity_enabled = learning
     result.collect_experience = False
@@ -111,17 +126,15 @@ class ProbeCache:
         from .parallel import assess_many, workers
         if workers() <= 1:
             return
-        jobs, keys, exported = [], [], {}
+        jobs, keys = [], []
         for net in nets:
             ident = net.snapshot_id()
             for task in tasks:
                 key = (ident, json.dumps(task, sort_keys=True))
                 if key in self.rows or key in keys:
                     continue
-                if ident not in exported:
-                    exported[ident] = net.export()
                 keys.append(key)
-                jobs.append((exported[ident], task['suites'], task['seed'], task['episodes'], task['steps'], 'validation'))
+                jobs.append((net, task['suites'], task['seed'], task['episodes'], task['steps'], 'validation'))
         if len(jobs) < 2:
             return
         for key, value in zip(keys, assess_many(jobs)):
@@ -293,7 +306,36 @@ def novelty(desc, archive):
     return statistics.mean(distances[:min(Limits.NOVELTY_NEIGHBORS,len(distances))])
 
 
-def train_actor(net, source, suites, c, count, sample_seed, observer=None):
+def recording_target(gen, suites):
+    """The episode recorded for every actor this generation: same scenario and seed for all."""
+    return ((gen - 1) % len(suites), 0) if suites else None
+
+
+def recording_record(net, kind, gen, label, individual, item):
+    scenario = item['scenario']
+    brain = net._export(full=False)
+    return {'schema': SCHEMA, 'kind': kind, 'generation': gen, 'actor': label, 'individual': individual,
+            'scenario': scenario['name'], 'seed': item['seed'], 'map': scenario['map'],
+            'visibility': scenario['visibility'], 'prey_moves': scenario.get('prey_moves'),
+            'brain': brain, 'memories_omitted': True, 'genome_id': net.snapshot_id(),
+            'learning': 'training', 'frames': item['frames']}
+
+
+def write_recordings(folder, gen, records):
+    target = Path(folder) / 'recordings'
+    for name, record in records:
+        atomic_json(target / name, record)
+    keep_from = gen - Limits.RECORDING_GENERATIONS + 1
+    for path in target.glob('g*_*.json'):
+        match = re.match(r'g(\d+)_', path.name)
+        if match and 1 < int(match[1]) < keep_from:
+            try:
+                path.unlink()
+            except OSError:
+                pass  # a viewer may hold it on Windows; it will be removed next time
+
+
+def train_actor(net, source, suites, c, count, sample_seed, observer=None, record_at=None, recorded=None):
     sample, seen = [], 0
     rng = random.Random(sample_seed)
     quota = max(Limits.MIN_AGENT_SAMPLE, c.experience_capacity//(c.population+1))
@@ -315,7 +357,8 @@ def train_actor(net, source, suites, c, count, sample_seed, observer=None):
     net.circuit_plasticity_enabled = c.circuit_plasticity_enabled
     net.clear_circuit_evidence()
     try:
-        metrics = evaluate_suite(net, suites, c.seed, 'train', count, c.steps, observer=observer)
+        metrics = evaluate_suite(net, suites, c.seed, 'train', count, c.steps, observer=observer,
+                                 record_at=record_at, recorded=recorded)
     finally:
         net.collect_experience = False
         net.experience_sink = None
@@ -429,6 +472,8 @@ def _run(root, c, resume, progress, should_stop, observer, monitor, directory):
                     'genome_codec': state['eva']['engine'], 'tensor_shape': list(base.shape), 'vector_width': base.width,
                     'sensor_contract': 'grid-local/15-v1', 'action_contract': 'move-pounce/8-v1',
                     'checkpoint_codec': 'canonical-json-utf8/sha256-v1', 'maps': 'environment/suites',
+                    'episode_rng': 'xoshiro256**/splitmix64 (V7 line; V6 used Mersenne Twister)',
+                    'genome_id': 'v7: structure + per-memory sha256 digests',
                     'experiment_id': folder.name, 'seed': c.seed, 'created_unix': time.time(),
                     'smith_profile': c.smith_profile, 'initial_revision': state['generation'],
                     'training_protocol': 'Independent adaptive explorers; teacher transfer; adaptive EVA; isolated validation/test copies'})
@@ -476,21 +521,45 @@ def _run(root, c, resume, progress, should_stop, observer, monitor, directory):
             # A new training-only map and episode stream; never drawn from validation or holdout.
             probe_suites, _, _ = training_generation(c.size, -c.seed-1, gen, counts['train'], [], folder.name + '/probe', c.scenario_set)
         incoming, scored, contributions = [], [], {}
-        for slot, net in enumerate(population):
+        # V7: explorers are independent (own brain, own seeds) and train in parallel.
+        # One explorer per generation feeds the live view (rotating, or the one the user
+        # selected); its frames are real training frames. Results are merged in slot order.
+        live_slot = None
+        if observer:
+            chosen = getattr(observer, 'selector', {}).get('individual', -1)
+            live_slot = chosen if 0 <= chosen < len(population) else (gen - 1) % len(population)
+            observer.set_context(generation=gen, individual=live_slot, phase='explorer',
+                                 genome_id=population[live_slot].snapshot_id())
+
+        def explorer_job(slot):
+            net = population[slot]
             source = f'{folder.name}/g{gen}/explorer{slot+1}'
-            if observer:
-                observer.set_context(generation=gen,individual=slot,phase='explorer',genome_id=net.snapshot_id())
             origin_id = net.snapshot_id()
+            probe_before = probe_after = None
             if c.select_for_learning:
                 probe_before = evaluate_suite(evaluation_copy(net, learning=False), probe_suites,
                                               -c.seed-1, 'train', counts['train'], c.steps)
-            m, sample, seen = train_actor(net, source, train_suites, c, counts['train'], c.seed*99991+gen*257+slot, observer)
+            recorded = []
+            m, sample, seen = train_actor(net, source, train_suites, c, counts['train'], c.seed*99991+gen*257+slot,
+                                          observer if slot == live_slot else None,
+                                          record_at=recording_target(gen, train_suites), recorded=recorded)
+            recording = (recording_record(net, 'training', gen, f'Esploratore {slot+1}', slot, recorded[0])
+                         if recorded else None)
+            if c.select_for_learning:
+                probe_after = evaluate_suite(evaluation_copy(net, learning=False), probe_suites,
+                                             -c.seed-1, 'train', counts['train'], c.steps)
+            return source, origin_id, m, sample, seen, probe_before, probe_after, recording
+
+        recordings = []
+        for slot, (source, origin_id, m, sample, seen, probe_before, probe_after, recording) in enumerate(
+                map_ordered(explorer_job, range(len(population)))):
+            net = population[slot]
+            if recording is not None:
+                recordings.append((f'g{gen:04d}_explorer{slot+1:02d}.json', recording))
             if guard_active:
                 for event in sample:
                     event['teacher_identity'] = origin_id
             if c.select_for_learning:
-                probe_after = evaluate_suite(evaluation_copy(net, learning=False), probe_suites,
-                                             -c.seed-1, 'train', counts['train'], c.steps)
                 m['transfer_probe'] = {
                     'split': 'train', 'seed': -c.seed-1, 'generation': gen,
                     'episodes': probe_after['episode_count'],
@@ -553,8 +622,14 @@ def _run(root, c, resume, progress, should_stop, observer, monitor, directory):
         personal_started = time.perf_counter()
         if observer:
             observer.set_context(generation=gen,individual=c.population,phase='eva',genome_id=eva_before_training)
+        eva_recorded = []
         best, sample, seen = train_actor(eva, f'{folder.name}/g{gen}/EVA', train_suites, c,
-                                         counts['train'], c.seed*99991+gen*257+c.population, observer)
+                                         counts['train'], c.seed*99991+gen*257+c.population, observer,
+                                         record_at=recording_target(gen, train_suites), recorded=eva_recorded)
+        if eva_recorded:
+            recordings.insert(0, (f'g{gen:04d}_eva.json',
+                                  recording_record(eva, 'training', gen, Limits.EVA_LABEL, c.population, eva_recorded[0])))
+        write_recordings(folder, gen, recordings)
         incoming.extend(sample)
         after_rows = probe_scores(eva, state['tasks'], cache)
         candidate_key = selection_key(after_rows, len(eva.nodes))
@@ -711,6 +786,12 @@ def _run(root, c, resume, progress, should_stop, observer, monitor, directory):
     return folder,last
 
 
+def _execution_status():
+    from boolean_engine import native_backend
+    from . import parallel
+    return {'native': native_backend.status(), 'parallel': parallel.status()}
+
+
 def _finish(folder,c,eva,suites,valid_count,test_count,begin,cpu,state,evaluated_population):
     from .parallel import assess_many
     exported_eva=eva.export()
@@ -718,10 +799,10 @@ def _finish(folder,c,eva,suites,valid_count,test_count,begin,cpu,state,evaluated
     initial_data=read_json(folder/'brains/initial_eva.json')
     BooleanNet.restore(initial_data)  # same validation as before the parallel path
     # Independent isolated copies: EVA (validation, holdout), initial EVA, every explorer.
-    finals=assess_many([(exported_eva,suites['validation'],c.seed,valid_count,c.steps,'validation'),
-                        (exported_eva,suites['holdout'],c.seed,test_count,c.steps,'holdout'),
+    finals=assess_many([(eva,suites['validation'],c.seed,valid_count,c.steps,'validation'),
+                        (eva,suites['holdout'],c.seed,test_count,c.steps,'holdout'),
                         (initial_data,suites['holdout'],c.seed,test_count,c.steps,'holdout')]+
-                       [(net.export(),suites['holdout'],c.seed,test_count,c.steps,'holdout') for net in evaluated_population])
+                       [(net,suites['holdout'],c.seed,test_count,c.steps,'holdout') for net in evaluated_population])
     assessments={'validation':finals[0],'holdout':finals[1]}
     atomic_json(folder/'benchmarks/results.json', assessments)
     initial_test=finals[2]
@@ -749,7 +830,8 @@ def _finish(folder,c,eva,suites,valid_count,test_count,begin,cpu,state,evaluated
         'engine':state['eva']['engine'],'elapsed_this_session_seconds':time.perf_counter()-begin,
         'cpu_this_session_seconds':time.process_time()-cpu,'champion_id':eva.snapshot_id(),
         'benchmarks':assessments,'baseline_comparison':baseline,'revision':state['generation'],
-        'smith_profile':c.smith_profile,'note':'Adaptive isolated test; empirical selection, no guarantee of improvement.'})
+        'smith_profile':c.smith_profile,'execution':_execution_status(),
+        'note':'Adaptive isolated test; empirical selection, no guarantee of improvement.'})
     from .diagnostics import assess_champion
     assess_champion(eva,suites['holdout'],c.seed,min(4,test_count),c.steps,folder)
     seal(folder)

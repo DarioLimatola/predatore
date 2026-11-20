@@ -152,9 +152,11 @@ class DevelopmentTests(unittest.TestCase):
             self.assertEqual(len(eva),row['episode_count'])
             self.assertEqual(sum(any(f.get('captured') for f in e['frames']) for e in eva),row['capture_count'])
             pairs={(e['scenario'],e['seed']) for e in eva}
-            for slot in range(4):
-                group=[e for e in observer.episodes if e['phase']=='explorer' and e['individual']==slot]
-                self.assertEqual({(e['scenario'],e['seed']) for e in group},pairs)
+            # V7: explorers train in parallel; one of them per generation feeds the live
+            # view (rotating; all are recorded under recordings/). Same episodes as EVA.
+            live=[e for e in observer.episodes if e['phase']=='explorer']
+            self.assertEqual({e['individual'] for e in live},{0})
+            self.assertEqual({(e['scenario'],e['seed']) for e in live},pairs)
             self.assertEqual(row['measurement'],'adaptive_training')
 
     def test_finalization_can_recover_after_last_generation_checkpoint(self):

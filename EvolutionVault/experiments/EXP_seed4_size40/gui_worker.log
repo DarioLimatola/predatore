@@ -1,0 +1,12 @@
+Gen    1 | EVA - learning agent 50.0% | avg 31.2% | neurons 32
+Gen    2 | EVA - learning agent 25.0% | avg 32.8% | neurons 32
+Gen    3 | EVA - learning agent 37.5% | avg 17.2% | neurons 32
+Gen    4 | EVA - learning agent 25.0% | avg 18.8% | neurons 32
+Gen    5 | EVA - learning agent 37.5% | avg 12.5% | neurons 32
+Gen    6 | EVA - learning agent 25.0% | avg 14.1% | neurons 32
+Gen    7 | EVA - learning agent 37.5% | avg 12.5% | neurons 32
+Gen    8 | EVA - learning agent 25.0% | avg 7.8% | neurons 32
+Gen    9 | EVA - learning agent 25.0% | avg 9.4% | neurons 32
+Gen   10 | EVA - learning agent 37.5% | avg 23.4% | neurons 32
+Gen   11 | EVA - learning agent 25.0% | avg 15.6% | neurons 32
+Experiment: C:\Users\thefo\OneDrive\Desktop\Progetti Claude\predatore\predatore\EvolutionVault\experiments\EXP_seed4_size40 completed generation: 11

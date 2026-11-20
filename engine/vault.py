@@ -100,10 +100,18 @@ def latest_checkpoint_path(directory):
     return best
 
 
+_written_generation = {}
+
+
 def _retain_previous(path, generation):
     if not path.is_file():
         return
-    current = _checkpoint_generation(path)
+    # The generation this process last committed to `path`; read the file only when unknown.
+    known = _written_generation.get(str(path))
+    if known is not None and known[1] == path.stat().st_mtime_ns:
+        current = known[0]
+    else:
+        current = _checkpoint_generation(path)
     if current < 0 or current >= generation:
         return
     temp = path.parent / ('.previous-' + uuid.uuid4().hex + '.tmp')
@@ -126,6 +134,10 @@ def save_checkpoint(path, obj):
     try:
         _retain_previous(path, obj['generation'])
         _atomic_text(path, signed)
+        try:
+            _written_generation[str(path)] = (int(obj['generation']), path.stat().st_mtime_ns)
+        except OSError:
+            _written_generation.pop(str(path), None)
         return path
     except PermissionError as original_error:
         generation = int(obj['generation'])

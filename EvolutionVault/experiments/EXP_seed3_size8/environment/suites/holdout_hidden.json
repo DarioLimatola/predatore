@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "name": "holdout_hidden",
+  "size": 8,
+  "density": 0.09375,
+  "requested_density": 0.08,
+  "seed": 3594,
+  "obstacles": [
+    [
+      1,
+      1
+    ],
+    [
+      1,
+      6
+    ],
+    [
+      3,
+      2
+    ],
+    [
+      4,
+      2
+    ],
+    [
+      5,
+      4
+    ],
+    [
+      6,
+      4
+    ]
+  ]
+}
