@@ -53,7 +53,7 @@ class ContextMemory:
 
     def clear(self):
         self.rows=OrderedDict(); self.terminal={}; self.teachers={}; self.meta={}
-        self.clock=0; self._cache={}
+        self.clock=0; self._cache={}; self._packed={}
 
     @staticmethod
     def empty():
@@ -78,18 +78,18 @@ class ContextMemory:
                 if key in bank:
                     bank[key]=[p[n:]+[0]*n for p in bank[key]]
             meta['decayed']=self.clock
-            self._cache.pop(key,None)
+            self._cache.pop(key,None); self._packed.pop(key,None)
 
     def _touch(self,key):
         self.meta[key]['last']=self.clock
         self.rows.move_to_end(key)
-        self._cache.pop(key,None)
+        self._cache.pop(key,None); self._packed.pop(key,None)
         if len(self.rows)>self.capacity:
             from itertools import islice
             old=min(islice(self.rows,L.MEMORY_EVICTION_WINDOW),key=lambda k:(
                 bool(k in self.terminal and any(self.terminal[k][0])),
                 bool(self.meta[k]['sources']),self.meta[k]['last']))
-            for bank in (self.rows,self.terminal,self.teachers,self.meta,self._cache):
+            for bank in (self.rows,self.terminal,self.teachers,self.meta,self._cache,self._packed):
                 bank.pop(old,None)
 
     def update(self,key,action,positive,weight=1,*,channel='personal'):
@@ -151,10 +151,22 @@ class ContextMemory:
 
     def export(self):
         size=(self.actions+7)//8
-        def pack(row):
-            return b''.join(v.to_bytes(size,'little') for p in row for v in p).hex()
-        return {'clock':self.clock,'rows':[[k,pack(row),pack(self.terminal[k]) if k in self.terminal else None,
-                 pack(self.teachers[k]) if k in self.teachers else None,dict(self.meta[k])]
+        if size==1:
+            # Same bytes as the generic path: one little-endian byte per plane value.
+            def pack(row):
+                return bytes([v for p in row for v in p]).hex()
+        else:
+            def pack(row):
+                return b''.join(v.to_bytes(size,'little') for p in row for v in p).hex()
+        # Packed rows are cached; every write path already invalidates _cache for the same key.
+        packed=self._packed
+        def cached(k,row):
+            hit=packed.get(k)
+            if hit is None:
+                hit=packed[k]=(pack(row),pack(self.terminal[k]) if k in self.terminal else None,
+                               pack(self.teachers[k]) if k in self.teachers else None)
+            return hit
+        return {'clock':self.clock,'rows':[[k,*cached(k,row),dict(self.meta[k])]
                  for k,row in self.rows.items()]}
 
     def restore(self,data,codec=None):
@@ -166,7 +178,7 @@ class ContextMemory:
         bits=L.CONTEXT_COUNTER_BITS
         def unpack(value):
             raw=bytes.fromhex(value)
-            vals=[int.from_bytes(raw[i:i+size],'little') for i in range(0,len(raw),size)]
+            vals=list(raw) if size==1 else [int.from_bytes(raw[i:i+size],'little') for i in range(0,len(raw),size)]
             if len(raw)!=2*bits*size or any(v>self.mask for v in vals):
                 raise ValueError('Invalid Boolean planes')
             return [vals[:bits],vals[bits:]]
@@ -178,3 +190,5 @@ class ContextMemory:
             self.rows[k]=unpack(personal);self.meta[k]=dict(meta)
             if terminal is not None:self.terminal[k]=unpack(terminal)
             if teacher is not None:self.teachers[k]=unpack(teacher)
+            if all(v is None or (v.islower() or v.isdecimal()) and ' ' not in v for v in (personal,terminal,teacher)):
+                self._packed[k]=(personal,terminal,teacher)  # canonical hex: identical to a fresh export

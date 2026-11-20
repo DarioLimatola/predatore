@@ -1,0 +1,5 @@
+Gen    1 | EVA - learning agent 0.0% | avg 8.3% | neurons 60
+Gen    2 | EVA - learning agent 50.0% | avg 26.0% | neurons 60
+Gen    3 | EVA - learning agent 25.0% | avg 16.7% | neurons 60
+Gen    4 | EVA - learning agent 37.5% | avg 14.6% | neurons 59
+Experiment: C:\Users\thefo\OneDrive\Desktop\Progetti Claude\predatore\predatore\EvolutionVault\experiments\EXP_seed42_size8 completed generation: 4
