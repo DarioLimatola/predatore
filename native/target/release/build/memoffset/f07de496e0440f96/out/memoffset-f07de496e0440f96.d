@@ -1,0 +1,10 @@
+C:\Users\thefo\OneDrive\Desktop\Progetti Claude\predatore\predatore\native\target\release\build\memoffset/f07de496e0440f96\out\memoffset-f07de496e0440f96.d: C:\Users\thefo\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\memoffset-0.9.1\src\lib.rs C:\Users\thefo\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\memoffset-0.9.1\src\raw_field.rs C:\Users\thefo\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\memoffset-0.9.1\src\offset_of.rs C:\Users\thefo\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\memoffset-0.9.1\src\span_of.rs
+
+C:\Users\thefo\OneDrive\Desktop\Progetti Claude\predatore\predatore\native\target\release\build\memoffset/f07de496e0440f96\out\libmemoffset-f07de496e0440f96.rlib: C:\Users\thefo\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\memoffset-0.9.1\src\lib.rs C:\Users\thefo\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\memoffset-0.9.1\src\raw_field.rs C:\Users\thefo\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\memoffset-0.9.1\src\offset_of.rs C:\Users\thefo\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\memoffset-0.9.1\src\span_of.rs
+
+C:\Users\thefo\OneDrive\Desktop\Progetti Claude\predatore\predatore\native\target\release\build\memoffset/f07de496e0440f96\out\libmemoffset-f07de496e0440f96.rmeta: C:\Users\thefo\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\memoffset-0.9.1\src\lib.rs C:\Users\thefo\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\memoffset-0.9.1\src\raw_field.rs C:\Users\thefo\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\memoffset-0.9.1\src\offset_of.rs C:\Users\thefo\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\memoffset-0.9.1\src\span_of.rs
+
+C:\Users\thefo\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\memoffset-0.9.1\src\lib.rs:
+C:\Users\thefo\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\memoffset-0.9.1\src\raw_field.rs:
+C:\Users\thefo\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\memoffset-0.9.1\src\offset_of.rs:
+C:\Users\thefo\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\memoffset-0.9.1\src\span_of.rs:

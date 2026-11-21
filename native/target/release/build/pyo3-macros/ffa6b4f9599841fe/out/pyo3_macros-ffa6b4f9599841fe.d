@@ -1,0 +1,7 @@
+C:\Users\thefo\OneDrive\Desktop\Progetti Claude\predatore\predatore\native\target\release\build\pyo3-macros/ffa6b4f9599841fe\out\pyo3_macros-ffa6b4f9599841fe.d: C:\Users\thefo\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\pyo3-macros-0.27.2\src\lib.rs
+
+C:\Users\thefo\OneDrive\Desktop\Progetti Claude\predatore\predatore\native\target\release\build\pyo3-macros/ffa6b4f9599841fe\out\pyo3_macros-ffa6b4f9599841fe.dll: C:\Users\thefo\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\pyo3-macros-0.27.2\src\lib.rs
+
+C:\Users\thefo\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\pyo3-macros-0.27.2\src\lib.rs:
+
+# env-dep:CARGO_PKG_VERSION=0.27.2

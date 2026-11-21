@@ -1,0 +1,34 @@
+Traceback (most recent call last):
+  File "C:\Users\thefo\OneDrive\Desktop\Progetti Claude\predatore\predatore\launcher.py", line 152, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "C:\Users\thefo\OneDrive\Desktop\Progetti Claude\predatore\predatore\launcher.py", line 143, in main
+    folder,g=run(args.vault_root,cfg,resume=args.resume,should_stop=lambda:stop_file.exists(),observer=observer,monitor=monitor,
+             ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                 progress=lambda x:print(f"Gen {x['generation']:4d} | EVA - learning agent {x['capture_rate']:.1%} | avg {x['population_mean_capture']:.1%} | neurons {x['active_neurons']}",flush=True))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\thefo\OneDrive\Desktop\Progetti Claude\predatore\predatore\engine\evolution.py", line 42, in run
+    return run_vector(root, config, resume=resume, progress=progress,
+                      should_stop=should_stop, observer=observer, monitor=monitor)
+  File "C:\Users\thefo\OneDrive\Desktop\Progetti Claude\predatore\predatore\engine\continual.py", line 373, in run_vector
+    return _run(root, config, resume, progress, should_stop, observer, monitor, directory)
+  File "C:\Users\thefo\OneDrive\Desktop\Progetti Claude\predatore\predatore\engine\continual.py", line 442, in _run
+    raise ValueError('Cambiare profilo SMITH per modificare la finestra di credito relazionale')
+ValueError: Cambiare profilo SMITH per modificare la finestra di credito relazionale
+Traceback (most recent call last):
+  File "C:\Users\thefo\OneDrive\Desktop\Progetti Claude\predatore\predatore\launcher.py", line 152, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "C:\Users\thefo\OneDrive\Desktop\Progetti Claude\predatore\predatore\launcher.py", line 143, in main
+    folder,g=run(args.vault_root,cfg,resume=args.resume,should_stop=lambda:stop_file.exists(),observer=observer,monitor=monitor,
+             ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                 progress=lambda x:print(f"Gen {x['generation']:4d} | EVA - learning agent {x['capture_rate']:.1%} | avg {x['population_mean_capture']:.1%} | neurons {x['active_neurons']}",flush=True))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\thefo\OneDrive\Desktop\Progetti Claude\predatore\predatore\engine\evolution.py", line 42, in run
+    return run_vector(root, config, resume=resume, progress=progress,
+                      should_stop=should_stop, observer=observer, monitor=monitor)
+  File "C:\Users\thefo\OneDrive\Desktop\Progetti Claude\predatore\predatore\engine\continual.py", line 373, in run_vector
+    return _run(root, config, resume, progress, should_stop, observer, monitor, directory)
+  File "C:\Users\thefo\OneDrive\Desktop\Progetti Claude\predatore\predatore\engine\continual.py", line 442, in _run
+    raise ValueError('Cambiare profilo SMITH per modificare la finestra di credito relazionale')
+ValueError: Cambiare profilo SMITH per modificare la finestra di credito relazionale
